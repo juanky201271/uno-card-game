@@ -1,2 +1,2 @@
-# Chart-the-Stock-Market-FreeCodeCamp
-Chart the Stock Market - MERN
+# UNO-Card-Game
+UNO Card Game - MERN
