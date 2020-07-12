@@ -1,3 +1,3 @@
-import StocksList from './StocksList'
+import Game from './Game'
 
-export { StocksList, }
+export { Game, }

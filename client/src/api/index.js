@@ -4,20 +4,18 @@ const api = axios.create({
   baseURL: '/api' // express
 })
 
-export const insertStock = table => api.post(`/stock/table/${table}`)
-export const getAllStocks = () => api.get(`/stocks`)
-export const getAllStocksData = () => api.get(`/stocks/data`)
-export const updateStockById = _id => api.put(`/stock/${_id}`)
-export const deleteStockById = (_id, table) => api.delete(`/stock/${_id}/${table}`)
-export const getStockById = _id => api.get(`/stock/${_id}`)
+export const createUser = table => api.post(`/user`)
+export const updateUserById = _id => api.put(`/user/${_id}`)
+export const deleteUserById = _id => api.delete(`/user/${_id}`)
+export const getUserById = _id => api.get(`/user/${_id}`)
+export const getUsers = () => api.get(`/users`)
 
 const apis = {
-    insertStock,
-    getAllStocks,
-    getAllStocksData,
-    updateStockById,
-    deleteStockById,
-    getStockById,
+    createUser,
+    updateUserById,
+    deleteUserById,
+    getUserById,
+    getUsers,
 }
 
 export default apis

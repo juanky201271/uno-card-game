@@ -13,7 +13,7 @@ const socketIo = require("socket.io")
 
 const io = socketIo(http)
 
-const stockRouter = require('./routes/stock-router')(io)
+const userRouter = require('./routes/user-router')(io)
 
 const db = require('./db')
 
@@ -26,7 +26,7 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.use('/api', stockRouter)
+app.use('/api', userRouter)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, "client/build")))

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import api from '../api'
-import { Chart, Soc, } from '../components'
+import { Soc, } from '../components'
 import styled from 'styled-components'
 import Masonry from 'react-masonry-component'
 
@@ -53,23 +53,23 @@ const Delete = styled.div.attrs({ className: 'btn btn-danger'})`
   cursor: pointer;
 `
 
-class DeleteStock extends Component {
+class DeleteUser extends Component {
   deleteUser = async event => {
     event.preventDefault()
     const { _id, _this, table, } = this.props
-    if (window.confirm(`Do tou want to delete the stock code ${table} ?`,)) {
+    if (window.confirm(`Do tou want to delete the user code ${table} ?`,)) {
 
-      await api.deleteStockById(_id, table).then(stock => {
+      await api.deleteUserById(_id, table).then(user => {
         _this.setState(state => {
           var cl = []
-          state.stocks.map((item, index) => {
+          state.users.map((item, index) => {
             if (item._id === _id) {
               return null
             } else {
               return cl.push(item)
             }
           })
-          return { stocks: cl, key: new Date(), }
+          return { users: cl, key: new Date(), }
         })
       })
       .catch(error => {
@@ -87,16 +87,16 @@ const Update = styled.div.attrs({ className: 'btn btn-success'})`
   cursor: pointer;
 `
 
-class UpdateStock extends Component {
+class UpdateUser extends Component {
   updateUser = async event => {
     event.preventDefault()
     const { _id, _this, table, } = this.props
-    if (window.confirm(`Do tou want to update the data of the stock code with ${table} ?`,)) {
+    if (window.confirm(`Do tou want to update the data of the user code with ${table} ?`,)) {
 
-      await api.updateStockById(_id).then(async stock => {
-        await api.getAllStocks().then(stocks => {
+      await api.updateUserById(_id).then(async user => {
+        await api.getAllUsers().then(users => {
           _this.setState({
-              stocks: stocks.data.data,
+              users: users.data.data,
               key: new Date(),
           })
         })
@@ -119,14 +119,14 @@ const Hide = styled.div.attrs({ className: 'btn btn-secondary'})`
   cursor: pointer;
 `
 
-class HideStock extends Component {
+class HideUser extends Component {
   hideUser = async event => {
     event.preventDefault()
     const { _id, _this, } = this.props
 
       _this.setState(state => {
         return {
-          stocksHide: state.stocksHide.concat(_id),
+          usersHide: state.usersHide.concat(_id),
           key: new Date(),
         }
       })
@@ -141,14 +141,14 @@ const Unhide = styled.div.attrs({ className: 'btn btn-secondary'})`
   cursor: pointer;
 `
 
-class UnhideStock extends Component {
+class UnhideUser extends Component {
   unhideUser = async event => {
     event.preventDefault()
     const { _this, } = this.props
 
       _this.setState(state => {
         return {
-          stocksHide: [],
+          usersHide: [],
           key: new Date(),
         }
       })
@@ -163,18 +163,18 @@ const Add = styled.div.attrs({ className: 'btn btn-success'})`
   cursor: pointer;
 `
 
-class AddStock extends Component {
+class AddUser extends Component {
   addUser = async event => {
     event.preventDefault()
     const { table, _this, } = this.props
     if (!table) return
 
-    if (_this.state.stocks.filter((item, index) => item.stockCode === table).length === 0) {
+    if (_this.state.users.filter((item, index) => item.userCode === table).length === 0) {
 
-      await api.insertStock(table).then(async stock => {
-        await api.getAllStocks().then(stocks => {
+      await api.insertUser(table).then(async user => {
+        await api.getAllUsers().then(users => {
           _this.setState({
-              stocks: stocks.data.data,
+              users: users.data.data,
               table: '',
               key: new Date(),
           })
@@ -184,19 +184,19 @@ class AddStock extends Component {
         })
       })
       .catch(error => {
-        alert(`Stock Code ${table} no found!`)
+        alert(`User Code ${table} no found!`)
         console.log(error)
       })
 
     }
     // unhide
-    const { stocks, stocksHide, } = _this.state
-    const s = stocks.filter((item, index) => item.stockCode === table)
+    const { users, usersHide, } = _this.state
+    const s = users.filter((item, index) => item.userCode === table)
     if (s.length) {
       const _id = s[0]._id
-      const stocksHideTemp = stocksHide.filter((item, index) => item !== _id)
+      const usersHideTemp = usersHide.filter((item, index) => item !== _id)
       _this.setState({
-          stocksHide: stocksHideTemp,
+          usersHide: usersHideTemp,
           table: '',
           key: new Date(),
       })
@@ -208,13 +208,13 @@ class AddStock extends Component {
   }
 }
 
-class StocksList extends Component {
+class UsersList extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            stocks: [],
+            users: [],
             isLoading: false,
-            stocksHide: [],
+            usersHide: [],
             table: '',
             key: new Date(),
             socket: '',
@@ -225,9 +225,9 @@ class StocksList extends Component {
     componentDidMount = async () => {
         this.setState({ isLoading: true })
 
-        await api.getAllStocks().then(stocks => {
+        await api.getAllUsers().then(users => {
           this.setState({
-              stocks: stocks.data.data,
+              users: users.data.data,
               isLoading: false,
           })
         })
@@ -240,12 +240,12 @@ class StocksList extends Component {
     }
     handleClickMasonry (event) {
       console.log('Masonry', event.target.id)
-      const stock_id = event.target.id.split("-")[0]
+      const user_id = event.target.id.split("-")[0]
       const obj = event.target.id.split("-")[1]
 
-      if (!stock_id || !obj) return
+      if (!user_id || !obj) return
 
-      console.log(document.getElementById(stock_id))
+      console.log(document.getElementById(user_id))
       this.masonry.layout()
 
     }
@@ -254,18 +254,18 @@ class StocksList extends Component {
       this.setState({ table: table, })
     }
     render() {
-      console.log('stocks', this.state)
-        const { stocks, isLoading, stocksHide, table, key, socket, } = this.state
+      console.log('users', this.state)
+        const { users, isLoading, usersHide, table, key, socket, } = this.state
 
-        const stocksShow = stocks.filter((item, index) => stocksHide.indexOf(item._id) < 0 )
+        const usersShow = users.filter((item, index) => usersHide.indexOf(item._id) < 0 )
 
-        const stockElements = stocksShow.map((item, index) => {
+        const userElements = usersShow.map((item, index) => {
            return (
                 <Wrapper key={item.name.substr(0,10).trim() + index.toString()} id={item._id}>
                   <Col>
                     <Row>
-                      <Title3 id={item._id + '-h3-'}>{item.stockCode}</Title3>
-                      <HideStock _id={item._id}
+                      <Title3 id={item._id + '-h3-'}>{item.userCode}</Title3>
+                      <HideUser _id={item._id}
                                   _this={this} />
                     </Row>
 
@@ -279,12 +279,12 @@ class StocksList extends Component {
                       { item.removable ?
                         (
                           <>
-                            <DeleteStock _id={item._id}
+                            <DeleteUser _id={item._id}
                                          _this={this}
-                                         table={item.stockCode} />
-                            <UpdateStock _id={item._id}
+                                         table={item.userCode} />
+                            <UpdateUser _id={item._id}
                                          _this={this}
-                                         table={item.stockCode} />
+                                         table={item.userCode} />
                           </>
                         ) : (
                           <></>
@@ -299,23 +299,23 @@ class StocksList extends Component {
             )
         })
 
-        stockElements.unshift(
-             <Wrapper key={'addStock999'} id={'999'}>
+        userElements.unshift(
+             <Wrapper key={'addUser999'} id={'999'}>
                <Col>
                  <Row>
-                   <Title3 id={'999-h3-'}>Add Stock:</Title3>
+                   <Title3 id={'999-h3-'}>Add User:</Title3>
                  </Row>
 
                  <InputText id={'999-text'} value={table} onChange={this.handleChangeTable} placeholder="Ex: AAPL, AAT, FB..." />
 
-                 <AddStock table={table}
+                 <AddUser table={table}
                            _this={this}
                            key={new Date().toString()} />
-                  { stocksHide.length ?
+                  { usersHide.length ?
                     (
                       <>
                         <hr />
-                        <UnhideStock _this={this} />
+                        <UnhideUser _this={this} />
                       </>
                     ) : (
                       <></>
@@ -327,18 +327,18 @@ class StocksList extends Component {
          )
 
         let showTable = true
-        if (!stocks.length) {
+        if (!users.length) {
             showTable = false
         }
 
         let showChart = true
-        if (!stocksShow.length) {
+        if (!usersShow.length) {
             showChart = false
         }
 
         return (
           <WrapperGen>
-              <Title>Stocks</Title>
+              <Title>Users</Title>
               <Soc _this={this} />
               <hr />
               {showTable && !isLoading && (
@@ -353,7 +353,7 @@ class StocksList extends Component {
                       onClick={this.handleClickMasonry}
                       ref={function(c) {this.masonry = this.masonry || c.masonry;}.bind(this)}
                   >
-                    {stockElements}
+                    {userElements}
                   </Masonry>
                   <Title>Chart</Title>
                   { socket ?
@@ -368,7 +368,7 @@ class StocksList extends Component {
                   <hr />
                   { showChart && (
                     <>
-                      <Chart dataHide={stocksHide} key={key} />
+                      <Chart dataHide={usersHide} key={key} />
                       <hr />
                     </>
                   )}
@@ -380,11 +380,11 @@ class StocksList extends Component {
               )}
 
               {isLoading && (
-                  <h3>Loading Stocks</h3>
+                  <h3>Loading Users</h3>
               )}
           </WrapperGen>
         )
     }
 }
 
-export default StocksList
+export default UsersList
