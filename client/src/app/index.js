@@ -1,14 +1,15 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 
-import { NavBar } from '../components'
+import { NavBar, GameProvider } from '../components'
 import { Game } from '../pages'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 
-class App extends Component {
-  render() {
-    return (
+function App() {
+
+  return (
+    <GameProvider>
       <Router>
 
         <NavBar/>
@@ -17,8 +18,9 @@ class App extends Component {
         </Switch>
 
       </Router>
-    )
-  }
+    </GameProvider>
+  )
+
 }
 
 export default App

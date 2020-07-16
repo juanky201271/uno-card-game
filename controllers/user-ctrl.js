@@ -126,6 +126,54 @@ module.exports = function(io) {
       })
   }
 
+  getUserByEmail = async (req, res) => {
+    await User
+      .findOne({ email: req.params.email }, (err, user) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err, })
+        }
+        if (!user) {
+          return res.status(404).json({ success: false, error: 'User not found', })
+        }
+        return res.status(200).json({ success: true, data: user})
+      })
+      .catch(err => {
+        return res.status(400).json({ success: false, error: err, })
+      })
+  }
+
+  getUserByName = async (req, res) => {
+    await User
+      .findOne({ name: req.params.name }, (err, user) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err, })
+        }
+        if (!user) {
+          return res.status(404).json({ success: false, error: 'User not found', })
+        }
+        return res.status(200).json({ success: true, data: user})
+      })
+      .catch(err => {
+        return res.status(400).json({ success: false, error: err, })
+      })
+  }
+
+  getUserByIp = async (req, res) => {
+    await User
+      .findOne({ ip: req.params.ip }, (err, user) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err, })
+        }
+        if (!user) {
+          return res.status(404).json({ success: false, error: 'User not found', })
+        }
+        return res.status(200).json({ success: true, data: user})
+      })
+      .catch(err => {
+        return res.status(400).json({ success: false, error: err, })
+      })
+  }
+
   getUsers = async (req, res) => {
     await User
       .find({}, (err, users) => {
@@ -147,6 +195,9 @@ module.exports = function(io) {
     updateUserById,
     deleteUserById,
     getUserById,
+    getUserByEmail,
+    getUserByName,
+    getUserByIp,
     getUsers,
   }
 

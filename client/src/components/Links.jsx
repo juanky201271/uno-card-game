@@ -1,16 +1,18 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
+import LoginForm from './LoginForm'
 
-class Links extends Component {
-  render() {
+function Links() {
+
     return (
       <>
         <Link to="/" className="navbar-brand">
-          <div style={{ color: '#222' }} >Chart the Stock Market</div>
+          <div style={{ color: '#222' }} >UNO Card Game</div>
         </Link>
+        <LoginForm />
       </>
     )
-  }
+
 }
 
 export default Links

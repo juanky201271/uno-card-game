@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Build a Voting App",
+  "description": "UNO Card Game",
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
@@ -22,13 +22,10 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "http-proxy-middleware": "^1.0.3",
-    "mongoose": "^5.9.10",
-    "nodemon": "^2.0.3",
-    "passport": "^0.4.1",
-    "passport-twitter": "^1.0.4",
+    "http-proxy-middleware": "^1.0.5",
+    "mongoose": "^5.9.24",
+    "nodemon": "^2.0.4",
     "path": "^0.12.7",
-    "quandl": "0.0.6",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {},

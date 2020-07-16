@@ -1,33 +1,29 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import socketIOClient from "socket.io-client"
-import api from '../api'
+import { GameContext } from './GameContext'
+
 const ENDPOINT = process.env.PUBLIC_URL
 
-function Soc({_this}) {
-  const [response, setResponse] = useState(" waiting ")
+function Soc(props) {
+
+  const [ state, setState ] = useContext(GameContext)
+  const [ response, setResponse ] = useState(" waiting ")
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT)
     socket.on("Stock", data => {
       setResponse(data.message)
-      api.getAllStocks().then(stocks => {
-        _this.setState({
-            stocks: stocks.data.data,
-            key: new Date(),
-            socket: data.message,
-        })
-      })
-      .catch(error => {
-        console.log(error)
-      })
+      let sockets = state.sockets ? [...state.sockets] : []
+      setState(state => ({ ...state, sockets: sockets.push(data.message) }))
     })
-  }, [_this])
+  }, [state, response, setState])
 
   return (
     <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
       ::: {response} :::
     </div>
   )
+
 }
 
 export default Soc

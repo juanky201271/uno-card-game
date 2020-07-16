@@ -14,6 +14,8 @@ const socketIo = require("socket.io")
 const io = socketIo(http)
 
 const userRouter = require('./routes/user-router')(io)
+const gameRouter = require('./routes/game-router')(io)
+const playerRouter = require('./routes/player-router')(io)
 
 const db = require('./db')
 
@@ -27,6 +29,8 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use('/api', userRouter)
+app.use('/api', gameRouter)
+app.use('/api', playerRouter)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, "client/build")))

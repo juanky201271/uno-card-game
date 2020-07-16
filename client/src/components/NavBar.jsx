@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import Logo from './Logo'
@@ -10,8 +10,8 @@ const Nav = styled.nav.attrs({ className: "navbar navbar-expand-lg navbar-dark" 
   background-color: #eee;
 `
 
-class NavBar extends Component {
-  render() {
+function NavBar() {
+
     return (
       <Container>
         <Nav>
@@ -20,7 +20,7 @@ class NavBar extends Component {
         </Nav>
       </Container>
     )
-  }
+
 }
 
 export default NavBar
