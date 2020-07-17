@@ -3,13 +3,16 @@ import styled from 'styled-components'
 import api from '../api'
 import { GameContext } from './GameContext'
 
-const Container = styled.div.attrs({ className: "form-group" })`
+const Container = styled.div.attrs({ className: "form-group" })
+`
   padding: 5px;
 `
-const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-content-end" })`
+const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-content-end" })
+`
   padding: 2px;
 `
-const LabelRed = styled.label.attrs({ className: "text-danger" })``
+const LabelRed = styled.label.attrs({ className: "text-danger" })
+``
 
 function LoginForm() {
 
@@ -28,26 +31,26 @@ function LoginForm() {
 
   const addGame = async () => {
     if (!values.players || !values.cards || !values.keyWord) return
-    console.log(values)
+    //console.log(values)
 
     const payload = { creator_id: state.user._id, winner_id: null, keyWord: values.keyWord,
                       players: values.players, cards: values.cards, curr_round: 0,
                       curr_cards: [], curr_cards_pile: [], curr_score: 0,
                       curr_player_id: null, curr_dealer_id: null }
     await api.createGame(payload).then(async game => {
-      console.log(game.data.data)
+      //console.log(game.data.data)
       const payload2 = { player_id: state.user._id, game_id: game.data.data._id, score: 0,
                         curr_round: 0, curr_cards: [], curr_cards_pile: [],
                         curr_score: 0, uno: false }
       await api.createPlayer(payload2).then(async player => {
-        console.log(player.data.data)
+        //console.log(player.data.data)
         await api.getUserByEmail("UNO").then(async user => {
           const payload3 = { player_id: user.data.data._id, game_id: game.data.data._id, score: 0,
                             curr_round: 0, curr_cards: [], curr_cards_pile: [],
                             curr_score: 0, uno: true }
           await api.createPlayer(payload3).then(playerUNO => {
-            console.log(playerUNO)
-            setState(state => ({ ...state, game: game.data.data[0], player: player.data.data[0], uno:playerUNO.data.data[0] }))
+            //console.log(playerUNO.data.data)
+            setState(state => ({ ...state, game: game.data.data, player: player.data.data, uno:playerUNO.data.data }))
           })
           .catch(error => {
             console.log(error)
@@ -66,7 +69,7 @@ function LoginForm() {
     })
   }
 
-  console.log('form game', values)
+  console.log('form game', values, state)
   return (
     <ContainerExt>
       { !state.game && state.user &&

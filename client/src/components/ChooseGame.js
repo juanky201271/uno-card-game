@@ -3,12 +3,16 @@ import api from '../api'
 import { GameContext, GameForm } from '../components'
 import styled from 'styled-components'
 
-const Container = styled.div.attrs({ className: "container" })`
+const Container = styled.div.attrs({ className: "container" })
+`
   padding: 10px;
 `
-const AddGame = styled.button.attrs({ className: 'btn btn-secondary' })``
-const JoinGame = styled.button.attrs({ className: 'btn btn-primary' })``
-const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })`
+const AddGame = styled.button.attrs({ className: 'btn btn-secondary' })
+``
+const JoinGame = styled.button.attrs({ className: 'btn btn-primary' })
+``
+const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
+`
   padding: 10px 10px 10px 10px;
 `
 
@@ -23,10 +27,21 @@ function ChooseGame() {
   }
 
   const handleClickJoinGame = (event) => {
-    if (event) event.preventDefault()
+    event.persist()
     api.getGameById(event.target.id).then(game => {
-      setValues(values => ({ ...values, addGame: false }))
-      setState(state => ({ ...state, game: game.data.data[0]}))
+      api.getPlayersByGameId(event.target.id).then(players => {
+        console.log(players.data.data)
+        let player, uno
+        for (let i = 0; i < players.data.data.length; i++) {
+          if (players.data.data[i].uno) uno = players.data.data[i]
+          else player = players.data.data[i]
+        }
+        setValues(values => ({ ...values, addGame: false }))
+        setState(state => ({ ...state, game: game.data.data[0], player: player, uno: uno }))
+      })
+      .catch(error => {
+        console.log(error)
+      })
     })
     .catch(error => {
       console.log(error)
@@ -35,7 +50,7 @@ function ChooseGame() {
 
   useEffect(() => {
     api.getGames().then(games => {
-      console.log(games.data.data)
+      //console.log(games.data.data)
       const listGames = games.data.data.map((ele, ind) => {
         return (
           <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
@@ -53,6 +68,7 @@ function ChooseGame() {
     })
   }, [state, setState])
 
+  console.log('game choose', values, state)
   return (
     <Container>
 

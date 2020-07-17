@@ -119,6 +119,22 @@ module.exports = function(io) {
       })
   }
 
+  getPlayersByGameId = async (req, res) => {
+    await Player
+      .find({ game_id: ObjectId(req.params.game_id) })
+      .populate('player_id')
+      .populate('game_id')
+      .exec((err, players) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err, })
+        }
+        if (!players.length) {
+          return res.status(404).json({ success: false, error: 'Player not found', })
+        }
+        return res.status(200).json({ success: true, data: players})
+      })
+  }
+
   getPlayers = async (req, res) => {
     await Player
       .find({})
@@ -140,6 +156,7 @@ module.exports = function(io) {
     updatePlayerById,
     deletePlayerById,
     getPlayerById,
+    getPlayersByGameId,
     getPlayers,
   }
 

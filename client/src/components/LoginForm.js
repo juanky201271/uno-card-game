@@ -3,13 +3,16 @@ import styled from 'styled-components'
 import api from '../api'
 import { GameContext } from './GameContext'
 
-const Container = styled.div.attrs({ className: "form-group" })`
+const Container = styled.div.attrs({ className: "form-group" })
+`
   padding: 5px;
 `
-const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-content-end" })`
+const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-content-end" })
+`
   padding: 2px;
 `
-const LabelRed = styled.label.attrs({ className: "text-danger" })``
+const LabelRed = styled.label.attrs({ className: "text-danger" })
+``
 
 function LoginForm() {
 
@@ -28,15 +31,6 @@ function LoginForm() {
 
   const login = async () => {
     if (!values.email || !values.pwd) return
-    console.log(values)
-
-    //const payload = { name: 'ELLEN', email: values.email, password: values.pwd }
-    //await api.createUser(payload).then(res => {
-    //    console.log(res)
-    //})
-    //.catch(error => {
-    //  console.log(error)
-    //})
 
     await api.getUserByEmail(values.email).then(user => {
       if (user.data.data.password === values.pwd) {
@@ -53,7 +47,7 @@ function LoginForm() {
 
   }
 
-  console.log('login', values)
+  console.log('login form', values, state)
   return (
     <ContainerExt>
       { !values.user &&

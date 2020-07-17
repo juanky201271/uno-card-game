@@ -18,6 +18,7 @@ function Soc(props) {
     })
   }, [state, response, setState])
 
+  console.log('socket', response, state)
   return (
     <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
       ::: {response} :::
