@@ -103,13 +103,15 @@ function PlayGame (props) {
     cards.forEach( (elem, i, arr, j = getRandomValue(i, arr.length)) => [arr[i], arr[j]] = [arr[j], arr[i]] )
     return ({unoTurn: true,
             unoCards: [], playerCards: [],
-            unoCardsPile: [], playerCardsPile: [],
-            cards: cards, pile: [], numCards: Number(state.game.cards), round: state.game.curr_round })
+            unoCardsPile: [], playerCardsPile: [], playerPickCard: false,
+            cards: cards, pile: [], finishRound: false,
+            numCards: Number(state.game.cards), round: state.game.curr_round })
   }
 
   const unoPlay = (round) => {
-    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile, cards, pile, numCards } = values
-
+    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile,
+          cards, pile, numCards, playerPickCard, finishRound } = values
+    if (finishRound) return
     if (unoCards.length === 0 && playerCards.length === 0) {
       for (let c = 0; c < numCards; c++) {
         let aux = cards.pop()
@@ -122,7 +124,6 @@ function PlayGame (props) {
     if (pile.length === 0) {
       while (true) {
         let aux = cards.pop()
-        console.log(aux)
         if (['red', 'yellow', 'green', 'blue'].includes(aux.c) && [0,1,2,3,4,5,6,7,8,9].includes(aux.n)) {
           pile.push({ card: aux, player: null, color: null })
           break
@@ -137,11 +138,11 @@ function PlayGame (props) {
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
-    let nextNumber = lastCardPile.n
+    let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
     let haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
 
-    if (state.uno._id !== lastPlayerPile && nextNumber === 'cd4') {
+    if (state.uno._id !== lastPlayerPile && lastCardPile.n === 'cd4') {
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
@@ -150,7 +151,7 @@ function PlayGame (props) {
       setValues(values => ({ ...values, unoTurn: unoTurn,
                             unoCards: unoCards, cards: cards }))
       return
-    } else if (state.uno._id !== lastPlayerPile && nextNumber === 'd2') {
+    } else if (state.uno._id !== lastPlayerPile && lastCardPile.n === 'd2') {
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoTurn = false
@@ -163,7 +164,7 @@ function PlayGame (props) {
         lastCardPile = pile[pile.length - 1].card
         lastPlayerPile = pile[pile.length - 1].player
         lastColorPile = pile[pile.length - 1].color
-        nextNumber = lastCardPile.n
+        nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
         nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
         haveColorIndex = null
         haveNumberIndex = null
@@ -178,8 +179,7 @@ function PlayGame (props) {
         index = null
         color = null
         unoCards.forEach((ele, ind) => {
-          if (ele.c === nextColor &&
-              ele.n !== 'd2' && ele.n !== 'r' && ele.n !== 's') haveColorIndex = ind
+          if (ele.c === nextColor) haveColorIndex = ind
           if (ele.c === nextColor && ele.n === 'd2') haveColorD2Index = ind
           if (ele.c === nextColor && ele.n === 'r') haveColorReverseIndex = ind
           if (ele.c === nextColor && ele.n === 's') haveColorSkipIndex = ind
@@ -188,32 +188,32 @@ function PlayGame (props) {
           if (ele.n === 'cd4') haveCd4Index = ind
           if (ele.c !== 'wild') rankingColor[ele.c]++;
         })
-        console.log('sort', rankingColor, nextNumber, nextColor)
+        console.log('actual', nextColor, nextNumber)
+        console.log('color', haveColorIndex, 'number', haveNumberIndex, 'c', haveCIndex, 'cd4', haveCd4Index, 'd2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
         let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
-        console.log('sort', arrRankingColor, nextNumber, nextColor)
 
         if (playerCards.length <= 3) {
-          if (haveColorD2Index) {
+          if (haveColorD2Index !== null) {
             index = haveColorD2Index
             color = null
-          } else if (haveCd4Index) {
+          } else if (haveCd4Index !== null) {
             index = haveCd4Index
             color = arrRankingColor[0][0]
-          } else if (haveNumberIndex) {
+          } else if (haveNumberIndex !== null) {
             index = haveNumberIndex
             color = null
-          } else if (haveCIndex) {
+          } else if (haveCIndex !== null) {
             index = haveCIndex
             color = arrRankingColor[0][0]
-          } else if (haveColorReverseIndex) {
+          } else if (haveColorReverseIndex !== null) {
             index = haveColorReverseIndex
             color = null
             keepTurn = true
-          } else if (haveColorSkipIndex) {
+          } else if (haveColorSkipIndex !== null) {
             index = haveColorSkipIndex
             color = null
             keepTurn = true
-          } else if (haveColorIndex) {
+          } else if (haveColorIndex !== null) {
             index = haveColorIndex
             color = null
           } else {
@@ -222,27 +222,27 @@ function PlayGame (props) {
             color = null
           }
         } else {
-          if (haveColorReverseIndex) {
+          if (haveColorReverseIndex !== null) {
             index = haveColorReverseIndex
             color = null
             keepTurn = true
-          } else if (haveColorSkipIndex) {
+          } else if (haveColorSkipIndex !== null) {
             index = haveColorSkipIndex
             color = null
             keepTurn = true
-          } else if (haveColorIndex) {
+          } else if (haveColorIndex !== null) {
             index = haveColorIndex
             color = null
-          } else if (haveNumberIndex) {
+          } else if (haveNumberIndex !== null) {
             index = haveNumberIndex
             color = null
-          } else if (haveColorD2Index) {
+          } else if (haveColorD2Index !== null) {
             index = haveColorD2Index
             color = null
-          } else if (haveCIndex) {
+          } else if (haveCIndex !== null) {
             index = haveCIndex
             color = arrRankingColor[0][0]
-          } else if (haveCd4Index) {
+          } else if (haveCd4Index !== null) {
             index = haveCd4Index
             color = arrRankingColor[0][0]
           } else {
@@ -280,26 +280,29 @@ function PlayGame (props) {
 
       } // while
     } // else
+    if (unoCards.length === 0) finishRound = true
     unoTurn = false
+    playerPickCard = false
     setValues(values => ({ ...values, unoTurn: unoTurn,
-                          unoCards: unoCards, playerCards: playerCards,
+                          unoCards: unoCards, playerCards: playerCards, playerPickCard: playerPickCard,
                           unoCardsPile: unoCardsPile,
-                          cards: cards, pile: pile }))
+                          cards: cards, pile: pile, finishRound: finishRound }))
   }
 
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
-    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile, cards, pile, numCards } = values
+    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile, cards, pile, numCards, finishRound } = values
+    if (finishRound) return
     if (unoTurn) return
 
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
-    let nextNumber = lastCardPile.n
+    let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
-    let selectedCard = playerCards[event.target.id] //playerCards.splice(event.target.id, 1)[0]
-    console.log(selectedCard)
+    let selectedCard = playerCards[event.target.id]
+    console.log('play card', selectedCard)
 
     if (selectedCard.n === 'c' || selectedCard.n === 'cd4') {
       let inputColor = document.getElementById('color-' + event.target.id).value
@@ -324,10 +327,12 @@ function PlayGame (props) {
       }
     }
 
+    if (playerCards.length === 0) finishRound = true
+
     setValues(values => ({ ...values, unoTurn: unoTurn,
                           playerCards: playerCards,
                           playerCardsPile: playerCardsPile,
-                          cards: cards, pile: pile }))
+                          cards: cards, pile: pile, finishRound: finishRound }))
 
   }
 
@@ -338,26 +343,43 @@ function PlayGame (props) {
 
   const handleClickPickCard = (event) => {
     if (event) event.preventDefault()
-    const { playerCards, cards, pile } = values
-
+    let { playerCards, cards, pile, playerPickCard, unoTurn, finishRound } = values
+    if (finishRound) return
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
-    let nextNumber = lastCardPile.n
+    let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
-    let iCan = true
+    let iCanPlay = false
     playerCards.forEach((ele, ind) => {
       if (ele.c === 'wild' || ele.c === nextColor || ele.n === nextNumber ) {
-        iCan = false
+        iCanPlay = true
       }
     });
 
-    if (!iCan) return
+    if (iCanPlay || playerPickCard) {
+      return
+    }
 
     playerCards.push(cards.pop())
 
-    setValues(values => ({ ...values, playerCards: playerCards, cards: cards }))
+    iCanPlay = false
+    playerCards.forEach((ele, ind) => {
+      if (ele.c === 'wild' || ele.c === nextColor || ele.n === nextNumber ) {
+        iCanPlay = true
+      }
+    });
+
+    if (!iCanPlay) {
+      unoTurn = true
+      playerPickCard = false
+    } else {
+      playerPickCard = true
+    }
+
+    setValues(values => ({ ...values, playerCards: playerCards, cards: cards,
+                                      playerPickCard: playerPickCard, unoTurn:unoTurn }))
   }
 
   const [ state, setState ] = useContext(GameContext)
@@ -368,7 +390,7 @@ function PlayGame (props) {
     unoPlay(state.game.curr_round + 1)
   })
 
-  console.log('play game', state, values)
+  console.log('play game render', state, values)
   return (
     <WrapperGen>
     <Title>Playing... Round: {values.round}</Title>
@@ -378,12 +400,21 @@ function PlayGame (props) {
           return (<div key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</div>)
         })}
       </WrapperGen>
-      <WrapperGen>
-        <p> Pile </p>
-        {values.pile.map(ele => {
-          return (<div key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</div>)
-        })}
-      </WrapperGen>
+      <ContainerRow>
+        <WrapperGen>
+          <p> Pile </p>
+          {values.pile.map(ele => {
+            return (<div key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</div>)
+          })}
+        </WrapperGen>
+        <WrapperGen>
+          <p> Cards </p>
+          {values.cards.map((ele, ind) => {
+            if (ind < values.cards.length - 10) return ('')
+            else return (<div key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n} - {ele.o}</div>)
+          })}
+        </WrapperGen>
+      </ContainerRow>
       <WrapperGen>
         <p> Me </p>
         {values.playerCards.map((ele, ind) => {
