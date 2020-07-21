@@ -9,14 +9,24 @@ const WrapperGen = styled.div
 `
 const Title = styled.h1.attrs({ className: 'h1' })
 ``
-const PileCard = styled.button.attrs({ className: 'btn btn-primary' })
+const PileCard = styled.button.attrs({ className: 'btn btn-success' })
 ``
-const PickCard = styled.button.attrs({ className: 'btn btn-danger' })
+const PickCard = styled.button.attrs({ className: 'btn btn-primary' })
 ``
 const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
   padding: 10px 10px 10px 10px;
 `
+const PUno = styled.p.attrs({ className: 'text-danger' })
+``
+const DivUno = styled.div.attrs({ className: 'text-danger' })
+``
+const PMe = styled.p.attrs({ className: 'text-success' })
+``
+const DivMe = styled.div.attrs({ className: 'text-success' })
+``
+const DivLastCard = styled.div.attrs({ className: 'text-primary' })
+``
 
 const cardsOrder = [
   { c: 'red', n: 0, o: 1 },
@@ -104,13 +114,13 @@ function PlayGame (props) {
     return ({unoTurn: true,
             unoCards: [], playerCards: [],
             unoCardsPile: [], playerCardsPile: [], playerPickCard: false,
-            cards: cards, pile: [], finishRound: false,
+            cards: cards, pile: [], finishRound: false, numberPlay: 0, unoWin: false,
             numCards: Number(state.game.cards), round: state.game.curr_round })
   }
 
   const unoPlay = (round) => {
     let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile,
-          cards, pile, numCards, playerPickCard, finishRound } = values
+          cards, pile, numCards, playerPickCard, finishRound, numberPlay, unoWin } = values
     if (finishRound) return
     if (unoCards.length === 0 && playerCards.length === 0) {
       for (let c = 0; c < numCards; c++) {
@@ -140,7 +150,7 @@ function PlayGame (props) {
     let lastColorPile = pile[pile.length - 1].color
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
-    let haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
+    let arrHaveColorIndex = [], arrHaveNumberIndex = [], haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }, rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, 'd2': 0, 's': 0, 'r': 0 }
 
     if (state.uno._id !== lastPlayerPile && lastCardPile.n === 'cd4') {
       unoCards.push(cards.pop())
@@ -166,6 +176,8 @@ function PlayGame (props) {
         lastColorPile = pile[pile.length - 1].color
         nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
         nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
+        arrHaveColorIndex = []
+        arrHaveNumberIndex = []
         haveColorIndex = null
         haveNumberIndex = null
         haveCIndex = null
@@ -174,23 +186,61 @@ function PlayGame (props) {
         haveColorReverseIndex = null
         haveColorSkipIndex = null
         rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
+        rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, 'd2': 0, 's': 0, 'r': 0 }
 
         keepTurn = false
         index = null
         color = null
         unoCards.forEach((ele, ind) => {
-          if (ele.c === nextColor) haveColorIndex = ind
+          if (ele.c === nextColor) arrHaveColorIndex.push([ele.n.toString(), ind])
           if (ele.c === nextColor && ele.n === 'd2') haveColorD2Index = ind
           if (ele.c === nextColor && ele.n === 'r') haveColorReverseIndex = ind
           if (ele.c === nextColor && ele.n === 's') haveColorSkipIndex = ind
-          if (ele.n === nextNumber) haveNumberIndex = ind
+          if (ele.n === nextNumber) arrHaveNumberIndex.push([ele.c, ind])
           if (ele.n === 'c') haveCIndex = ind
           if (ele.n === 'cd4') haveCd4Index = ind
-          if (ele.c !== 'wild') rankingColor[ele.c]++;
+          if (ele.c !== 'wild') {
+            rankingColor[ele.c]++
+            rankingNumber[ele.n.toString()]++
+          }
         })
         console.log('actual', nextColor, nextNumber)
-        console.log('color', haveColorIndex, 'number', haveNumberIndex, 'c', haveCIndex, 'cd4', haveCd4Index, 'd2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
+        console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, 'cd4', haveCd4Index, 'd2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
         let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
+        let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
+        console.log('color rank', arrRankingColor, 'number rank', arrRankingNumber)
+
+        // mejor la que tenga mas del mismo color
+        let exit = false
+        for (let i = 0; i < arrRankingColor.length; i++) {
+          for (let j = 0; j < arrHaveNumberIndex.length; j++ ) {
+            console.log(i, arrRankingColor[i], j, arrHaveNumberIndex[j])
+            if (arrRankingColor[i][0] === arrHaveNumberIndex[j][0]) {
+              haveNumberIndex = arrHaveNumberIndex[j][1]
+              exit = true
+              break
+            }
+          }
+          if (exit) break
+        }
+
+        // mejor el numero que se repita menos
+        exit = false
+        for (let i = arrRankingNumber.length - 1; i >= 0; i--) {
+          for (let j = 0; j < arrHaveColorIndex.length; j++ ) {
+            console.log(i, arrRankingNumber[i], j, arrHaveColorIndex[j])
+            if (arrRankingNumber[i][0] === arrHaveColorIndex[j][0]) {
+              haveColorIndex = arrHaveColorIndex[j][1]
+              exit = true
+              break
+            }
+          }
+          if (exit) break
+        }
+
+        console.log('color', haveColorIndex)
+        console.log('number', haveNumberIndex)
+
 
         if (playerCards.length <= 3) {
           if (haveColorD2Index !== null) {
@@ -280,18 +330,22 @@ function PlayGame (props) {
 
       } // while
     } // else
-    if (unoCards.length === 0) finishRound = true
+    if (unoCards.length === 0) {
+      finishRound = true
+      unoWin = true
+    }
     unoTurn = false
     playerPickCard = false
     setValues(values => ({ ...values, unoTurn: unoTurn,
                           unoCards: unoCards, playerCards: playerCards, playerPickCard: playerPickCard,
                           unoCardsPile: unoCardsPile,
-                          cards: cards, pile: pile, finishRound: finishRound }))
+                          cards: cards, pile: pile, finishRound: finishRound, unoWin: unoWin }))
   }
 
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
-    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile, cards, pile, numCards, finishRound } = values
+    let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile,
+          cards, pile, numCards, finishRound, numberPlay, unoWin } = values
     if (finishRound) return
     if (unoTurn) return
 
@@ -327,12 +381,15 @@ function PlayGame (props) {
       }
     }
 
-    if (playerCards.length === 0) finishRound = true
+    if (playerCards.length === 0) {
+      finishRound = true
+      unoWin = false
+    }
 
     setValues(values => ({ ...values, unoTurn: unoTurn,
                           playerCards: playerCards,
                           playerCardsPile: playerCardsPile,
-                          cards: cards, pile: pile, finishRound: finishRound }))
+                          cards: cards, pile: pile, finishRound: finishRound, numberPlay: numberPlay, unoWin: unoWin }))
 
   }
 
@@ -358,6 +415,12 @@ function PlayGame (props) {
       }
     });
 
+    if (!iCanPlay && playerPickCard) {
+      unoTurn = true
+      setValues(values => ({ ...values, unoTurn:unoTurn }))
+      return
+    }
+
     if (iCanPlay || playerPickCard) {
       return
     }
@@ -378,6 +441,10 @@ function PlayGame (props) {
       playerPickCard = true
     }
 
+    if (!iCanPlay && playerPickCard) {
+      unoTurn = true
+    }
+
     setValues(values => ({ ...values, playerCards: playerCards, cards: cards,
                                       playerPickCard: playerPickCard, unoTurn:unoTurn }))
   }
@@ -395,32 +462,41 @@ function PlayGame (props) {
     <WrapperGen>
     <Title>Playing... Round: {values.round}</Title>
       <WrapperGen>
-        <p> UNO </p>
+        <PUno> UNO {values.finishRound && values.unoWin && 'Winner!!!!'} </PUno>
         {values.unoCards.map(ele => {
-          return (<div key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</div>)
+          return (<DivUno key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</DivUno>)
         })}
       </WrapperGen>
       <ContainerRow>
         <WrapperGen>
           <p> Pile </p>
           {values.pile.map(ele => {
-            return (<div key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</div>)
+            if (ele.player === state.player._id)
+              return (<DivMe key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivMe>)
+            else if (ele.player === state.uno._id)
+              return (<DivUno key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivUno>)
+            else
+              return (<DivLastCard key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivLastCard>)
           })}
         </WrapperGen>
         <WrapperGen>
           <p> Cards </p>
           {values.cards.map((ele, ind) => {
-            if (ind < values.cards.length - 10) return ('')
-            else return (<div key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n} - {ele.o}</div>)
+            if (ind < values.cards.length - 10)
+              return ('')
+            else if (ind === values.cards.length - 1)
+              return (<DivLastCard key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - {ele.o}</DivLastCard>)
+            else
+              return (<div key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - {ele.o}</div>)
           })}
         </WrapperGen>
       </ContainerRow>
       <WrapperGen>
-        <p> Me </p>
+        <PMe> Me {values.finishRound && !values.unoWin && 'Winner!!!!'} </PMe>
         {values.playerCards.map((ele, ind) => {
           return (
             <ContainerRow key={ind}>
-              <div key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</div>
+              <DivMe key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</DivMe>
 
               { ele.c === 'wild' &&
                 (
@@ -435,14 +511,20 @@ function PlayGame (props) {
                 </>
                 )
               }
-
-              <PileCard onClick={handleClickPileCard} id={ind}> Pile this Card </PileCard>
+              { (ele.c === 'wild' ||
+                  ele.c === values.pile[values.pile.length - 1].card.c ||
+                  ele.n === values.pile[values.pile.length - 1].card.n ||
+                  ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
+                <PileCard onClick={handleClickPileCard} id={ind}> Pile this Card </PileCard>
+              }
             </ContainerRow>
           )
         })}
       </WrapperGen>
       <WrapperGen>
-        <PickCard onClick={handleClickPickCard} id="PickCard"> Pick a card </PickCard>
+        { !values.finishRound &&
+          <PickCard onClick={handleClickPickCard} id="PickCard"> Pick a card </PickCard>
+        }
       </WrapperGen>
     </WrapperGen>
   )
