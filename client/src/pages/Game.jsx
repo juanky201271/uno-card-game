@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import api from '../api'
-import { Soc, GameContext, ChooseGame } from '../components'
+import { Soc, GameContext, ChooseGame, PlayGame } from '../components'
 import styled from 'styled-components'
 
 const WrapperGen = styled.div
@@ -26,7 +26,9 @@ function Game (props) {
         { !state.game &&
           (<ChooseGame />)
         }
-
+        { state.game &&
+          (<PlayGame />)
+        }
     </WrapperGen>
   )
 

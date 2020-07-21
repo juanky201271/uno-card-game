@@ -49,24 +49,33 @@ function ChooseGame() {
   }
 
   useEffect(() => {
-    api.getGames().then(games => {
-      //console.log(games.data.data)
-      const listGames = games.data.data.map((ele, ind) => {
-        return (
-          <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
-            <p>{ele.keyWord} - {ele.creator_id.name}</p>
-            { !state.game && state.user &&
-              (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game </JoinGame>)
-            }
-          </ContainerRow>
-        )
+    let ignore = false
+
+    async function fetchData() {
+      var listGames = []
+      await api.getGames().then(games => {
+        //console.log(games.data.data)
+        listGames = games.data.data.map((ele, ind) => {
+          return (
+            <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
+              <p>{ele.keyWord} - {ele.creator_id.name}</p>
+              { !state.game && state.user && ele.players === 'Alone' &&
+                (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
+              }
+            </ContainerRow>
+          )
+        })
       })
-      setValues(values => ({ ...values, listGames: listGames}))
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }, [state, setState])
+      .catch(error => {
+        console.log(error)
+      })
+      if (!ignore) setValues(values => ({ ...values, listGames: listGames}))
+    }
+
+    fetchData()
+    return () => { ignore = true }
+
+  }, [state])
 
   console.log('game choose', values, state)
   return (
