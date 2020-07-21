@@ -13,9 +13,13 @@ const PileCard = styled.button.attrs({ className: 'btn btn-success' })
 ``
 const PickCard = styled.button.attrs({ className: 'btn btn-primary' })
 ``
-const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
+const ContainerRow = styled.div.attrs({ className: "d-flex flex-row border border-primary" })
 `
-  padding: 10px 10px 10px 10px;
+  padding: 20px 20px 20px 20px;
+`
+const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column border border-primary" })
+`
+  padding: 20px 20px 20px 20px;
 `
 const PUno = styled.p.attrs({ className: 'text-danger' })
 ``
@@ -460,72 +464,81 @@ function PlayGame (props) {
   console.log('play game render', state, values)
   return (
     <WrapperGen>
-    <Title>Playing... Round: {values.round}</Title>
-      <WrapperGen>
-        <PUno> UNO {values.finishRound && values.unoWin && 'Winner!!!!'} </PUno>
-        {values.unoCards.map(ele => {
-          return (<DivUno key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</DivUno>)
-        })}
-      </WrapperGen>
       <ContainerRow>
-        <WrapperGen>
-          <p> Pile </p>
-          {values.pile.map(ele => {
-            if (ele.player === state.player._id)
-              return (<DivMe key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivMe>)
-            else if (ele.player === state.uno._id)
-              return (<DivUno key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivUno>)
-            else
-              return (<DivLastCard key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - {ele.card.o} - {ele.player} - {ele.color}</DivLastCard>)
-          })}
-        </WrapperGen>
-        <WrapperGen>
-          <p> Cards </p>
-          {values.cards.map((ele, ind) => {
-            if (ind < values.cards.length - 10)
-              return ('')
-            else if (ind === values.cards.length - 1)
-              return (<DivLastCard key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - {ele.o}</DivLastCard>)
-            else
-              return (<div key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - {ele.o}</div>)
-          })}
-        </WrapperGen>
-      </ContainerRow>
-      <WrapperGen>
-        <PMe> Me {values.finishRound && !values.unoWin && 'Winner!!!!'} </PMe>
-        {values.playerCards.map((ele, ind) => {
-          return (
-            <ContainerRow key={ind}>
-              <DivMe key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n}</DivMe>
+        <ContainerColumn>
+          <WrapperGen>
+            <PUno> UNO {values.finishRound && values.unoWin && 'Winner!!!!'} </PUno>
+            {values.unoCards.map(ele => {
+              return (
+                <ContainerRow>
+                  <DivUno key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n} - #{ele.o}</DivUno>
+                </ContainerRow>
+              )
+            })}
+          </WrapperGen>
+        </ContainerColumn>
+        <ContainerRow>
+          <WrapperGen>
+            <p> Pile </p>
+            {values.pile.map(ele => {
+              if (ele.player === state.player._id)
+                return (<DivMe key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} -  {ele.color}</DivMe>)
+              else if (ele.player === state.uno._id)
+                return (<DivUno key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} - {ele.color}</DivUno>)
+              else
+                return (<DivLastCard key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} - {ele.color}</DivLastCard>)
+            })}
+          </WrapperGen>
+          <WrapperGen>
+            <p> Cards </p>
+            {values.cards.map((ele, ind) => {
+              if (ind < values.cards.length - 10)
+                return ('')
+              else if (ind === values.cards.length - 1)
+                return (<DivLastCard key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - #{ele.o}</DivLastCard>)
+              else
+                return (<div key={ele.c + ele.n + ele.o}>{ind} ... {ele.c} - {ele.n} - #{ele.o}</div>)
+            })}
+          </WrapperGen>
+        </ContainerRow>
+        <ContainerColumn>
+          <WrapperGen>
+            <PMe> Me {values.finishRound && !values.unoWin && 'Winner!!!!'} </PMe>
+            {values.playerCards.map((ele, ind) => {
+              return (
+                <ContainerRow key={ind}>
+                  <DivMe key={ele.c + ele.n + ele.o}>{ele.c} - {ele.n} - #{ele.o}</DivMe>
 
-              { ele.c === 'wild' &&
-                (
-                <>
-                  <label>Change to Color:</label>
-                  <select id={'color-' + ind} onChange={handleChange} value={values['color-' + ind] ? values['color-' + ind] : ''} required>
-                    <option value="red">red</option>
-                    <option value="yellow">yellow</option>
-                    <option value="green">green</option>
-                    <option value="blue">blue</option>
-                  </select>
-                </>
-                )
-              }
-              { (ele.c === 'wild' ||
-                  ele.c === values.pile[values.pile.length - 1].card.c ||
-                  ele.n === values.pile[values.pile.length - 1].card.n ||
-                  ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
-                <PileCard onClick={handleClickPileCard} id={ind}> Pile this Card </PileCard>
-              }
-            </ContainerRow>
-          )
-        })}
-      </WrapperGen>
-      <WrapperGen>
-        { !values.finishRound &&
-          <PickCard onClick={handleClickPickCard} id="PickCard"> Pick a card </PickCard>
-        }
-      </WrapperGen>
+                  { ele.c === 'wild' &&
+                    (
+                    <>
+                      <label>Change to Color:</label>
+                      <select id={'color-' + ind} onChange={handleChange} value={values['color-' + ind] ? values['color-' + ind] : ''} required>
+                        <option value="red">red</option>
+                        <option value="yellow">yellow</option>
+                        <option value="green">green</option>
+                        <option value="blue">blue</option>
+                      </select>
+                    </>
+                    )
+                  }
+                  { (ele.c === 'wild' ||
+                      ele.c === values.pile[values.pile.length - 1].card.c ||
+                      ele.n === values.pile[values.pile.length - 1].card.n ||
+                      ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
+                    <PileCard onClick={handleClickPileCard} id={ind}> Pile this Card </PileCard>
+                  }
+                </ContainerRow>
+              )
+            })}
+          </WrapperGen>
+          <WrapperGen>
+            { !values.finishRound &&
+              <PickCard onClick={handleClickPickCard} id="PickCard"> Pick a card </PickCard>
+            }
+          </WrapperGen>
+        </ContainerColumn>
+      </ContainerRow>
     </WrapperGen>
   )
 
