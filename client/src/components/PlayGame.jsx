@@ -13,13 +13,13 @@ const PileCard = styled.button.attrs({ className: 'btn btn-success' })
 ``
 const PickCard = styled.button.attrs({ className: 'btn btn-primary' })
 ``
-const ContainerRow = styled.div.attrs({ className: "d-flex flex-row border border-primary" })
+const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
-  padding: 20px 20px 20px 20px;
+  padding: 5px 5px 5px 5px;
 `
 const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column border border-primary" })
 `
-  padding: 20px 20px 20px 20px;
+  padding: 5px 5px 5px 5px;
 `
 const PUno = styled.p.attrs({ className: 'text-danger' })
 ``
@@ -31,6 +31,12 @@ const DivMe = styled.div.attrs({ className: 'text-success' })
 ``
 const DivLastCard = styled.div.attrs({ className: 'text-primary' })
 ``
+const DivPile = styled.div.attrs({ className:"d-flex justify-content-center align-items-center border border-dark rounded" })
+`
+  width: 50px;
+  height: 35px;
+  margin: 3px 3px 3px 3px;
+`
 
 const DivCardExt = styled.div.attrs({ className:"d-flex justify-content-center align-items-center border border-dark rounded" })
 `
@@ -97,6 +103,11 @@ const DivCardLitNumber = styled.div.attrs({ className:"text-light font-weight-bo
   position: relative;
   top: -80px;
   left: 0px;
+  text-shadow: 2px 2px 2px #000000;
+`
+const DivCardLitNumberPile = styled.div.attrs({ className:"text-light font-weight-bold font-italic" })
+`
+  font-size: 20px;
   text-shadow: 2px 2px 2px #000000;
 `
 const DivCardExtRed = styled.div.attrs({ className:"d-flex justify-content-center align-items-center rounded bg-danger" })
@@ -1198,6 +1209,8 @@ function PlayGame (props) {
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
+    console.log('pick', nextColor, nextNumber)
+
     let iCanPlay = false
     playerCards.forEach((ele, ind) => {
       if (ele.c === 'wild' || ele.c === nextColor || ele.n === nextNumber ) {
@@ -1234,7 +1247,10 @@ function PlayGame (props) {
 
     if (!iCanPlay && playerPickCard) {
       unoTurn = true
+      playerPickCard = false
     }
+
+    console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
 
     setValues(values => ({ ...values, playerCards: playerCards, cards: cards,
                                       playerPickCard: playerPickCard, unoTurn:unoTurn }))
@@ -1497,22 +1513,71 @@ function PlayGame (props) {
         <ContainerRow>
           <ContainerRow>
             <p> Pile </p>
-            <ContainerColumn>
+            <ContainerRow>
             {values.pile.map((ele, ind) => {
-              if (ind < values.pile.length - 5)
-                return ('')
-              else if (ele.player === state.player._id)
-                return (<DivMe key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} -  {ele.color}</DivMe>)
-              else if (ele.player === state.uno._id)
-                return (<DivUno key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} - {ele.color}</DivUno>)
-              else
-                return (<DivLastCard key={ele.card.c + ele.card.n + ele.card.o}>{ele.card.c} - {ele.card.n} - #{ele.card.o} - {ele.color}</DivLastCard>)
+              return(
+                 ele.player === state.player._id ?
+                  (
+                    <DivPile className={ele.card.c === 'red' ? 'align-self-end bg-danger' : ele.card.c === 'yellow' ? 'align-self-end bg-warning' : ele.card.c === 'green' ? 'align-self-end bg-success' : ele.card.c === 'blue' ? 'align-self-end bg-primary' : ele.card.c === 'wild' ? 'align-self-end bg-dark' : ''}>
+
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
+                        (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'r' &&
+                        (<DivCardLitNumberPile>{'Rev.'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 's' &&
+                        (<DivCardLitNumberPile>{'Skip'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'c' &&
+                        (<DivCardLitNumberPile>{'Col.'}</DivCardLitNumberPile>)
+                      }
+                    </DivPile>
+                  )
+                  :
+                  ele.player === state.uno._id ?
+                  (
+                    <DivPile className={ele.card.c === 'red' ? 'align-self-start bg-danger' : ele.card.c === 'yellow' ? 'align-self-start bg-warning' : ele.card.c === 'green' ? 'align-self-start bg-success' : ele.card.c === 'blue' ? 'align-self-start bg-primary' : ele.card.c === 'wild' ? 'align-self-start bg-dark' : ''}>
+
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
+                        (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'r' &&
+                        (<DivCardLitNumberPile>{'Rev.'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 's' &&
+                        (<DivCardLitNumberPile>{'Skip'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'c' &&
+                        (<DivCardLitNumberPile>{'Col.'}</DivCardLitNumberPile>)
+                      }
+                    </DivPile>
+                  )
+                  :
+                  (
+                    <DivPile className={ele.card.c === 'red' ? 'align-self-center bg-danger' : ele.card.c === 'yellow' ? 'align-self-center bg-warning' : ele.card.c === 'green' ? 'align-self-center bg-success' : ele.card.c === 'blue' ? 'align-self-center bg-primary' : ele.card.c === 'wild' ? 'align-self-center bg-dark' : ''}>
+
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
+                        (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'r' &&
+                        (<DivCardLitNumberPile>{'Rev.'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 's' &&
+                        (<DivCardLitNumberPile>{'Skip'}</DivCardLitNumberPile>)
+                      }
+                      {ele.card.n === 'c' &&
+                        (<DivCardLitNumberPile>{'Col.'}</DivCardLitNumberPile>)
+                      }
+                    </DivPile>
+                  )
+              )
             })}
-            </ContainerColumn>
+            </ContainerRow>
             {values.pile.map((ele, ind) => {
               if (ind === values.pile.length - 1)
                 return (
-                  <ContainerColumn>
+                  <ContainerRow className={ele.color === 'red' ? 'bg-danger' : ele.color === 'yellow' ? 'bg-warning' : ele.color === 'green' ? 'bg-success' : ele.color === 'blue' ? 'bg-primary' : ''}>
                       { ele.card.c === 'red' &&
                       (<DivCardExt>
                         <DivCardExtRed>
@@ -1744,7 +1809,7 @@ function PlayGame (props) {
                         </>
                         )
                       }
-                  </ContainerColumn>
+                  </ContainerRow>
                 )
               else
                 return ('')
@@ -1989,19 +2054,21 @@ function PlayGame (props) {
                       </>
                       )
                     }
-
-                    { (ele.c === 'wild' ||
-                        ele.c === values.pile[values.pile.length - 1].card.c ||
-                        ele.n === values.pile[values.pile.length - 1].card.n ||
-                        ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
-                      <PileCard onClick={handleClickPileCard} id={ind}> Pile this Card </PileCard>
-                    }
                   </ContainerRow>
+
+                  { (ele.c === 'wild' ||
+                      ele.c === values.pile[values.pile.length - 1].card.c ||
+                      ele.n === values.pile[values.pile.length - 1].card.n ||
+                      ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
+                    <ContainerRow>
+                      <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
+                    </ContainerRow>
+                  }
+
                   { ele.c === 'wild' &&
                     (
                     <>
                     <ContainerRow>
-                      <label>Change to Color:</label>
                       <select id={'color-' + ind} onChange={handleChange} value={values['color-' + ind] ? values['color-' + ind] : ''} required>
                         <option value=""></option>
                         <option value="red">red</option>
@@ -2019,7 +2086,7 @@ function PlayGame (props) {
           </>
           <WrapperGen>
             { !values.finishRound &&
-              <PickCard onClick={handleClickPickCard} id="PickCard"> Pick a card </PickCard>
+              <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>
             }
           </WrapperGen>
         </ContainerRow>
