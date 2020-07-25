@@ -1580,7 +1580,7 @@ function PlayGame (props) {
             <p> Pile </p>
             <ContainerRow>
             {values.pile.map((ele, ind) => {
-              if (ind > values.pile.length - 21 && ind !== values.pile.length - 1)
+              if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
                 return(
                  ele.player === state.player._id ?
                   (
