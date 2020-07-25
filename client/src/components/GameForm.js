@@ -93,7 +93,7 @@ function LoginForm() {
              <label>Key word:</label>
              <input type="text" className="form-control" id="keyWord" onChange={handleChange} value={values ? values.keyWord : ''} required />
            </Container>
-           <button type="submit" className="btn btn-default">Submit</button>
+           <button type="submit" className="btn btn-secondary">Submit</button>
           </form>
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
         </>)

@@ -9,15 +9,27 @@ const WrapperGen = styled.div
 `
 const Title = styled.h1.attrs({ className: 'h1' })
 ``
-const PileCard = styled.button.attrs({ className: 'btn btn-success' })
+const PileCard = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
-const PickCard = styled.button.attrs({ className: 'btn btn-primary' })
+const PickCard = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
+const CancelGame = styled.button.attrs({ className: 'btn btn-secondary' })
+`
+  margin: 5px 5px 5px 5px;
+`
+const NewGame = styled.button.attrs({ className: 'btn btn-secondary' })
+`
+  margin: 5px 5px 5px 5px;
+`
+const ViewUnoCards = styled.button.attrs({ className: 'btn btn-dark' })
+`
+  margin: 5px 5px 5px 5px;
+`
 const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
   padding: 5px 5px 5px 5px;
 `
-const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column border border-primary" })
+const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column" })
 `
   padding: 5px 5px 5px 5px;
 `
@@ -31,7 +43,7 @@ const DivMe = styled.div.attrs({ className: 'text-success' })
 ``
 const DivLastCard = styled.div.attrs({ className: 'text-primary' })
 ``
-const DivPile = styled.div.attrs({ className:"d-flex justify-content-center align-items-center border border-dark rounded" })
+const DivPile = styled.div.attrs({ className:"d-flex justify-content-center align-items-center border border-dark rounde" })
 `
   width: 50px;
   height: 35px;
@@ -51,6 +63,24 @@ const DivCardCirBigWhite = styled.div.attrs({ className:"rounded-circle bg-light
   position: relative;
   top: 0px;
   left: -5px;
+`
+const DivCardCirBigUNO = styled.div.attrs({ className:"rounded-circle bg-danger" })
+`
+  width: 79px;
+  height: 160px;
+  transform: rotate(30deg);
+  position: relative;
+  top: 0px;
+  left: 0px;
+`
+const DivCardBigNumberUNO = styled.div.attrs({ className:"text-warning font-weight-bold font-italic" })
+`
+  font-size: 35px;
+  position: relative;
+  top: 50px;
+  left: -5px;
+  text-shadow: 2px 2px 2px #000000;
+  transform: rotate(-55deg);
 `
 const DivCardCirLitWhite = styled.div.attrs({ className:"rounded-circle bg-light" })
 `
@@ -903,7 +933,7 @@ function PlayGame (props) {
             unoCards: [], playerCards: [],
             unoCardsPile: [], playerCardsPile: [], playerPickCard: false,
             cards: cards, pile: [], finishRound: false, numberPlay: 0, unoWin: false,
-            numCards: Number(state.game.cards), round: state.game.curr_round })
+            numCards: Number(state.game.cards), round: state.game.curr_round, viewUnoCards: false })
   }
 
   const unoPlay = (round) => {
@@ -936,24 +966,27 @@ function PlayGame (props) {
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
+    let drawDone = pile[pile.length - 1].drawDone
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
     let arrHaveColorIndex = [], arrHaveNumberIndex = [], haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }, rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
 
-    if (state.uno._id !== lastPlayerPile && lastCardPile.n === '+4') {
+    if (!drawDone && lastCardPile.n === '+4') {
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoTurn = false
-      setValues(values => ({ ...values, unoTurn: unoTurn,
+      pile[pile.length - 1].drawDone = true
+      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile,
                             unoCards: unoCards, cards: cards }))
       return
-    } else if (state.uno._id !== lastPlayerPile && lastCardPile.n === '+2') {
+    } else if (!drawDone && lastCardPile.n === '+2') {
       unoCards.push(cards.pop())
       unoCards.push(cards.pop())
       unoTurn = false
-      setValues(values => ({ ...values, unoTurn: unoTurn,
+      pile[pile.length - 1].drawDone = true
+      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile,
                             unoCards: unoCards, cards: cards }))
       return
     } else {
@@ -962,6 +995,7 @@ function PlayGame (props) {
         lastCardPile = pile[pile.length - 1].card
         lastPlayerPile = pile[pile.length - 1].player
         lastColorPile = pile[pile.length - 1].color
+        drawDone = pile[pile.length - 1].drawDone
         nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
         nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
         arrHaveColorIndex = []
@@ -1105,7 +1139,7 @@ function PlayGame (props) {
           iHaveACard = true
         } else {
           let aux = unoCards.splice(index, 1)[0]
-          pile.push({ card: aux, player: state.uno._id, color: color })
+          pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true })
           unoCardsPile.push({ card: aux, player: state.uno._id, color: color })
 
           if (aux.n === '+4') {
@@ -1153,6 +1187,7 @@ function PlayGame (props) {
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
+    let drawDone = pile[pile.length - 1].drawDone
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -1162,21 +1197,17 @@ function PlayGame (props) {
     if (selectedCard.n === 'c' || selectedCard.n === '+4') {
       let inputColor = document.getElementById('color-' + event.target.id).value
       selectedCard = playerCards.splice(event.target.id, 1)[0]
-      pile.push({ card: selectedCard, player: state.player._id, color: inputColor })
+      pile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: false })
       playerCardsPile.push({ card: selectedCard, player: state.player._id, color: inputColor })
       unoTurn = true
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
         return
       } else {
-        if (selectedCard.n === 'r' || selectedCard.n === 's') {
-          selectedCard = playerCards.splice(event.target.id, 1)[0]
-          pile.push({ card: selectedCard, player: state.player._id, color: null })
-          playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null })
-        } else {
-          selectedCard = playerCards.splice(event.target.id, 1)[0]
-          pile.push({ card: selectedCard, player: state.player._id, color: null })
-          playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null })
+        selectedCard = playerCards.splice(event.target.id, 1)[0]
+        pile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: false })
+        playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null })
+        if (!(selectedCard.n === 'r' || selectedCard.n === 's')) {
           unoTurn = true
         }
       }
@@ -1206,6 +1237,7 @@ function PlayGame (props) {
     let lastCardPile = pile[pile.length - 1].card
     let lastPlayerPile = pile[pile.length - 1].player
     let lastColorPile = pile[pile.length - 1].color
+    let drawDone = pile[pile.length - 1].drawDone
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -1256,6 +1288,21 @@ function PlayGame (props) {
                                       playerPickCard: playerPickCard, unoTurn:unoTurn }))
   }
 
+  const handleClickCancelGame = (event) => {
+    if (event) event.preventDefault()
+    setState(state => ({ ...state, game: null, player: null, uno: null }))
+  }
+
+  const handleClickNewGame = (event) => {
+    if (event) event.preventDefault()
+    setValues({ ...values, ...init() })
+  }
+
+  const handleViewUnoCards = (event) => {
+    if (event) event.preventDefault()
+    setValues({ ...values, viewUnoCards: !values.viewUnoCards })
+  }
+
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState(init())
 
@@ -1269,244 +1316,262 @@ function PlayGame (props) {
     <WrapperGen>
       <ContainerColumn>
         <ContainerRow>
+          <CancelGame onClick={handleClickCancelGame} id="CancelGame"> Cancel Game </CancelGame>
+          <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
+          <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide UNO Cards </ViewUnoCards>
+        </ContainerRow>
+        <ContainerRow>
           <>
             <PUno> UNO {values.finishRound && values.unoWin && 'Winner!!!!'} </PUno>
             {values.unoCards.map((ele, ind) => {
-              return (
-                <ContainerRow key={ind}>
-                    { ele.c === 'red' &&
-                    (<DivCardExt>
-                      <DivCardExtRed>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitRed>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitRed>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitRed>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitRed2></DivCardSkipLitRed2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitRed>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberRed>{ele.n}</DivCardBigNumberRed>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigRed></DivCardDrawTwoBigRed>
-                               <DivCardDrawTwoBigRed2></DivCardDrawTwoBigRed2></>)
+              if (values.viewUnoCards)
+                return (
+                  <ContainerRow key={ind}>
+                      { ele.c === 'red' &&
+                      (<DivCardExt>
+                        <DivCardExtRed>
+                          {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                            (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
                           }
                           {ele.n === 'r' &&
-                            (<><DivCardReverseBigRedArrow></DivCardReverseBigRedArrow>
-                               <DivCardReverseBigRed></DivCardReverseBigRed>
-                               <DivCardReverseBigRed2></DivCardReverseBigRed2>
-                               <DivCardReverseBigRed3></DivCardReverseBigRed3>
-                               <DivCardReverseBigRed4></DivCardReverseBigRed4>
-                               <DivCardReverseBigRedArrow2></DivCardReverseBigRedArrow2></>)
+                            (<DivCardCirLitRed>
+                                <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                                <DivCardReverseLit></DivCardReverseLit>
+                                <DivCardReverseLit2></DivCardReverseLit2>
+                                <DivCardReverseLit3></DivCardReverseLit3>
+                                <DivCardReverseLit4></DivCardReverseLit4>
+                                <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                             </DivCardCirLitRed>)
                           }
                           {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigRed></DivCardSkipBigRed>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigRed3></DivCardSkipBigRed3>
-                            </>)
+                            (<DivCardCirLitRed>
+                              <DivCardSkipLit></DivCardSkipLit>
+                              <DivCardSkipLitRed2></DivCardSkipLitRed2>
+                              <DivCardSkipLit3></DivCardSkipLit3>
+                             </DivCardCirLitRed>)
                           }
-                        </DivCardCirBigWhite>
-                      </DivCardExtRed>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'yellow' &&
-                    (<DivCardExt>
-                      <DivCardExtYellow>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitYellow>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitYellow>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitYellow>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitYellow2></DivCardSkipLitYellow2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitYellow>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberYellow>{ele.n}</DivCardBigNumberYellow>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigYellow></DivCardDrawTwoBigYellow>
-                               <DivCardDrawTwoBigYellow2></DivCardDrawTwoBigYellow2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigYellowArrow></DivCardReverseBigYellowArrow>
-                               <DivCardReverseBigYellow></DivCardReverseBigYellow>
-                               <DivCardReverseBigYellow2></DivCardReverseBigYellow2>
-                               <DivCardReverseBigYellow3></DivCardReverseBigYellow3>
-                               <DivCardReverseBigYellow4></DivCardReverseBigYellow4>
-                               <DivCardReverseBigYellowArrow2></DivCardReverseBigYellowArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigYellow></DivCardSkipBigYellow>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigYellow3></DivCardSkipBigYellow3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtYellow>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'green' &&
-                    (<DivCardExt>
-                      <DivCardExtGreen>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitGreen>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitGreen>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitGreen>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitGreen2></DivCardSkipLitGreen2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitGreen>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberGreen>{ele.n}</DivCardBigNumberGreen>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigGreen></DivCardDrawTwoBigGreen>
-                               <DivCardDrawTwoBigGreen2></DivCardDrawTwoBigGreen2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigGreenArrow></DivCardReverseBigGreenArrow>
-                               <DivCardReverseBigGreen></DivCardReverseBigGreen>
-                               <DivCardReverseBigGreen2></DivCardReverseBigGreen2>
-                               <DivCardReverseBigGreen3></DivCardReverseBigGreen3>
-                               <DivCardReverseBigGreen4></DivCardReverseBigGreen4>
-                               <DivCardReverseBigGreenArrow2></DivCardReverseBigGreenArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigGreen></DivCardSkipBigGreen>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigGreen3></DivCardSkipBigGreen3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtGreen>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'blue' &&
-                    (<DivCardExt>
-                      <DivCardExtBlue>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitBlue>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitBlue>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitBlue>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitBlue2></DivCardSkipLitBlue2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitBlue>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberBlue>{ele.n}</DivCardBigNumberBlue>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigBlue></DivCardDrawTwoBigBlue>
-                               <DivCardDrawTwoBigBlue2></DivCardDrawTwoBigBlue2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigBlueArrow></DivCardReverseBigBlueArrow>
-                               <DivCardReverseBigBlue></DivCardReverseBigBlue>
-                               <DivCardReverseBigBlue2></DivCardReverseBigBlue2>
-                               <DivCardReverseBigBlue3></DivCardReverseBigBlue3>
-                               <DivCardReverseBigBlue4></DivCardReverseBigBlue4>
-                               <DivCardReverseBigBlueArrow2></DivCardReverseBigBlueArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigBlue></DivCardSkipBigBlue>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigBlue3></DivCardSkipBigBlue3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtBlue>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'wild' &&
-                      (
-                      <>
-                        <DivCardExt>
-                          <DivCardExtWild>
-                            {ele.n === 'c' &&
-                              (<DivCardCirLitWhite>
-                                  <DivCardWildColorLit></DivCardWildColorLit>
-                               </DivCardCirLitWhite>)
+                          <DivCardCirBigWhite>
+                            {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                              (<DivCardBigNumberRed>{ele.n}</DivCardBigNumberRed>)
                             }
-                            {ele.n === '+4' &&
-                              (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                            {ele.n === '+2' &&
+                              (<><DivCardDrawTwoBigRed></DivCardDrawTwoBigRed>
+                                 <DivCardDrawTwoBigRed2></DivCardDrawTwoBigRed2></>)
                             }
-                            <DivCardCirBigWhite>
+                            {ele.n === 'r' &&
+                              (<><DivCardReverseBigRedArrow></DivCardReverseBigRedArrow>
+                                 <DivCardReverseBigRed></DivCardReverseBigRed>
+                                 <DivCardReverseBigRed2></DivCardReverseBigRed2>
+                                 <DivCardReverseBigRed3></DivCardReverseBigRed3>
+                                 <DivCardReverseBigRed4></DivCardReverseBigRed4>
+                                 <DivCardReverseBigRedArrow2></DivCardReverseBigRedArrow2></>)
+                            }
+                            {ele.n === 's' &&
+                              (<>
+                                 <DivCardSkipBigRed></DivCardSkipBigRed>
+                                 <DivCardSkipBig2></DivCardSkipBig2>
+                                 <DivCardSkipBigRed3></DivCardSkipBigRed3>
+                              </>)
+                            }
+                          </DivCardCirBigWhite>
+                        </DivCardExtRed>
+                      </DivCardExt>)
+                      }
+                      { ele.c === 'yellow' &&
+                      (<DivCardExt>
+                        <DivCardExtYellow>
+                          {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                            (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                          }
+                          {ele.n === 'r' &&
+                            (<DivCardCirLitYellow>
+                                <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                                <DivCardReverseLit></DivCardReverseLit>
+                                <DivCardReverseLit2></DivCardReverseLit2>
+                                <DivCardReverseLit3></DivCardReverseLit3>
+                                <DivCardReverseLit4></DivCardReverseLit4>
+                                <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                             </DivCardCirLitYellow>)
+                          }
+                          {ele.n === 's' &&
+                            (<DivCardCirLitYellow>
+                              <DivCardSkipLit></DivCardSkipLit>
+                              <DivCardSkipLitYellow2></DivCardSkipLitYellow2>
+                              <DivCardSkipLit3></DivCardSkipLit3>
+                             </DivCardCirLitYellow>)
+                          }
+                          <DivCardCirBigWhite>
+                            {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                              (<DivCardBigNumberYellow>{ele.n}</DivCardBigNumberYellow>)
+                            }
+                            {ele.n === '+2' &&
+                              (<><DivCardDrawTwoBigYellow></DivCardDrawTwoBigYellow>
+                                 <DivCardDrawTwoBigYellow2></DivCardDrawTwoBigYellow2></>)
+                            }
+                            {ele.n === 'r' &&
+                              (<><DivCardReverseBigYellowArrow></DivCardReverseBigYellowArrow>
+                                 <DivCardReverseBigYellow></DivCardReverseBigYellow>
+                                 <DivCardReverseBigYellow2></DivCardReverseBigYellow2>
+                                 <DivCardReverseBigYellow3></DivCardReverseBigYellow3>
+                                 <DivCardReverseBigYellow4></DivCardReverseBigYellow4>
+                                 <DivCardReverseBigYellowArrow2></DivCardReverseBigYellowArrow2></>)
+                            }
+                            {ele.n === 's' &&
+                              (<>
+                                 <DivCardSkipBigYellow></DivCardSkipBigYellow>
+                                 <DivCardSkipBig2></DivCardSkipBig2>
+                                 <DivCardSkipBigYellow3></DivCardSkipBigYellow3>
+                              </>)
+                            }
+                          </DivCardCirBigWhite>
+                        </DivCardExtYellow>
+                      </DivCardExt>)
+                      }
+                      { ele.c === 'green' &&
+                      (<DivCardExt>
+                        <DivCardExtGreen>
+                          {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                            (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                          }
+                          {ele.n === 'r' &&
+                            (<DivCardCirLitGreen>
+                                <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                                <DivCardReverseLit></DivCardReverseLit>
+                                <DivCardReverseLit2></DivCardReverseLit2>
+                                <DivCardReverseLit3></DivCardReverseLit3>
+                                <DivCardReverseLit4></DivCardReverseLit4>
+                                <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                             </DivCardCirLitGreen>)
+                          }
+                          {ele.n === 's' &&
+                            (<DivCardCirLitGreen>
+                              <DivCardSkipLit></DivCardSkipLit>
+                              <DivCardSkipLitGreen2></DivCardSkipLitGreen2>
+                              <DivCardSkipLit3></DivCardSkipLit3>
+                             </DivCardCirLitGreen>)
+                          }
+                          <DivCardCirBigWhite>
+                            {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                              (<DivCardBigNumberGreen>{ele.n}</DivCardBigNumberGreen>)
+                            }
+                            {ele.n === '+2' &&
+                              (<><DivCardDrawTwoBigGreen></DivCardDrawTwoBigGreen>
+                                 <DivCardDrawTwoBigGreen2></DivCardDrawTwoBigGreen2></>)
+                            }
+                            {ele.n === 'r' &&
+                              (<><DivCardReverseBigGreenArrow></DivCardReverseBigGreenArrow>
+                                 <DivCardReverseBigGreen></DivCardReverseBigGreen>
+                                 <DivCardReverseBigGreen2></DivCardReverseBigGreen2>
+                                 <DivCardReverseBigGreen3></DivCardReverseBigGreen3>
+                                 <DivCardReverseBigGreen4></DivCardReverseBigGreen4>
+                                 <DivCardReverseBigGreenArrow2></DivCardReverseBigGreenArrow2></>)
+                            }
+                            {ele.n === 's' &&
+                              (<>
+                                 <DivCardSkipBigGreen></DivCardSkipBigGreen>
+                                 <DivCardSkipBig2></DivCardSkipBig2>
+                                 <DivCardSkipBigGreen3></DivCardSkipBigGreen3>
+                              </>)
+                            }
+                          </DivCardCirBigWhite>
+                        </DivCardExtGreen>
+                      </DivCardExt>)
+                      }
+                      { ele.c === 'blue' &&
+                      (<DivCardExt>
+                        <DivCardExtBlue>
+                          {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                            (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                          }
+                          {ele.n === 'r' &&
+                            (<DivCardCirLitBlue>
+                                <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                                <DivCardReverseLit></DivCardReverseLit>
+                                <DivCardReverseLit2></DivCardReverseLit2>
+                                <DivCardReverseLit3></DivCardReverseLit3>
+                                <DivCardReverseLit4></DivCardReverseLit4>
+                                <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                             </DivCardCirLitBlue>)
+                          }
+                          {ele.n === 's' &&
+                            (<DivCardCirLitBlue>
+                              <DivCardSkipLit></DivCardSkipLit>
+                              <DivCardSkipLitBlue2></DivCardSkipLitBlue2>
+                              <DivCardSkipLit3></DivCardSkipLit3>
+                             </DivCardCirLitBlue>)
+                          }
+                          <DivCardCirBigWhite>
+                            {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                              (<DivCardBigNumberBlue>{ele.n}</DivCardBigNumberBlue>)
+                            }
+                            {ele.n === '+2' &&
+                              (<><DivCardDrawTwoBigBlue></DivCardDrawTwoBigBlue>
+                                 <DivCardDrawTwoBigBlue2></DivCardDrawTwoBigBlue2></>)
+                            }
+                            {ele.n === 'r' &&
+                              (<><DivCardReverseBigBlueArrow></DivCardReverseBigBlueArrow>
+                                 <DivCardReverseBigBlue></DivCardReverseBigBlue>
+                                 <DivCardReverseBigBlue2></DivCardReverseBigBlue2>
+                                 <DivCardReverseBigBlue3></DivCardReverseBigBlue3>
+                                 <DivCardReverseBigBlue4></DivCardReverseBigBlue4>
+                                 <DivCardReverseBigBlueArrow2></DivCardReverseBigBlueArrow2></>)
+                            }
+                            {ele.n === 's' &&
+                              (<>
+                                 <DivCardSkipBigBlue></DivCardSkipBigBlue>
+                                 <DivCardSkipBig2></DivCardSkipBig2>
+                                 <DivCardSkipBigBlue3></DivCardSkipBigBlue3>
+                              </>)
+                            }
+                          </DivCardCirBigWhite>
+                        </DivCardExtBlue>
+                      </DivCardExt>)
+                      }
+                      { ele.c === 'wild' &&
+                        (
+                        <>
+                          <DivCardExt>
+                            <DivCardExtWild>
                               {ele.n === 'c' &&
-                                (<DivCardWildColorBig></DivCardWildColorBig>)
+                                (<DivCardCirLitWhite>
+                                    <DivCardWildColorLit></DivCardWildColorLit>
+                                 </DivCardCirLitWhite>)
                               }
                               {ele.n === '+4' &&
-                                (<>
-                                  <DivCardDrawFourBigRed></DivCardDrawFourBigRed>
-                                  <DivCardDrawFourBigYellow></DivCardDrawFourBigYellow>
-                                  <DivCardDrawFourBigGreen></DivCardDrawFourBigGreen>
-                                  <DivCardDrawFourBigBlue></DivCardDrawFourBigBlue>
-                                </>)
+                                (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
                               }
-                            </DivCardCirBigWhite>
-                          </DivCardExtWild>
-                        </DivCardExt>
-                      </>
-                      )
-                    }
-                </ContainerRow>
-              )
+                              <DivCardCirBigWhite>
+                                {ele.n === 'c' &&
+                                  (<DivCardWildColorBig></DivCardWildColorBig>)
+                                }
+                                {ele.n === '+4' &&
+                                  (<>
+                                    <DivCardDrawFourBigRed></DivCardDrawFourBigRed>
+                                    <DivCardDrawFourBigYellow></DivCardDrawFourBigYellow>
+                                    <DivCardDrawFourBigGreen></DivCardDrawFourBigGreen>
+                                    <DivCardDrawFourBigBlue></DivCardDrawFourBigBlue>
+                                  </>)
+                                }
+                              </DivCardCirBigWhite>
+                            </DivCardExtWild>
+                          </DivCardExt>
+                        </>
+                        )
+                      }
+                  </ContainerRow>
+                )
+              else
+                return (
+                  <ContainerRow key={ind}>
+                    <DivCardExt>
+                      <DivCardExtWild>
+                        <DivCardCirBigUNO>
+                          <DivCardBigNumberUNO>{'UNO'}</DivCardBigNumberUNO>
+                        </DivCardCirBigUNO>
+                      </DivCardExtWild>
+                    </DivCardExt>
+                  </ContainerRow>
+                )
             })}
           </>
         </ContainerRow>
@@ -1515,10 +1580,11 @@ function PlayGame (props) {
             <p> Pile </p>
             <ContainerRow>
             {values.pile.map((ele, ind) => {
-              return(
+              if (ind > values.pile.length - 21 && ind !== values.pile.length - 1)
+                return(
                  ele.player === state.player._id ?
                   (
-                    <DivPile className={ele.card.c === 'red' ? 'align-self-end bg-danger' : ele.card.c === 'yellow' ? 'align-self-end bg-warning' : ele.card.c === 'green' ? 'align-self-end bg-success' : ele.card.c === 'blue' ? 'align-self-end bg-primary' : ele.card.c === 'wild' ? 'align-self-end bg-dark' : ''}>
+                    <DivPile key={ind + ele.player} className={ele.card.c === 'red' ? 'align-self-end bg-danger' : ele.card.c === 'yellow' ? 'align-self-end bg-warning' : ele.card.c === 'green' ? 'align-self-end bg-success' : ele.card.c === 'blue' ? 'align-self-end bg-primary' : ele.card.c === 'wild' ? 'align-self-end bg-dark' : ''}>
 
                       {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
                         (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
@@ -1537,7 +1603,7 @@ function PlayGame (props) {
                   :
                   ele.player === state.uno._id ?
                   (
-                    <DivPile className={ele.card.c === 'red' ? 'align-self-start bg-danger' : ele.card.c === 'yellow' ? 'align-self-start bg-warning' : ele.card.c === 'green' ? 'align-self-start bg-success' : ele.card.c === 'blue' ? 'align-self-start bg-primary' : ele.card.c === 'wild' ? 'align-self-start bg-dark' : ''}>
+                    <DivPile key={ind + ele.player} className={ele.card.c === 'red' ? 'align-self-start bg-danger' : ele.card.c === 'yellow' ? 'align-self-start bg-warning' : ele.card.c === 'green' ? 'align-self-start bg-success' : ele.card.c === 'blue' ? 'align-self-start bg-primary' : ele.card.c === 'wild' ? 'align-self-start bg-dark' : ''}>
 
                       {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
                         (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
@@ -1555,7 +1621,7 @@ function PlayGame (props) {
                   )
                   :
                   (
-                    <DivPile className={ele.card.c === 'red' ? 'align-self-center bg-danger' : ele.card.c === 'yellow' ? 'align-self-center bg-warning' : ele.card.c === 'green' ? 'align-self-center bg-success' : ele.card.c === 'blue' ? 'align-self-center bg-primary' : ele.card.c === 'wild' ? 'align-self-center bg-dark' : ''}>
+                    <DivPile key={ind + ele.player} className={ele.card.c === 'red' ? 'align-self-center bg-danger' : ele.card.c === 'yellow' ? 'align-self-center bg-warning' : ele.card.c === 'green' ? 'align-self-center bg-success' : ele.card.c === 'blue' ? 'align-self-center bg-primary' : ele.card.c === 'wild' ? 'align-self-center bg-dark' : ''}>
 
                       {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.card.n) &&
                         (<DivCardLitNumberPile>{ele.card.n}</DivCardLitNumberPile>)
@@ -1571,13 +1637,15 @@ function PlayGame (props) {
                       }
                     </DivPile>
                   )
-              )
+                )
+              else
+                return ('')
             })}
             </ContainerRow>
             {values.pile.map((ele, ind) => {
               if (ind === values.pile.length - 1)
                 return (
-                  <ContainerRow className={ele.color === 'red' ? 'bg-danger' : ele.color === 'yellow' ? 'bg-warning' : ele.color === 'green' ? 'bg-success' : ele.color === 'blue' ? 'bg-primary' : ''}>
+                  <ContainerRow key={ind + ele.player} className={ele.color === 'red' ? 'bg-danger' : ele.color === 'yellow' ? 'bg-warning' : ele.color === 'green' ? 'bg-success' : ele.color === 'blue' ? 'bg-primary' : ''}>
                       { ele.card.c === 'red' &&
                       (<DivCardExt>
                         <DivCardExtRed>
@@ -1817,273 +1885,271 @@ function PlayGame (props) {
           </ContainerRow>
         </ContainerRow>
         <ContainerRow>
-          <>
-            <PMe> Me {values.finishRound && !values.unoWin && 'Winner!!!!'} </PMe>
-            {values.playerCards.map((ele, ind) => {
-              return (
-                <ContainerColumn key={ind}>
-                  <ContainerRow>
-                    { ele.c === 'red' &&
-                    (<DivCardExt>
-                      <DivCardExtRed>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+          <PMe> Me {values.finishRound && !values.unoWin && 'Winner!!!!'} </PMe>
+          {values.playerCards.map((ele, ind) => {
+            return (
+              <ContainerColumn key={ind}>
+                <ContainerRow>
+                  { ele.c === 'red' &&
+                  (<DivCardExt>
+                    <DivCardExtRed>
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                        (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                      }
+                      {ele.n === 'r' &&
+                        (<DivCardCirLitRed>
+                            <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                            <DivCardReverseLit></DivCardReverseLit>
+                            <DivCardReverseLit2></DivCardReverseLit2>
+                            <DivCardReverseLit3></DivCardReverseLit3>
+                            <DivCardReverseLit4></DivCardReverseLit4>
+                            <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                         </DivCardCirLitRed>)
+                      }
+                      {ele.n === 's' &&
+                        (<DivCardCirLitRed>
+                          <DivCardSkipLit></DivCardSkipLit>
+                          <DivCardSkipLitRed2></DivCardSkipLitRed2>
+                          <DivCardSkipLit3></DivCardSkipLit3>
+                         </DivCardCirLitRed>)
+                      }
+                      <DivCardCirBigWhite>
+                        {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                          (<DivCardBigNumberRed>{ele.n}</DivCardBigNumberRed>)
+                        }
+                        {ele.n === '+2' &&
+                          (<><DivCardDrawTwoBigRed></DivCardDrawTwoBigRed>
+                             <DivCardDrawTwoBigRed2></DivCardDrawTwoBigRed2></>)
                         }
                         {ele.n === 'r' &&
-                          (<DivCardCirLitRed>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitRed>)
+                          (<><DivCardReverseBigRedArrow></DivCardReverseBigRedArrow>
+                             <DivCardReverseBigRed></DivCardReverseBigRed>
+                             <DivCardReverseBigRed2></DivCardReverseBigRed2>
+                             <DivCardReverseBigRed3></DivCardReverseBigRed3>
+                             <DivCardReverseBigRed4></DivCardReverseBigRed4>
+                             <DivCardReverseBigRedArrow2></DivCardReverseBigRedArrow2></>)
                         }
                         {ele.n === 's' &&
-                          (<DivCardCirLitRed>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitRed2></DivCardSkipLitRed2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitRed>)
+                          (<>
+                             <DivCardSkipBigRed></DivCardSkipBigRed>
+                             <DivCardSkipBig2></DivCardSkipBig2>
+                             <DivCardSkipBigRed3></DivCardSkipBigRed3>
+                          </>)
                         }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberRed>{ele.n}</DivCardBigNumberRed>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigRed></DivCardDrawTwoBigRed>
-                               <DivCardDrawTwoBigRed2></DivCardDrawTwoBigRed2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigRedArrow></DivCardReverseBigRedArrow>
-                               <DivCardReverseBigRed></DivCardReverseBigRed>
-                               <DivCardReverseBigRed2></DivCardReverseBigRed2>
-                               <DivCardReverseBigRed3></DivCardReverseBigRed3>
-                               <DivCardReverseBigRed4></DivCardReverseBigRed4>
-                               <DivCardReverseBigRedArrow2></DivCardReverseBigRedArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigRed></DivCardSkipBigRed>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigRed3></DivCardSkipBigRed3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtRed>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'yellow' &&
-                    (<DivCardExt>
-                      <DivCardExtYellow>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitYellow>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitYellow>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitYellow>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitYellow2></DivCardSkipLitYellow2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitYellow>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberYellow>{ele.n}</DivCardBigNumberYellow>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigYellow></DivCardDrawTwoBigYellow>
-                               <DivCardDrawTwoBigYellow2></DivCardDrawTwoBigYellow2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigYellowArrow></DivCardReverseBigYellowArrow>
-                               <DivCardReverseBigYellow></DivCardReverseBigYellow>
-                               <DivCardReverseBigYellow2></DivCardReverseBigYellow2>
-                               <DivCardReverseBigYellow3></DivCardReverseBigYellow3>
-                               <DivCardReverseBigYellow4></DivCardReverseBigYellow4>
-                               <DivCardReverseBigYellowArrow2></DivCardReverseBigYellowArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigYellow></DivCardSkipBigYellow>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigYellow3></DivCardSkipBigYellow3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtYellow>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'green' &&
-                    (<DivCardExt>
-                      <DivCardExtGreen>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitGreen>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitGreen>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitGreen>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitGreen2></DivCardSkipLitGreen2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitGreen>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberGreen>{ele.n}</DivCardBigNumberGreen>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigGreen></DivCardDrawTwoBigGreen>
-                               <DivCardDrawTwoBigGreen2></DivCardDrawTwoBigGreen2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigGreenArrow></DivCardReverseBigGreenArrow>
-                               <DivCardReverseBigGreen></DivCardReverseBigGreen>
-                               <DivCardReverseBigGreen2></DivCardReverseBigGreen2>
-                               <DivCardReverseBigGreen3></DivCardReverseBigGreen3>
-                               <DivCardReverseBigGreen4></DivCardReverseBigGreen4>
-                               <DivCardReverseBigGreenArrow2></DivCardReverseBigGreenArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigGreen></DivCardSkipBigGreen>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigGreen3></DivCardSkipBigGreen3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtGreen>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'blue' &&
-                    (<DivCardExt>
-                      <DivCardExtBlue>
-                        {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
-                          (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                        }
-                        {ele.n === 'r' &&
-                          (<DivCardCirLitBlue>
-                              <DivCardReverseLitArrow></DivCardReverseLitArrow>
-                              <DivCardReverseLit></DivCardReverseLit>
-                              <DivCardReverseLit2></DivCardReverseLit2>
-                              <DivCardReverseLit3></DivCardReverseLit3>
-                              <DivCardReverseLit4></DivCardReverseLit4>
-                              <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
-                           </DivCardCirLitBlue>)
-                        }
-                        {ele.n === 's' &&
-                          (<DivCardCirLitBlue>
-                            <DivCardSkipLit></DivCardSkipLit>
-                            <DivCardSkipLitBlue2></DivCardSkipLitBlue2>
-                            <DivCardSkipLit3></DivCardSkipLit3>
-                           </DivCardCirLitBlue>)
-                        }
-                        <DivCardCirBigWhite>
-                          {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
-                            (<DivCardBigNumberBlue>{ele.n}</DivCardBigNumberBlue>)
-                          }
-                          {ele.n === '+2' &&
-                            (<><DivCardDrawTwoBigBlue></DivCardDrawTwoBigBlue>
-                               <DivCardDrawTwoBigBlue2></DivCardDrawTwoBigBlue2></>)
-                          }
-                          {ele.n === 'r' &&
-                            (<><DivCardReverseBigBlueArrow></DivCardReverseBigBlueArrow>
-                               <DivCardReverseBigBlue></DivCardReverseBigBlue>
-                               <DivCardReverseBigBlue2></DivCardReverseBigBlue2>
-                               <DivCardReverseBigBlue3></DivCardReverseBigBlue3>
-                               <DivCardReverseBigBlue4></DivCardReverseBigBlue4>
-                               <DivCardReverseBigBlueArrow2></DivCardReverseBigBlueArrow2></>)
-                          }
-                          {ele.n === 's' &&
-                            (<>
-                               <DivCardSkipBigBlue></DivCardSkipBigBlue>
-                               <DivCardSkipBig2></DivCardSkipBig2>
-                               <DivCardSkipBigBlue3></DivCardSkipBigBlue3>
-                            </>)
-                          }
-                        </DivCardCirBigWhite>
-                      </DivCardExtBlue>
-                    </DivCardExt>)
-                    }
-                    { ele.c === 'wild' &&
-                      (
-                      <>
-                        <DivCardExt>
-                          <DivCardExtWild>
-                            {ele.n === 'c' &&
-                              (<DivCardCirLitWhite>
-                                  <DivCardWildColorLit></DivCardWildColorLit>
-                               </DivCardCirLitWhite>)
-                            }
-                            {ele.n === '+4' &&
-                              (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
-                            }
-                            <DivCardCirBigWhite>
-                              {ele.n === 'c' &&
-                                (<DivCardWildColorBig></DivCardWildColorBig>)
-                              }
-                              {ele.n === '+4' &&
-                                (<>
-                                  <DivCardDrawFourBigRed></DivCardDrawFourBigRed>
-                                  <DivCardDrawFourBigYellow></DivCardDrawFourBigYellow>
-                                  <DivCardDrawFourBigGreen></DivCardDrawFourBigGreen>
-                                  <DivCardDrawFourBigBlue></DivCardDrawFourBigBlue>
-                                </>)
-                              }
-                            </DivCardCirBigWhite>
-                          </DivCardExtWild>
-                        </DivCardExt>
-                      </>
-                      )
-                    }
-                  </ContainerRow>
-
-                  { (ele.c === 'wild' ||
-                      ele.c === values.pile[values.pile.length - 1].card.c ||
-                      ele.n === values.pile[values.pile.length - 1].card.n ||
-                      ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
-                    <ContainerRow>
-                      <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
-                    </ContainerRow>
+                      </DivCardCirBigWhite>
+                    </DivCardExtRed>
+                  </DivCardExt>)
                   }
-
+                  { ele.c === 'yellow' &&
+                  (<DivCardExt>
+                    <DivCardExtYellow>
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                        (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                      }
+                      {ele.n === 'r' &&
+                        (<DivCardCirLitYellow>
+                            <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                            <DivCardReverseLit></DivCardReverseLit>
+                            <DivCardReverseLit2></DivCardReverseLit2>
+                            <DivCardReverseLit3></DivCardReverseLit3>
+                            <DivCardReverseLit4></DivCardReverseLit4>
+                            <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                         </DivCardCirLitYellow>)
+                      }
+                      {ele.n === 's' &&
+                        (<DivCardCirLitYellow>
+                          <DivCardSkipLit></DivCardSkipLit>
+                          <DivCardSkipLitYellow2></DivCardSkipLitYellow2>
+                          <DivCardSkipLit3></DivCardSkipLit3>
+                         </DivCardCirLitYellow>)
+                      }
+                      <DivCardCirBigWhite>
+                        {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                          (<DivCardBigNumberYellow>{ele.n}</DivCardBigNumberYellow>)
+                        }
+                        {ele.n === '+2' &&
+                          (<><DivCardDrawTwoBigYellow></DivCardDrawTwoBigYellow>
+                             <DivCardDrawTwoBigYellow2></DivCardDrawTwoBigYellow2></>)
+                        }
+                        {ele.n === 'r' &&
+                          (<><DivCardReverseBigYellowArrow></DivCardReverseBigYellowArrow>
+                             <DivCardReverseBigYellow></DivCardReverseBigYellow>
+                             <DivCardReverseBigYellow2></DivCardReverseBigYellow2>
+                             <DivCardReverseBigYellow3></DivCardReverseBigYellow3>
+                             <DivCardReverseBigYellow4></DivCardReverseBigYellow4>
+                             <DivCardReverseBigYellowArrow2></DivCardReverseBigYellowArrow2></>)
+                        }
+                        {ele.n === 's' &&
+                          (<>
+                             <DivCardSkipBigYellow></DivCardSkipBigYellow>
+                             <DivCardSkipBig2></DivCardSkipBig2>
+                             <DivCardSkipBigYellow3></DivCardSkipBigYellow3>
+                          </>)
+                        }
+                      </DivCardCirBigWhite>
+                    </DivCardExtYellow>
+                  </DivCardExt>)
+                  }
+                  { ele.c === 'green' &&
+                  (<DivCardExt>
+                    <DivCardExtGreen>
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                        (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                      }
+                      {ele.n === 'r' &&
+                        (<DivCardCirLitGreen>
+                            <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                            <DivCardReverseLit></DivCardReverseLit>
+                            <DivCardReverseLit2></DivCardReverseLit2>
+                            <DivCardReverseLit3></DivCardReverseLit3>
+                            <DivCardReverseLit4></DivCardReverseLit4>
+                            <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                         </DivCardCirLitGreen>)
+                      }
+                      {ele.n === 's' &&
+                        (<DivCardCirLitGreen>
+                          <DivCardSkipLit></DivCardSkipLit>
+                          <DivCardSkipLitGreen2></DivCardSkipLitGreen2>
+                          <DivCardSkipLit3></DivCardSkipLit3>
+                         </DivCardCirLitGreen>)
+                      }
+                      <DivCardCirBigWhite>
+                        {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                          (<DivCardBigNumberGreen>{ele.n}</DivCardBigNumberGreen>)
+                        }
+                        {ele.n === '+2' &&
+                          (<><DivCardDrawTwoBigGreen></DivCardDrawTwoBigGreen>
+                             <DivCardDrawTwoBigGreen2></DivCardDrawTwoBigGreen2></>)
+                        }
+                        {ele.n === 'r' &&
+                          (<><DivCardReverseBigGreenArrow></DivCardReverseBigGreenArrow>
+                             <DivCardReverseBigGreen></DivCardReverseBigGreen>
+                             <DivCardReverseBigGreen2></DivCardReverseBigGreen2>
+                             <DivCardReverseBigGreen3></DivCardReverseBigGreen3>
+                             <DivCardReverseBigGreen4></DivCardReverseBigGreen4>
+                             <DivCardReverseBigGreenArrow2></DivCardReverseBigGreenArrow2></>)
+                        }
+                        {ele.n === 's' &&
+                          (<>
+                             <DivCardSkipBigGreen></DivCardSkipBigGreen>
+                             <DivCardSkipBig2></DivCardSkipBig2>
+                             <DivCardSkipBigGreen3></DivCardSkipBigGreen3>
+                          </>)
+                        }
+                      </DivCardCirBigWhite>
+                    </DivCardExtGreen>
+                  </DivCardExt>)
+                  }
+                  { ele.c === 'blue' &&
+                  (<DivCardExt>
+                    <DivCardExtBlue>
+                      {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(ele.n) &&
+                        (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                      }
+                      {ele.n === 'r' &&
+                        (<DivCardCirLitBlue>
+                            <DivCardReverseLitArrow></DivCardReverseLitArrow>
+                            <DivCardReverseLit></DivCardReverseLit>
+                            <DivCardReverseLit2></DivCardReverseLit2>
+                            <DivCardReverseLit3></DivCardReverseLit3>
+                            <DivCardReverseLit4></DivCardReverseLit4>
+                            <DivCardReverseLitArrow2></DivCardReverseLitArrow2>
+                         </DivCardCirLitBlue>)
+                      }
+                      {ele.n === 's' &&
+                        (<DivCardCirLitBlue>
+                          <DivCardSkipLit></DivCardSkipLit>
+                          <DivCardSkipLitBlue2></DivCardSkipLitBlue2>
+                          <DivCardSkipLit3></DivCardSkipLit3>
+                         </DivCardCirLitBlue>)
+                      }
+                      <DivCardCirBigWhite>
+                        {[0,1,2,3,4,5,6,7,8,9].includes(ele.n) &&
+                          (<DivCardBigNumberBlue>{ele.n}</DivCardBigNumberBlue>)
+                        }
+                        {ele.n === '+2' &&
+                          (<><DivCardDrawTwoBigBlue></DivCardDrawTwoBigBlue>
+                             <DivCardDrawTwoBigBlue2></DivCardDrawTwoBigBlue2></>)
+                        }
+                        {ele.n === 'r' &&
+                          (<><DivCardReverseBigBlueArrow></DivCardReverseBigBlueArrow>
+                             <DivCardReverseBigBlue></DivCardReverseBigBlue>
+                             <DivCardReverseBigBlue2></DivCardReverseBigBlue2>
+                             <DivCardReverseBigBlue3></DivCardReverseBigBlue3>
+                             <DivCardReverseBigBlue4></DivCardReverseBigBlue4>
+                             <DivCardReverseBigBlueArrow2></DivCardReverseBigBlueArrow2></>)
+                        }
+                        {ele.n === 's' &&
+                          (<>
+                             <DivCardSkipBigBlue></DivCardSkipBigBlue>
+                             <DivCardSkipBig2></DivCardSkipBig2>
+                             <DivCardSkipBigBlue3></DivCardSkipBigBlue3>
+                          </>)
+                        }
+                      </DivCardCirBigWhite>
+                    </DivCardExtBlue>
+                  </DivCardExt>)
+                  }
                   { ele.c === 'wild' &&
                     (
                     <>
-                    <ContainerRow>
-                      <select id={'color-' + ind} onChange={handleChange} value={values['color-' + ind] ? values['color-' + ind] : ''} required>
-                        <option value=""></option>
-                        <option value="red">red</option>
-                        <option value="yellow">yellow</option>
-                        <option value="green">green</option>
-                        <option value="blue">blue</option>
-                      </select>
-                    </ContainerRow>
+                      <DivCardExt>
+                        <DivCardExtWild>
+                          {ele.n === 'c' &&
+                            (<DivCardCirLitWhite>
+                                <DivCardWildColorLit></DivCardWildColorLit>
+                             </DivCardCirLitWhite>)
+                          }
+                          {ele.n === '+4' &&
+                            (<DivCardLitNumber>{ele.n}</DivCardLitNumber>)
+                          }
+                          <DivCardCirBigWhite>
+                            {ele.n === 'c' &&
+                              (<DivCardWildColorBig></DivCardWildColorBig>)
+                            }
+                            {ele.n === '+4' &&
+                              (<>
+                                <DivCardDrawFourBigRed></DivCardDrawFourBigRed>
+                                <DivCardDrawFourBigYellow></DivCardDrawFourBigYellow>
+                                <DivCardDrawFourBigGreen></DivCardDrawFourBigGreen>
+                                <DivCardDrawFourBigBlue></DivCardDrawFourBigBlue>
+                              </>)
+                            }
+                          </DivCardCirBigWhite>
+                        </DivCardExtWild>
+                      </DivCardExt>
                     </>
                     )
                   }
-                </ContainerColumn>
-              )
-            })}
-          </>
+                </ContainerRow>
+
+                { (ele.c === 'wild' ||
+                    ele.c === values.pile[values.pile.length - 1].card.c ||
+                    ele.n === values.pile[values.pile.length - 1].card.n ||
+                    ele.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
+                  <ContainerRow>
+                    <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
+                  </ContainerRow>
+                }
+
+                { ele.c === 'wild' &&
+                  (
+                  <>
+                  <ContainerRow>
+                    <select id={'color-' + ind} onChange={handleChange} required>
+                      <option value=""></option>
+                      <option value="red">red</option>
+                      <option value="yellow">yellow</option>
+                      <option value="green">green</option>
+                      <option value="blue">blue</option>
+                    </select>
+                  </ContainerRow>
+                  </>
+                  )
+                }
+              </ContainerColumn>
+            )
+          })}
           <WrapperGen>
             { !values.finishRound &&
               <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>

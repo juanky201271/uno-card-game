@@ -61,7 +61,7 @@ function LoginForm() {
              <label>Password:</label>
              <input type="password" className="form-control" id="pwd" onChange={handleChange} value={values ? values.pwd : ''} required />
            </Container>
-           <button type="submit" className="btn btn-default">Submit</button>
+           <button type="submit" className="btn btn-secondary">Submit</button>
           </form>
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
         </>)

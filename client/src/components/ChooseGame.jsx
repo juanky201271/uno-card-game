@@ -9,7 +9,7 @@ const Container = styled.div.attrs({ className: "container" })
 `
 const AddGame = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
-const JoinGame = styled.button.attrs({ className: 'btn btn-primary' })
+const JoinGame = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
 const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
