@@ -9,11 +9,17 @@ const Container = styled.div.attrs({ className: "container" })
 `
 const AddGame = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
-const JoinGame = styled.button.attrs({ className: 'btn btn-secondary' })
-``
+const JoinGame = styled.button.attrs({ className: 'btn btn-secondary d-flex justify-content-center align-items-center align-self-center' })
+`
+  margin: 10px 10px 10px 10px;
+`
 const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
   padding: 10px 10px 10px 10px;
+`
+const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-items-center align-self-center' })
+`
+  margin: 10px 10px 10px 10px;
 `
 
 function ChooseGame() {
@@ -58,7 +64,7 @@ function ChooseGame() {
         listGames = games.data.data.map((ele, ind) => {
           return (
             <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
-              <p>{ele.keyWord} - {ele.players} - {ele.creator_id.name}</p>
+              <PGame>{ele.keyWord} - {ele.players} - cards:{ele.cards} - {ele.creator_id.name}</PGame>
               { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
                 (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
               }

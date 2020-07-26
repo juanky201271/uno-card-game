@@ -9,7 +9,7 @@ const WrapperGen = styled.div
   padding: 10px 10px 10px 10px;
 `
 
-const Title = styled.h1.attrs({ className: 'h1' })
+const Title = styled.h1.attrs({ className: 'h2' })
 ``
 
 function Game (props) {
