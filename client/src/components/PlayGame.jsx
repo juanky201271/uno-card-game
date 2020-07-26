@@ -11,7 +11,7 @@ const Title = styled.h1.attrs({ className: 'h1' })
 ``
 const PileCard = styled.button.attrs({ className: 'btn btn-secondary' })
 ``
-const PickCard = styled.button.attrs({ className: 'btn btn-secondary' })
+const PickCard = styled.button.attrs({ className: 'btn btn-dark' })
 ``
 const CancelGame = styled.button.attrs({ className: 'btn btn-secondary' })
 `
@@ -955,26 +955,26 @@ function PlayGame (props) {
             unoCards: [], playerCards: [],
             unoCardsPile: [], playerCardsPile: [], playerPickCard: false,
             cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: false,
-            numCards: Number(state.game.cards), round: state.game.curr_round, viewUnoCards: false })
+            numCards: Number(state.game.cards), round: state.game.curr_round, viewUnoCards: false, checkUNO: false })
   }
 
   const initCardsAgain = (pile) => {
     let cards = []
-    console.log('cards', cards, cards.length, 'pile', pile, pile.length)
+    //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
     pile.forEach((ele, ind) => {
       cards.unshift(ele.card)
     })
 
-    console.log('remove', cards.shift())
-    console.log('cards', cards, cards.length, 'pile', pile, pile.length)
+    cards.shift()
+    //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
     const getRandomValue = (i, N) => Math.floor(Math.random() * (N - i) + i)
     cards.forEach( (elem, i, arr, j = getRandomValue(i, arr.length)) => [arr[i], arr[j]] = [arr[j], arr[i]] )
 
     let last = pile[pile.length - 1]
-    console.log('last', last)
+    //console.log('last', last)
     let pileAux = []
     pileAux.push(last)
-    console.log('cards', cards, cards.length, 'pileAux', pileAux, pileAux.length)
+    //console.log('cards', cards, cards.length, 'pileAux', pileAux, pileAux.length)
     return { cards: cards, pile: pileAux }
   }
 
@@ -1285,7 +1285,7 @@ function PlayGame (props) {
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
     let { unoTurn, unoCards, unoCardsPile, playerCards, playerCardsPile,
-          cards, pile, numCards, finishRound, numberPlay, unoWin } = values
+          cards, pile, numCards, finishRound, numberPlay, unoWin, checkUNO } = values
     if (finishRound) return
     if (unoTurn) return
     if (document.getElementById('color-' + event.target.id)) {
@@ -1325,16 +1325,31 @@ function PlayGame (props) {
       unoWin = false
     }
 
+    if (playerCards.length === 1 && !checkUNO) {
+      if (cards.length === 0) {
+        let obj = initCardsAgain(pile)
+        cards = obj.cards
+        pile = obj.pile
+      }
+      playerCards.push(cards.pop())
+      if (cards.length === 0) {
+        let obj = initCardsAgain(pile)
+        cards = obj.cards
+        pile = obj.pile
+      }
+      playerCards.push(cards.pop())
+    }
+
     setValues(values => ({ ...values, unoTurn: unoTurn,
                           playerCards: playerCards,
                           playerCardsPile: playerCardsPile,
-                          cards: cards, pile: pile, finishRound: finishRound, numberPlay: numberPlay, unoWin: unoWin }))
+                          cards: cards, pile: pile, finishRound: finishRound, numberPlay: numberPlay, unoWin: unoWin, checkUNO: false }))
 
   }
 
   const handleChange = (event) => {
     event.persist()
-    setValues(values => ({ ...values, [event.target.id]: event.target.value}))
+    setValues(values => ({ ...values, [event.target.id]: event.target.value }))
   }
 
   const handleClickPickCard = (event) => {
@@ -1407,12 +1422,17 @@ function PlayGame (props) {
 
   const handleClickNewGame = (event) => {
     if (event) event.preventDefault()
-    setValues({ ...values, ...init() })
+    setValues(values => ({ ...values, ...init() }))
   }
 
   const handleViewUnoCards = (event) => {
     if (event) event.preventDefault()
-    setValues({ ...values, viewUnoCards: !values.viewUnoCards })
+    setValues(values => ({ ...values, viewUnoCards: !values.viewUnoCards }))
+  }
+
+  const handleChangeCheckUNO = (event) => {
+    event.persist()
+    setValues(values => ({ ...values, [event.target.id]: event.target.checked }))
   }
 
   const [ state, setState ] = useContext(GameContext)
@@ -2278,11 +2298,17 @@ function PlayGame (props) {
               </ContainerColumn>
             )
           })}
-          <WrapperGen>
+          <ContainerColumn>
             { !values.finishRound &&
-              <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>
+              <>
+                <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="checkUNO" onChange={handleChangeCheckUNO} checked={values.checkUNO} />
+                  <label class="form-check-label" for="checkUNO">I say UNO!!!!</label>
+                </div>
+              </>
             }
-          </WrapperGen>
+          </ContainerColumn>
         </ContainerRow>
       </ContainerColumn>
     </WrapperGen>
