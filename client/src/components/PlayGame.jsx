@@ -1451,7 +1451,6 @@ function PlayGame (props) {
           <CancelGame onClick={handleClickCancelGame} id="CancelGame"> Cancel Game </CancelGame>
           <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
           <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide UNO Cards </ViewUnoCards>
-          <p>Number Plays: {values.numberPlay}</p>
         </ContainerRow>
         <ContainerRow>
           <>
