@@ -68,6 +68,9 @@ function ChooseGame() {
               { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
                 (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
               }
+              { !state.game && state.user && ele.players === 'Multiple' &&
+                (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>)
+              }
             </ContainerRow>
           )
         })

@@ -6,8 +6,11 @@ import LoginForm from './LoginForm'
 import { GameContext, GameProvider } from './GameContext'
 import ChooseGame from './ChooseGame'
 import GameForm from './GameForm'
-import PlayGame from './PlayGame'
+import PlayGameAlone from './PlayGameAlone'
+import Card from './Card'
+import MiniCard from './MiniCard'
+import PlayGameMultiple from './PlayGameMultiple'
 
 export { Logo, Links, NavBar, Soc,
          LoginForm, GameContext, GameProvider,
-         ChooseGame, GameForm, PlayGame }
+         ChooseGame, GameForm, PlayGameAlone, Card, MiniCard, PlayGameMultiple }

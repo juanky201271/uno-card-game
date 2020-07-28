@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react'
-import api from '../api'
-import { Soc, GameContext, ChooseGame, PlayGame } from '../components'
+import { Soc, GameContext, ChooseGame, PlayGameAlone, PlayGameMultiple } from '../components'
 import styled from 'styled-components'
 
 const WrapperGen = styled.div
@@ -10,7 +9,10 @@ const WrapperGen = styled.div
 `
 
 const Title = styled.h1.attrs({ className: 'h2' })
-``
+`
+  margin: 5px 5px 5px 5px;
+  padding: 10px 10px 10px 10px;
+`
 
 function Game (props) {
 
@@ -21,13 +23,25 @@ function Game (props) {
   return (
     <WrapperGen>
         <Title>Game {state.game ? ' - ' + state.game.keyWord : '' }</Title>
-        <Soc />
         <hr />
         { !state.game &&
           (<ChooseGame />)
         }
-        { state.game &&
-          (<PlayGame />)
+        { state.game ?
+
+            state.game.players === 'Alone' ?
+              (
+                <PlayGameAlone />
+              )
+              :
+              (
+
+                <><Soc /><PlayGameMultiple /></>
+              )
+          :
+          (
+            <></>
+          )
         }
     </WrapperGen>
   )

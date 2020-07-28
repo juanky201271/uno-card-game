@@ -79,6 +79,7 @@ function LoginForm() {
              <label># Players:</label>
              <select className="form-control" id="players" onChange={handleChange} value={values ? values.players : ''} required>
                 <option value="Alone">Alone</option>
+                <option value="Multiple">Multiple</option>
              </select>
            </Container>
            <Container>
