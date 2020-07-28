@@ -270,7 +270,8 @@ function PlayGameAlone (props) {
         keepTurn = false
         index = null
         color = null
-        unoCards.forEach((ele, ind) => {
+        for (let ind = 0; ind < unoCards.length; ind++) {
+          let ele = unoCards[ind]
           if (ele.card.c === nextColor) arrHaveColorIndex.push([ele.card.n.toString(), ind])
           if (ele.card.c === nextColor && ele.card.n === '+2') haveColorD2Index = ind
           if (ele.card.c === nextColor && ele.card.n === 'r') haveColorReverseIndex = ind
@@ -282,7 +283,7 @@ function PlayGameAlone (props) {
             rankingColor[ele.card.c]++
             rankingNumber[ele.card.n.toString()]++
           }
-        })
+        }
         console.log('actual', nextColor, nextNumber)
         //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
         let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])

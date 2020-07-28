@@ -4,7 +4,7 @@ import styled from 'styled-components'
 const DivPile = styled.div.attrs({})
 `
 `
-const DivCardLitNumberPile = styled.div.attrs({ className:"text-light font-weight-bold font-italic" })
+const DivCardLitNumberPile = styled.div.attrs({ className:"font-weight-bold font-italic" })
 `
   font-size: 20px;
   text-shadow: 2px 2px 2px #000000;
@@ -21,9 +21,11 @@ const colors = {
 function MiniCard(props) {
 
   const color = colors[props.color]
+  const wildColor = colors[props.wildColor]
   const clN = 'd-flex justify-content-center align-items-center align-self-' + props.align
   const DivPileStyle = { border: (props.lastPlay ? '5px solid black' : '1px solid black'), borderRadius: '5px',
-                         backgroundColor: color, width: props.width, height: props.height, margin: '3px 3px 3px 3px' }
+                         backgroundColor: color, width: props.width, height: props.height, margin: '3px 3px 3px 3px',
+                         color: (['c','+4'].includes(props.number) ? wildColor : 'white') }
 
   console.log('MiniCard', props)
   return (
