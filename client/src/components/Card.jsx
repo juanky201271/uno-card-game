@@ -319,7 +319,7 @@ function Card(props) {
                                    top: (props.height - 250) + 'px', left: (props.width - 91) + 'px', backgroundColor: color }
 
 
-  console.log('card', props)
+  //console.log('card', props)
   return (
     <DivCardExt style={DivCardExtStyle}>
       <DivCardExtColor style={DivCardExtColorStyle}>

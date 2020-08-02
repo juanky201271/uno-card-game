@@ -27,7 +27,7 @@ function MiniCard(props) {
                          backgroundColor: color, width: props.width, height: props.height, margin: '3px 3px 3px 3px',
                          color: (['c','+4'].includes(props.number) ? wildColor : 'white') }
 
-  console.log('MiniCard', props)
+  //console.log('MiniCard', props)
   return (
     <DivPile key={props.color + props.number + props.order} className={clN} style={DivPileStyle}>
       {[0,1,2,3,4,5,6,7,8,9,'+2','+4'].includes(props.number) &&

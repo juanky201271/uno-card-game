@@ -41,7 +41,7 @@ function ChooseGame() {
     event.persist()
     api.getGameById(event.target.id).then(game => {
       api.getPlayersByGameId(event.target.id).then(players => {
-        console.log(players.data.data)
+        //console.log(players.data.data)
         let player, uno, playerExist = false
         for (let i = 0; i < players.data.data.length; i++) {
           if (players.data.data[i].uno)
