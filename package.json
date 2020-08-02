@@ -25,9 +25,7 @@
     "http-proxy-middleware": "^1.0.5",
     "mongoose": "^5.9.24",
     "nodemon": "^2.0.4",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
+    "path": "^0.12.7",
     "socket.io": "^2.3.0"
   },
   "resolutions": {
