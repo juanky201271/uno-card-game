@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const GameContext = React.createContext([{ sockets: [] }, () => {}])
+const GameContext = React.createContext([{}, () => {}])
 
 const GameProvider = (props) => {
   const [ state, setState ] = useState({})

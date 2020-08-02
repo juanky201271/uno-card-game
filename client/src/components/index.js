@@ -10,7 +10,9 @@ import PlayGameAlone from './PlayGameAlone'
 import Card from './Card'
 import MiniCard from './MiniCard'
 import PlayGameMultiple from './PlayGameMultiple'
+import socket from './socket'
 
 export { Logo, Links, NavBar, Soc,
          LoginForm, GameContext, GameProvider,
-         ChooseGame, GameForm, PlayGameAlone, Card, MiniCard, PlayGameMultiple }
+         ChooseGame, GameForm, PlayGameAlone, Card,
+         MiniCard, PlayGameMultiple, socket }

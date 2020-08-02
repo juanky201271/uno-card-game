@@ -1,8 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react'
 import api from '../api'
-import { GameContext, GameForm } from '../components'
+//import socketIOClient from "socket.io-client"
+import { GameContext, GameForm, socket } from '../components'
 import styled from 'styled-components'
 
+//const ENDPOINT = process.env.PUBLIC_URL
 const Container = styled.div.attrs({ className: "container" })
 `
   padding: 10px;
@@ -21,11 +23,14 @@ const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-i
 `
   margin: 10px 10px 10px 10px;
 `
+//const socket = socketIOClient(ENDPOINT)
 
 function ChooseGame() {
 
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState({})
+
+  //const socket = state.socket
 
   const handleClickAddGame = (event) => {
     if (event) event.preventDefault()
@@ -37,13 +42,37 @@ function ChooseGame() {
     api.getGameById(event.target.id).then(game => {
       api.getPlayersByGameId(event.target.id).then(players => {
         console.log(players.data.data)
-        let player, uno
+        let player, uno, playerExist = false
         for (let i = 0; i < players.data.data.length; i++) {
-          if (players.data.data[i].uno) uno = players.data.data[i]
-          else player = players.data.data[i]
+          if (players.data.data[i].uno)
+            uno = players.data.data[i]
+          else if (game.data.data[0].creator_id._id === players.data.data[i].player_id._id) {
+            if (state.user._id === players.data.data[i].player_id._id)
+              playerExist = true
+            player = players.data.data[i]
+          }
+          else if (state.user._id === players.data.data[i].player_id._id)
+            playerExist = true
         }
-        setValues(values => ({ ...values, addGame: false }))
-        setState(state => ({ ...state, game: game.data.data[0], player: player, uno: uno }))
+        socket.emit('game', { message: 'Player ' + state.user.name + ' join to the game ' + game.data.data[0].keyWord + '.', user_id: state.user._id, game_id: game.data.data[0]._id });
+        if (!playerExist) {
+          const payload = { player_id: state.user._id, game_id: game.data.data[0]._id, score: 0,
+                            curr_round: 0, curr_cards: [], curr_cards_pile: [],
+                            curr_score: 0, uno: false }
+          api.createPlayer(payload).then(player2 => {
+
+            setValues(values => ({ ...values, addGame: false }))
+            setState(state => ({ ...state, game: game.data.data[0], player: player, uno: uno,
+                                           players: [ ...players.data.data, player2.data.data] }))
+          })
+          .catch(error => {
+            console.log(error)
+          })
+        } else {
+          setValues(values => ({ ...values, addGame: false }))
+          setState(state => ({ ...state, game: game.data.data[0], player: player, uno: uno,
+                                         players: players.data.data }))
+        }
       })
       .catch(error => {
         console.log(error)

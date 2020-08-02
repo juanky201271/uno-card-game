@@ -492,15 +492,18 @@ function PlayGameAlone (props) {
       selectedCard = playerCards.splice(event.target.id, 1)[0].card
       pile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: false, numberPlay: numberPlay })
       playerCardsPile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: true, numberPlay: numberPlay })
-      unoTurn = true
+      if (selectedCard.n === 'c') {
+        unoTurn = true
+      }
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
+        console.log('no coincide color o numero')
         return
       } else {
         selectedCard = playerCards.splice(event.target.id, 1)[0].card
         pile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: false, numberPlay: numberPlay })
         playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: true, numberPlay: numberPlay })
-        if (!(selectedCard.n === 'r' || selectedCard.n === 's')) {
+        if (!(selectedCard.n === 'r' || selectedCard.n === 's' || selectedCard.n === '+2')) {
           unoTurn = true
         }
       }

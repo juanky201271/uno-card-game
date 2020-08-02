@@ -1,5 +1,5 @@
 require("dotenv").config()
-//const cookieSession = require("cookie-session")
+
 const path = require("path")
 const express = require("express")
 const app = express()
@@ -42,22 +42,25 @@ if (process.env.NODE_ENV === 'production') {
 
 const server = http.listen(PORT, () => console.log(`Server on Port ${PORT}`))
 
-let interval
+const listClients = {}
 
 io.on("connection", (socket) => {
-  console.log("New client connected")
-  if (interval) {
-    clearInterval(interval)
-  }
-  //interval = setInterval(() => getApiAndEmit(socket), 1000)
+  console.log("New client connected " + socket.id)
+  socket.on('log in', function (obj) {
+    obj.message = "<" + socket.id + "> " + obj.message
+    console.log(obj)
+    listClients[socket.id] = { user_id: obj.user_id }
+    io.sockets.emit('log in', obj, socket.id, listClients)
+  });
+  socket.on('game', function (obj) {
+    obj.message = "<" + socket.id + "> " + obj.message
+    console.log(obj)
+    listClients[socket.id] = { user_id: obj.user_id, game_id: obj.game_id }
+    socket.join("game-" + obj.game_id)
+    io.sockets.in("game-" + obj.game_id).emit('game', obj, socket.id, listClients)
+    //console.log('clients', io.sockets.clients())
+  });
   socket.on("disconnect", () => {
-    console.log("Client disconnected")
-    clearInterval(interval)
+    console.log("Client disconnected " + socket.id)
   })
 })
-
-const getApiAndEmit = socket => {
-  const response = new Date()
-  // Emitting a new message. Will be consumed by the client
-  socket.emit("FromAPI", response)
-}

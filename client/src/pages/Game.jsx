@@ -23,6 +23,7 @@ function Game (props) {
   return (
     <WrapperGen>
         <Title>Game {state.game ? ' - ' + state.game.keyWord : '' }</Title>
+        <Soc />
         <hr />
         { !state.game &&
           (<ChooseGame />)
@@ -35,8 +36,7 @@ function Game (props) {
               )
               :
               (
-
-                <><Soc /><PlayGameMultiple /></>
+                <PlayGameMultiple />
               )
           :
           (

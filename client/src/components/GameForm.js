@@ -17,7 +17,7 @@ const LabelRed = styled.label.attrs({ className: "text-danger" })
 function LoginForm() {
 
   const [ state, setState ] = useContext(GameContext)
-  const [ values, setValues ] = useState({ players: 'Alone', cards: '7' })
+  const [ values, setValues ] = useState({ players: 'Alone', cards: '7', done: false })
 
   const handleSubmit = (event) => {
     if (event) event.preventDefault()
@@ -50,7 +50,8 @@ function LoginForm() {
                             curr_score: 0, uno: true }
           await api.createPlayer(payload3).then(playerUNO => {
             //console.log(playerUNO.data.data)
-            setState(state => ({ ...state, game: game.data.data, player: player.data.data, uno:playerUNO.data.data }))
+            setValues(values => ({ players: 'Alone', cards: '7', done: true }))
+            setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
           })
           .catch(error => {
             console.log(error)
@@ -72,7 +73,7 @@ function LoginForm() {
   console.log('form game', values, state)
   return (
     <ContainerExt>
-      { !state.game && state.user &&
+      { !state.game && state.user && !values.done &&
         (<>
           <form className="form-group" onSubmit={handleSubmit}>
            <Container>

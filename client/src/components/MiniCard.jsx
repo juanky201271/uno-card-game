@@ -15,7 +15,7 @@ const colors = {
   yellow: '#ffeb3b',
   green: '#4caf50',
   blue: '#2196f3',
-  wild: '#000000'
+  wild: '#292b2c'
 }
 
 function MiniCard(props) {
