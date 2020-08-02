@@ -224,8 +224,9 @@ function PlayGameAlone (props) {
       }
       unoCards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = false
+      playerPickCard = false
       pile[pile.length - 1].drawDone = true
-      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile,
+      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard,
                             unoCards: unoCards, cards: cards, numberPlay: numberPlay + 1 }))
       return
     } else if (!drawDone && lastCardPile.n === '+2') {
@@ -242,8 +243,9 @@ function PlayGameAlone (props) {
       }
       unoCards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = false
+      playerPickCard = false
       pile[pile.length - 1].drawDone = true
-      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile,
+      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard, 
                             unoCards: unoCards, cards: cards, numberPlay: numberPlay + 1 }))
       return
     } else {
@@ -492,9 +494,7 @@ function PlayGameAlone (props) {
       selectedCard = playerCards.splice(event.target.id, 1)[0].card
       pile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: false, numberPlay: numberPlay })
       playerCardsPile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: true, numberPlay: numberPlay })
-      if (selectedCard.n === 'c') {
-        unoTurn = true
-      }
+      unoTurn = true
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
         console.log('no coincide color o numero')
@@ -503,7 +503,7 @@ function PlayGameAlone (props) {
         selectedCard = playerCards.splice(event.target.id, 1)[0].card
         pile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: false, numberPlay: numberPlay })
         playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: true, numberPlay: numberPlay })
-        if (!(selectedCard.n === 'r' || selectedCard.n === 's' || selectedCard.n === '+2')) {
+        if (!(selectedCard.n === 'r' || selectedCard.n === 's')) {
           unoTurn = true
         }
       }
