@@ -73,6 +73,14 @@ function LoginForm() {
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
         </>)
       }
+      {
+        values.user &&
+        (
+           <Container>
+             <label>User: {values.user.name}</label>
+           </Container>
+        )
+      }
     </ContainerExt>
   )
 

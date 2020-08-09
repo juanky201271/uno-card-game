@@ -7,7 +7,7 @@ function Links() {
     return (
       <>
         <Link to="/" className="navbar-brand">
-          <div style={{ color: '#222' }} >UNO Card Game (juanky201271)</div>
+          <div style={{ color: '#222' }} >UNO Card Game (juanky201271&copy;)</div>
         </Link>
         <LoginForm />
       </>
