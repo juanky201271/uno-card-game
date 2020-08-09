@@ -245,7 +245,7 @@ function PlayGameAlone (props) {
       unoTurn = false
       playerPickCard = false
       pile[pile.length - 1].drawDone = true
-      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard, 
+      setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard,
                             unoCards: unoCards, cards: cards, numberPlay: numberPlay + 1 }))
       return
     } else {

@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react'
-import { Soc, GameContext, ChooseGame, PlayGameAlone, PlayGameMultiple } from '../components'
+import React, { useContext } from 'react'
+import { GameContext, ChooseGame, PlayGameAlone, PlayGameMultiple } from '../components'
 import styled from 'styled-components'
 
 const WrapperGen = styled.div
@@ -17,34 +17,26 @@ const Title = styled.h1.attrs({ className: 'h2' })
 function Game (props) {
 
   const [ state, setState ] = useContext(GameContext)
-  const [ values, setValues ] = useState({ isLoading: false, socket: '' })
 
-  console.log('game', state, values)
+  console.log('game', state)
   return (
     <WrapperGen>
         <Title>Game {state.game ? ' - ' + state.game.keyWord : '' }</Title>
-
         <hr />
         { !state.game &&
           (<ChooseGame />)
         }
         { state.game ?
-
             state.game.players === 'Alone' ?
               (
                 <PlayGameAlone />
               )
               :
               (
-                <>
-                  <Soc />
-                  <PlayGameMultiple />
-                </>
+                <PlayGameMultiple />
               )
           :
-          (
-            <></>
-          )
+          null
         }
     </WrapperGen>
   )

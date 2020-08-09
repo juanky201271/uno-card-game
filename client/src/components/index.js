@@ -1,7 +1,6 @@
 import Logo from './Logo'
 import Links from './Links'
 import NavBar from './NavBar'
-import Soc from './Soc'
 import LoginForm from './LoginForm'
 import { GameContext, GameProvider } from './GameContext'
 import ChooseGame from './ChooseGame'
@@ -12,7 +11,7 @@ import MiniCard from './MiniCard'
 import PlayGameMultiple from './PlayGameMultiple'
 import socket from './socket'
 
-export { Logo, Links, NavBar, Soc,
+export { Logo, Links, NavBar,
          LoginForm, GameContext, GameProvider,
          ChooseGame, GameForm, PlayGameAlone, Card,
          MiniCard, PlayGameMultiple, socket }
