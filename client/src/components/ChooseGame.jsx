@@ -27,6 +27,11 @@ const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-i
 `
   margin: 10px 10px 10px 10px;
 `
+const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  width: 125px;
+  font-size: 10px;
+`
 //const socket = socketIOClient(ENDPOINT)
 
 function ChooseGame() {
@@ -129,8 +134,8 @@ function ChooseGame() {
                 (<ContainerRow>
                   <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
                   <ContainerColumn>
-                    <p>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</p>
-                    <p>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</p>
+                    <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                    <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                   </ContainerColumn>
                 </ContainerRow>)
               }
