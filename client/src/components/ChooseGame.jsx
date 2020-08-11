@@ -39,7 +39,13 @@ function ChooseGame() {
 
   const handleClickJoinGame = (event) => {
     event.persist()
+    //if (!state.listUserGame) return
     api.getGameById(event.target.id).then(game => {
+
+      //if (Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === game.data.data[0].creator_id._id && e[1].game_id === game.data.data[0]._id).length === 0 &&
+      //    state.user_id !== game.data.data[0].creator_id._id)
+      //  return
+
       api.getPlayersByGameId(event.target.id).then(players => {
         //console.log(players.data.data)
         let player, uno, playerExist = false
@@ -84,6 +90,24 @@ function ChooseGame() {
   }
 
   useEffect(() => {
+    socket.on("log in", (obj, id, listClients) => {
+      console.log('emit log in', obj, id, listClients)
+      setState(state =>({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
+    socket.on("game", (obj, id, listClients) => {
+      console.log('emit game',obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
+    socket.on("log out", (obj, id, listClients) => {
+      console.log('emit log out', obj, id, listClients)
+      setState(state =>({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
+  }, [])
+
+  useEffect(() => {
     let ignore = false
 
     async function fetchData() {
@@ -98,7 +122,11 @@ function ChooseGame() {
                 (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
               }
               { !state.game && state.user && ele.players === 'Multiple' &&
-                (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>)
+                (<ContainerRow>
+                  <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
+                  <p>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</p>
+                  <p>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</p>
+                </ContainerRow>)
               }
             </ContainerRow>
           )

@@ -375,151 +375,150 @@ function PlayGameMultiple(props) {
       pile[pile.length - 1].drawDone = true
       return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep }
     } else {
-      let iHaveACard = false, keepTurn = false, index = null, color = null
-      while (true) {
-        lastCardPile = pile[pile.length - 1].card
-        //lastPlayerPile = pile[pile.length - 1].player
-        lastColorPile = pile[pile.length - 1].color
-        drawDone = pile[pile.length - 1].drawDone
-        nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
-        nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
-        arrHaveColorIndex = []
-        arrHaveNumberIndex = []
-        haveColorIndex = null
-        haveNumberIndex = null
-        haveCIndex = null
-        haveCd4Index = null
-        haveColorD2Index = null
-        haveColorReverseIndex = null
-        haveColorSkipIndex = null
-        rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
-        rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
+      let iHaveACard = false, index = null, color = null
 
-        keepTurn = false
-        index = null
-        color = null
-        for (let ind = 0; ind < Object.entries(playersUno)[unoTurn][1].cards.length; ind++) {
-          let ele = Object.entries(playersUno)[unoTurn][1].cards[ind]
-          if (ele.card.c === nextColor) arrHaveColorIndex.push([ele.card.n.toString(), ind])
-          if (ele.card.c === nextColor && ele.card.n === '+2') haveColorD2Index = ind
-          if (ele.card.c === nextColor && ele.card.n === 'r') haveColorReverseIndex = ind
-          if (ele.card.c === nextColor && ele.card.n === 's') haveColorSkipIndex = ind
-          if (ele.card.n === nextNumber) arrHaveNumberIndex.push([ele.card.c, ind])
-          if (ele.card.n === 'c') haveCIndex = ind
-          if (ele.card.n === '+4') haveCd4Index = ind
-          if (ele.card.c !== 'wild') {
-            rankingColor[ele.card.c]++
-            rankingNumber[ele.card.n.toString()]++
+      lastCardPile = pile[pile.length - 1].card
+      //lastPlayerPile = pile[pile.length - 1].player
+      lastColorPile = pile[pile.length - 1].color
+      drawDone = pile[pile.length - 1].drawDone
+      nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
+      nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
+      arrHaveColorIndex = []
+      arrHaveNumberIndex = []
+      haveColorIndex = null
+      haveNumberIndex = null
+      haveCIndex = null
+      haveCd4Index = null
+      haveColorD2Index = null
+      haveColorReverseIndex = null
+      haveColorSkipIndex = null
+      rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
+      rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
+
+      index = null
+      color = null
+      for (let ind = 0; ind < Object.entries(playersUno)[unoTurn][1].cards.length; ind++) {
+        let ele = Object.entries(playersUno)[unoTurn][1].cards[ind]
+        if (ele.card.c === nextColor) arrHaveColorIndex.push([ele.card.n.toString(), ind])
+        if (ele.card.c === nextColor && ele.card.n === '+2') haveColorD2Index = ind
+        if (ele.card.c === nextColor && ele.card.n === 'r') haveColorReverseIndex = ind
+        if (ele.card.c === nextColor && ele.card.n === 's') haveColorSkipIndex = ind
+        if (ele.card.n === nextNumber) arrHaveNumberIndex.push([ele.card.c, ind])
+        if (ele.card.n === 'c') haveCIndex = ind
+        if (ele.card.n === '+4') haveCd4Index = ind
+        if (ele.card.c !== 'wild') {
+          rankingColor[ele.card.c]++
+          rankingNumber[ele.card.n.toString()]++
+        }
+      }
+      console.log('actual', nextColor, nextNumber)
+      //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
+      let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
+      let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
+      //console.log('color rank', arrRankingColor, 'number rank', arrRankingNumber)
+
+      // mejor la que tenga mas del mismo color
+      let exit = false
+      for (let i = 0; i < arrRankingColor.length; i++) {
+        for (let j = 0; j < arrHaveNumberIndex.length; j++ ) {
+          //console.log(i, arrRankingColor[i], j, arrHaveNumberIndex[j])
+          if (arrRankingColor[i][0] === arrHaveNumberIndex[j][0]) {
+            haveNumberIndex = arrHaveNumberIndex[j][1]
+            exit = true
+            break
           }
         }
-        console.log('actual', nextColor, nextNumber)
-        //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
-        let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
-        let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
-        //console.log('color rank', arrRankingColor, 'number rank', arrRankingNumber)
+        if (exit) break
+      }
 
-        // mejor la que tenga mas del mismo color
-        let exit = false
-        for (let i = 0; i < arrRankingColor.length; i++) {
-          for (let j = 0; j < arrHaveNumberIndex.length; j++ ) {
-            //console.log(i, arrRankingColor[i], j, arrHaveNumberIndex[j])
-            if (arrRankingColor[i][0] === arrHaveNumberIndex[j][0]) {
-              haveNumberIndex = arrHaveNumberIndex[j][1]
-              exit = true
-              break
-            }
+      // mejor el numero que se repita menos
+      exit = false
+      for (let i = arrRankingNumber.length - 1; i >= 0; i--) {
+        for (let j = 0; j < arrHaveColorIndex.length; j++ ) {
+          //console.log(i, arrRankingNumber[i], j, arrHaveColorIndex[j])
+          if (arrRankingNumber[i][0] === arrHaveColorIndex[j][0]) {
+            haveColorIndex = arrHaveColorIndex[j][1]
+            exit = true
+            break
           }
-          if (exit) break
         }
+        if (exit) break
+      }
 
-        // mejor el numero que se repita menos
-        exit = false
-        for (let i = arrRankingNumber.length - 1; i >= 0; i--) {
-          for (let j = 0; j < arrHaveColorIndex.length; j++ ) {
-            //console.log(i, arrRankingNumber[i], j, arrHaveColorIndex[j])
-            if (arrRankingNumber[i][0] === arrHaveColorIndex[j][0]) {
-              haveColorIndex = arrHaveColorIndex[j][1]
-              exit = true
-              break
-            }
-          }
-          if (exit) break
-        }
+      console.log('color', haveColorIndex)
+      console.log('number', haveNumberIndex)
 
-        console.log('color', haveColorIndex)
-        console.log('number', haveNumberIndex)
-
-        if (Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.length <= 3) {
-          if (haveColorD2Index !== null) {
-            index = haveColorD2Index
-            color = null
-          } else if (haveCd4Index !== null) {
-            index = haveCd4Index
-            color = arrRankingColor[0][0]
-          } else if (haveNumberIndex !== null) {
-            index = haveNumberIndex
-            color = null
-          } else if (haveCIndex !== null) {
-            index = haveCIndex
-            if (nextColor === arrRankingColor[0][0]) {
-              if (arrRankingColor[1][1] > 0)
-                color = arrRankingColor[1][0]
-              else
-                color = arrRankingColor[0][0]
-            } else {
+      if (Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.length <= 3) {
+        if (haveColorD2Index !== null) {
+          index = haveColorD2Index
+          color = null
+        } else if (haveCd4Index !== null) {
+          index = haveCd4Index
+          color = arrRankingColor[0][0]
+        } else if (haveNumberIndex !== null) {
+          index = haveNumberIndex
+          color = null
+        } else if (haveCIndex !== null) {
+          index = haveCIndex
+          if (nextColor === arrRankingColor[0][0]) {
+            if (arrRankingColor[1][1] > 0)
+              color = arrRankingColor[1][0]
+            else
               color = arrRankingColor[0][0]
-            }
-          } else if (haveColorReverseIndex !== null) {
-            index = haveColorReverseIndex
-            color = null
-          } else if (haveColorSkipIndex !== null) {
-            index = haveColorSkipIndex
-            color = null
-          } else if (haveColorIndex !== null) {
-            index = haveColorIndex
-            color = null
           } else {
-            // robar carta
-            index = null
-            color = null
+            color = arrRankingColor[0][0]
           }
+        } else if (haveColorReverseIndex !== null) {
+          index = haveColorReverseIndex
+          color = null
+        } else if (haveColorSkipIndex !== null) {
+          index = haveColorSkipIndex
+          color = null
+        } else if (haveColorIndex !== null) {
+          index = haveColorIndex
+          color = null
         } else {
-          if (haveColorReverseIndex !== null) {
-            index = haveColorReverseIndex
-            color = null
-          } else if (haveColorSkipIndex !== null) {
-            index = haveColorSkipIndex
-            color = null
-          } else if (haveColorIndex !== null) {
-            index = haveColorIndex
-            color = null
-          } else if (haveNumberIndex !== null) {
-            index = haveNumberIndex
-            color = null
-          } else if (haveColorD2Index !== null) {
-            index = haveColorD2Index
-            color = null
-          } else if (haveCIndex !== null) {
-            index = haveCIndex
-            if (nextColor === arrRankingColor[0][0]) {
-              if (arrRankingColor[1][1] > 0)
-                color = arrRankingColor[1][0]
-              else
-                color = arrRankingColor[0][0]
-            } else {
-              color = arrRankingColor[0][0]
-            }
-          } else if (haveCd4Index !== null) {
-            index = haveCd4Index
-            color = arrRankingColor[0][0]
-          } else {
-            // robar carta
-            index = null
-            color = null
-          }
+          // robar carta
+          index = null
+          color = null
         }
-        if (index === null) {
-          if (iHaveACard) break
+      } else {
+        if (haveColorReverseIndex !== null) {
+          index = haveColorReverseIndex
+          color = null
+        } else if (haveColorSkipIndex !== null) {
+          index = haveColorSkipIndex
+          color = null
+        } else if (haveColorIndex !== null) {
+          index = haveColorIndex
+          color = null
+        } else if (haveNumberIndex !== null) {
+          index = haveNumberIndex
+          color = null
+        } else if (haveColorD2Index !== null) {
+          index = haveColorD2Index
+          color = null
+        } else if (haveCIndex !== null) {
+          index = haveCIndex
+          if (nextColor === arrRankingColor[0][0]) {
+            if (arrRankingColor[1][1] > 0)
+              color = arrRankingColor[1][0]
+            else
+              color = arrRankingColor[0][0]
+          } else {
+            color = arrRankingColor[0][0]
+          }
+        } else if (haveCd4Index !== null) {
+          index = haveCd4Index
+          color = arrRankingColor[0][0]
+        } else {
+          // robar carta
+          index = null
+          color = null
+        }
+      }
+      if (index === null) {
+        if (!iHaveACard) {
           if (cards.length === 0) {
             let obj = initCardsAgain(pile)
             cards = obj.cards
@@ -527,63 +526,60 @@ function PlayGameMultiple(props) {
           }
           Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
           iHaveACard = true
-        } else {
-          let aux = Object.entries(playersUno)[unoTurn][1].cards.splice(index, 1)[0].card
-          pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
-          Object.entries(playersUno)[unoTurn][1].pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
+        }
+      } else {
+        let aux = Object.entries(playersUno)[unoTurn][1].cards.splice(index, 1)[0].card
+        pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
+        Object.entries(playersUno)[unoTurn][1].pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
 
-          if (aux.n === '+4') {
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-          } else if (aux.n === '+2') {
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            if (cards.length === 0) {
-              let obj = initCardsAgain(pile)
-              cards = obj.cards
-              pile = obj.pile
-            }
-            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-          } else if (aux.n === 'r') {
-            nextTurnStep = nextTurnStep * (-1)
-          } else if (aux.n === 's') {
-            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+        if (aux.n === '+4') {
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
           }
-
-          if (!keepTurn) break
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
+          }
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
+          }
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
+          }
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+        } else if (aux.n === '+2') {
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
+          }
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          if (cards.length === 0) {
+            let obj = initCardsAgain(pile)
+            cards = obj.cards
+            pile = obj.pile
+          }
+          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+        } else if (aux.n === 'r') {
+          nextTurnStep = nextTurnStep * (-1)
+        } else if (aux.n === 's') {
+          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
         }
 
-        if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) break
+      }
 
-      } // while
     } // else
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
       finishRound = true
@@ -692,6 +688,7 @@ function PlayGameMultiple(props) {
     }
 
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+    playerPickCard = false
 
     return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep, cardIndex, wildColor }
   }
@@ -761,7 +758,7 @@ function PlayGameMultiple(props) {
 
   const handleClickStartGame = (event) => {
     if (event) event.preventDefault()
-    if (Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id).length < 2) return
+    if (Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length < 2) return
     socket.emit('start', { message: 'Player ' + state.user.name + ' Start the game ' + state.game.keyWord + '.', user_id: state.user._id, game_id: state.game._id });
   }
 
@@ -788,7 +785,12 @@ function PlayGameMultiple(props) {
 
   const handleClickCancelGame = (event) => {
     if (event) event.preventDefault()
-    socket.emit('cancel', {}, state.game._id)
+    socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
+  }
+
+  const handleClickCancel = (event) => {
+    if (event) event.preventDefault()
+    socket.emit('cancel', { user_id: state.user._id }, state.game._id)
   }
 
   const handleClickNewGame = (event) => {
@@ -863,12 +865,21 @@ function PlayGameMultiple(props) {
         setResponse(message)
       }
     })
-    socket.on("cancel", (obj, id, listClients, message) => {
+    socket.on("cancel game", (obj, id, listClients, message) => {
       //if (state.game.creator_id._id === state.user._id) {
         console.log('emit cancel', obj, id, listClients)
         setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
         setResponse(message)
       //}
+    })
+    socket.on("cancel", (obj, id, listClients, message) => {
+      console.log('emit cancel', obj, id, listClients)
+      if (obj.user_id === state.user._id) {
+        setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
+      } else {
+        setState(state => ({ ...state, listUserGame: listClients }))
+      }
+      setResponse(message)
     })
     socket.on("sincro view", (obj, id, listClients, message) => {
       //if (state.game.creator_id._id !== state.user._id) {
@@ -895,12 +906,21 @@ function PlayGameMultiple(props) {
         ::: {response} :::
       </div>
       <hr />
-      {state.listUserGame ? console.log(Object.entries(state.listUserGame)) : 'nothing'}
       { state.game.creator_id._id === state.user._id && !values.startGame &&
         <ContainerRow>
           <StartGame onClick={handleClickStartGame}>Start Game</StartGame>
           <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
-          <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id).length : '0'}</PUnoLit>
+          <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          <CancelGame onClick={handleClickCancel} id="Cancel"> Cancel Game </CancelGame>
+        </ContainerRow>
+      }
+
+      { state.game.creator_id._id !== state.user._id && !values.startGame &&
+        <ContainerRow>
+          <p>Waiting for the principal player start the game</p>
+          <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
+          <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          <CancelGame onClick={handleClickCancel} id="Cancel"> Cancel Game </CancelGame>
         </ContainerRow>
       }
 
@@ -912,45 +932,10 @@ function PlayGameMultiple(props) {
               { state.game.creator_id._id === state.user._id && values.finishRound &&
                 <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
               }
-              <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide UNO Cards </ViewUnoCards>
+              <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide All Cards </ViewUnoCards>
+              <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
             </ContainerRow>
-            <ContainerRow>
-              <ContainerColumn>
-                {
-                  Object.entries(values.playersUno).map((e, i) => {
-                    if (e[1].player._id !== state.user._id)
-                      return (
-                        <ContainerRow>
-                          {!(values.finishRound && values.unoWin === i) &&
-                            <PUno style={ values.unoTurn === i ? { border: '3px solid black'} : { border: '0px solid black' }}>{e[1].player.name}</PUno>
-                          }
-                          {values.finishRound && values.unoWin === i &&
-                            <PWinner>{e[1].player.name} is the Winner!!!!</PWinner>
-                          }
-                          {
-                            e[1].cards.map((ele, ind) => {
-                              if (values.viewUnoCards)
-                                return (
-                                  <ContainerRow key={ind + ele.player}>
-                                    <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={55} height={35} />
-                                  </ContainerRow>
-                                )
-                              else
-                                return (
-                                  <ContainerRow key={ind + ele.player}>
-                                    <MiniCard color={'red'} wildColor={null} number={'UNO'} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={55} height={35} />
-                                  </ContainerRow>
-                                )
-                            })
-                          }
-                        </ContainerRow>
-                      )
-                    else
-                      return ('')
-                  })
-                }
-              </ContainerColumn>
-            </ContainerRow>
+
             <ContainerRow>
               <ContainerRow>
                 <ContainerRow>
@@ -981,6 +966,7 @@ function PlayGameMultiple(props) {
                       <ContainerColumn key={ind + ele.player}>
                         <PUnoLit>{ele.name}</PUnoLit>
                         <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                        <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].player.name}</PUnoLit>
                       </ContainerColumn>
                     )
                   else
@@ -988,83 +974,102 @@ function PlayGameMultiple(props) {
                 })}
               </ContainerRow>
             </ContainerRow>
+
             <ContainerRow>
-
-            {
-              Object.entries(values.playersUno).map((e, i) => {
-                if (e[1].player._id === state.user._id)
-                  return (
-                    <ContainerRow>
-
-                      {!(values.finishRound && values.unoWin === i) &&
-                        <PMe style={ values.unoTurn === i ? { border: '3px solid black'} : { border: '0px solid black' }}>{e[1].player.name.split('').map(ele => {
-                          return (
-                            <>
-                              {ele}<br/>
-                            </>
-                          )
-                        })}</PMe>
-                      }
-                      {values.finishRound && values.unoWin === i &&
-                        <PWinner>{e[1].player.name} is the Winner!!!!</PWinner>
-                      }
-                      {e[1].cards.map((ele, ind) => {
-                        return (
-                          <ContainerColumn key={ind}>
-                            <ContainerRow key={ind + ele.player}>
-                              <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
-                            </ContainerRow>
-
-                            { (ele.card.c === 'wild' ||
-                                ele.card.c === values.pile[values.pile.length - 1].card.c ||
-                                ele.card.n === values.pile[values.pile.length - 1].card.n ||
-                                ele.card.c === values.pile[values.pile.length - 1].color) &&
-                                !values.finishRound && values.unoTurn === i &&
-                              <ContainerRow>
-                                <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
-                              </ContainerRow>
-                            }
-
-                            { ele.card.c === 'wild' && !values.finishRound && values.unoTurn === i &&
-                              (
-                              <>
-                              <ContainerRow>
-                                <select id={'color-' + ind} onChange={handleChange} required>
-                                  <option value=""></option>
-                                  <option value="red">red</option>
-                                  <option value="yellow">yellow</option>
-                                  <option value="green">green</option>
-                                  <option value="blue">blue</option>
-                                </select>
-                              </ContainerRow>
-                              </>
+              <ContainerColumn>
+                {
+                  Object.entries(values.playersUno).map((e, i, a) => {
+                    //{console.log('1:', i, '-1:', a.length - 1 - i, 'e', e, 'e arr', a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1])}
+                    if (a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player._id !== state.user._id)
+                      return (
+                        <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
+                          {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
+                            <PUno>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name}</PUno>
+                          }
+                          {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                            <PWinner>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name} is the Winner!!!!</PWinner>
+                          }
+                          {
+                            a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards.map((ele, ind) => {
+                              if (values.viewUnoCards)
+                                return (
+                                  <ContainerRow key={ind + ele.player} id={ind + ele.player}>
+                                    <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={55} height={35} />
+                                  </ContainerRow>
+                                )
+                              else
+                                return (
+                                  <ContainerRow key={ind + ele.player} id={ind + ele.player}>
+                                    <MiniCard color={'red'} wildColor={null} number={'UNO'} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={55} height={35} />
+                                  </ContainerRow>
+                                )
+                            })
+                          }
+                        </ContainerRow>
+                      )
+                    else
+                      return (
+                        <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
+                          {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
+                            <PMe>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name.split('').map(ele => {
+                              return (
+                                <>
+                                  {ele}<br/>
+                                </>
                               )
-                            }
-                          </ContainerColumn>
+                            })}</PMe>
+                          }
+                          {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                            <PWinner>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name} is the Winner!!!!</PWinner>
+                          }
+                          {a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards.map((ele, ind) => {
+                            return (
+                              <ContainerColumn key={ind + ele.player} id={ind + ele.player}>
+                                <ContainerRow>
+                                  <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                                </ContainerRow>
 
-                        )
-                      })}
-                      { !values.finishRound && values.unoTurn === i &&
-                        (
-                          <ContainerColumn>
-                            <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>
-                            <div className="form-check">
-                              <input type="checkbox" className="form-check-input" id="checkUno" onChange={handleChangeCheckUNO} checked={values.checkUno} />
-                              <label className="form-check-label" htmlFor="checkUno">I say UNO!!!!</label>
-                            </div>
-                          </ContainerColumn>
-                        )
-                      }
+                                { (ele.card.c === 'wild' ||
+                                    ele.card.c === values.pile[values.pile.length - 1].card.c ||
+                                    ele.card.n === values.pile[values.pile.length - 1].card.n ||
+                                    ele.card.c === values.pile[values.pile.length - 1].color) &&
+                                    !values.finishRound && values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                                  (<ContainerRow>
+                                    <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
+                                  </ContainerRow>)
+                                }
 
-                    </ContainerRow>
-                    )
-                  else
-                    return ('')
-                })
-              }
-
-
+                                { ele.card.c === 'wild' && !values.finishRound && values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                                  (<ContainerRow>
+                                    <select id={'color-' + ind} onChange={handleChange} required>
+                                      <option value=""></option>
+                                      <option value="red">red</option>
+                                      <option value="yellow">yellow</option>
+                                      <option value="green">green</option>
+                                      <option value="blue">blue</option>
+                                    </select>
+                                  </ContainerRow>)
+                                }
+                              </ContainerColumn>
+                            )
+                          })
+                          }
+                          { !values.finishRound && values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                            (<ContainerColumn>
+                                <PickCard onClick={handleClickPickCard} id="PickCard"> Pick Card </PickCard>
+                                <div className="form-check">
+                                  <input type="checkbox" className="form-check-input" id="checkUno" onChange={handleChangeCheckUNO} checked={values.checkUno} />
+                                  <label className="form-check-label" htmlFor="checkUno">I say UNO!!!!</label>
+                                </div>
+                              </ContainerColumn>)
+                          }
+                        </ContainerRow>
+                      )
+                  })
+                }
+              </ContainerColumn>
             </ContainerRow>
+
           </ContainerColumn>
         )
       }
