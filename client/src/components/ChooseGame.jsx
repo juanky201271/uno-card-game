@@ -29,7 +29,7 @@ const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-i
 `
 const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
 `
-  width: 125px;
+  width: 200px;
   font-size: 10px;
 `
 //const socket = socketIOClient(ENDPOINT)
