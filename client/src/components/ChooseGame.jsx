@@ -19,6 +19,10 @@ const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
   padding: 10px 10px 10px 10px;
 `
+const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column" })
+`
+  padding: 10px 10px 10px 10px;
+`
 const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-items-center align-self-center' })
 `
   margin: 10px 10px 10px 10px;
@@ -124,8 +128,10 @@ function ChooseGame() {
               { !state.game && state.user && ele.players === 'Multiple' &&
                 (<ContainerRow>
                   <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
-                  <p>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</p>
-                  <p>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</p>
+                  <ContainerColumn>
+                    <p>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</p>
+                    <p>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</p>
+                  </ContainerColumn>
                 </ContainerRow>)
               }
             </ContainerRow>

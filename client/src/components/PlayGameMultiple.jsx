@@ -909,8 +909,10 @@ function PlayGameMultiple(props) {
       { state.game.creator_id._id === state.user._id && !values.startGame &&
         <ContainerRow>
           <StartGame onClick={handleClickStartGame}>Start Game</StartGame>
-          <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
-          <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          <ContainerColumn>
+            <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
+            <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          </ContainerColumn>
           <CancelGame onClick={handleClickCancel} id="Cancel"> Cancel Game </CancelGame>
         </ContainerRow>
       }
@@ -918,8 +920,10 @@ function PlayGameMultiple(props) {
       { state.game.creator_id._id !== state.user._id && !values.startGame &&
         <ContainerRow>
           <p>Waiting for the principal player start the game</p>
-          <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
-          <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          <ContainerColumn>
+            <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
+            <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          </ContainerColumn>
           <CancelGame onClick={handleClickCancel} id="Cancel"> Cancel Game </CancelGame>
         </ContainerRow>
       }
