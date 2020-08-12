@@ -247,7 +247,7 @@ const colors = {
 function Card(props) {
 
   const color = colors[props.color]
-  const wildColor = colors[props.wildColor]
+  const wildColor = colors[props.wildColor] || 'white'
   const DivCardExtStyle = { width: props.width + 'px', height: props.height + 'px',
                             border: (props.lastPlay ? '5px solid black' : '1px solid black'), borderRadius: '5px', backgroundColor: wildColor }
   const DivCardExtColorStyle = { width: (props.width - 20).toString() + 'px', height: (props.height - 20).toString() + 'px', backgroundColor: color }
