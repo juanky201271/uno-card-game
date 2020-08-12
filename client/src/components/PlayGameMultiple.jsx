@@ -540,6 +540,11 @@ function PlayGameMultiple(props) {
         pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
         Object.entries(playersUno)[unoTurn][1].pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.player_id.name })
 
+        if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
+          finishRound = true
+          unoWin = unoTurn
+        }
+
         if (aux.n === '+4') {
           if (cards.length === 0) {
             let obj = initCardsAgain(pile)
@@ -589,10 +594,7 @@ function PlayGameMultiple(props) {
       }
 
     } // else
-    if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
-      finishRound = true
-      unoWin = unoTurn
-    }
+
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
     playerPickCard = false
     return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep }
