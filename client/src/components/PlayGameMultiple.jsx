@@ -44,6 +44,14 @@ const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
   width: 125px;
   font-size: 10px;
 `
+const PUnoLitNumber = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
+`
 const PMe = styled.p.attrs({ className: 'text-secondary' })
 `
   font-size: 35px;
@@ -942,40 +950,41 @@ function PlayGameMultiple(props) {
 
             <ContainerRow>
               <ContainerRow>
-                <ContainerRow>
-                {values.pile.map((ele, ind) => {
-                  if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
-                    return(
-                     ele.player === state.user._id ?
-                      (
-                        <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+                <ContainerRow style={{ backgroundColor: 'lightgray' }}>
+                  {values.pile.map((ele, ind) => {
+                    if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
+                      return(
+                       ele.player === state.user._id ?
+                        (
+                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+                        )
+                        :
+                        !ele.player ?
+                        (
+                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
+                        )
+                        :
+                        (
+                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
+                        )
                       )
-                      :
-                      !ele.player ?
-                      (
-                        <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
+                    else
+                      return ('')
+                  })}
+
+                  {values.pile.map((ele, ind) => {
+                    if (ind === values.pile.length - 1)
+                      return (
+                        <ContainerColumn key={ind + ele.player}>
+                          <PUnoLit>{ele.name}</PUnoLit>
+                          <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                          <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].player.name}</PUnoLit>
+                        </ContainerColumn>
                       )
-                      :
-                      (
-                        <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
-                      )
-                    )
-                  else
-                    return ('')
-                })}
+                    else
+                      return ('')
+                  })}
                 </ContainerRow>
-                {values.pile.map((ele, ind) => {
-                  if (ind === values.pile.length - 1)
-                    return (
-                      <ContainerColumn key={ind + ele.player}>
-                        <PUnoLit>{ele.name}</PUnoLit>
-                        <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
-                        <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].player.name}</PUnoLit>
-                      </ContainerColumn>
-                    )
-                  else
-                    return ('')
-                })}
               </ContainerRow>
             </ContainerRow>
 
@@ -987,6 +996,7 @@ function PlayGameMultiple(props) {
                     if (a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player._id !== state.user._id)
                       return (
                         <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
+                          <PUnoLitNumber> {i + 1} </PUnoLitNumber>
                           {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
                             <PUno>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name}</PUno>
                           }
@@ -1014,6 +1024,7 @@ function PlayGameMultiple(props) {
                     else
                       return (
                         <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
+                          <PUnoLitNumber> {i + 1} </PUnoLitNumber>
                           {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
                             <PMe>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.name.split('').map(ele => {
                               return (

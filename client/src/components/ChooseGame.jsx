@@ -109,6 +109,11 @@ function ChooseGame() {
       setState(state => ({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
+    socket.on("cancel", (obj, id, listClients) => {
+      console.log('emit cancel',obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
     socket.on("log out", (obj, id, listClients) => {
       console.log('emit log out', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))

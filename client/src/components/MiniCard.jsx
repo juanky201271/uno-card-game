@@ -52,7 +52,7 @@ function MiniCard(props) {
           (<DivCardLitNumberPile>{'Skip'}</DivCardLitNumberPile>)
         }
         {props.number === 'c' &&
-          (<DivCardLitNumberPile>{'Col.'}</DivCardLitNumberPile>)
+          (<DivCardLitNumberPile>{'Wild'}</DivCardLitNumberPile>)
         }
       </DivPile>
     </ContainerColumn>

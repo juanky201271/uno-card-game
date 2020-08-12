@@ -90,9 +90,9 @@ io.on("connection", (socket) => {
     console.log(message, listClients)
   })
   socket.on('cancel', function (obj, game_id) {
-    let message = "<" + socket.id + "> cancel the game"
+    let message = "<" + socket.id + "> cancel"
     listClients[socket.id] = { user_id: obj.user_id }
-    io.sockets.in("game-" + game_id).emit('cancel', obj, socket.id, listClients, message)
+    io.sockets.emit('cancel', obj, socket.id, listClients, message)
     console.log(message, listClients)
   })
   socket.on('sincro view', function (obj, game_id) {
