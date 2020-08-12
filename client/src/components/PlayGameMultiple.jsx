@@ -629,6 +629,25 @@ function PlayGameMultiple(props) {
       }
     }
 
+    if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
+      finishRound = true
+      unoWin = unoTurn
+    }
+    if (Object.entries(playersUno)[unoTurn][1].cards.length === 1 && !checkUno) {
+      if (cards.length === 0) {
+        let obj = initCardsAgain(pile)
+        cards = obj.cards
+        pile = obj.pile
+      }
+      Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+      if (cards.length === 0) {
+        let obj = initCardsAgain(pile)
+        cards = obj.cards
+        pile = obj.pile
+      }
+      Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+    }
+
     if (selectedCard.n === '+4') {
       if (cards.length === 0) {
         let obj = initCardsAgain(pile)
@@ -673,26 +692,6 @@ function PlayGameMultiple(props) {
       nextTurnStep = nextTurnStep * (-1)
     } else if (selectedCard.n === 's') {
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-    }
-
-    if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
-      finishRound = true
-      unoWin = unoTurn
-    }
-
-    if (Object.entries(playersUno)[unoTurn][1].cards.length === 1 && !checkUno) {
-      if (cards.length === 0) {
-        let obj = initCardsAgain(pile)
-        cards = obj.cards
-        pile = obj.pile
-      }
-      Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-      if (cards.length === 0) {
-        let obj = initCardsAgain(pile)
-        cards = obj.cards
-        pile = obj.pile
-      }
-      Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
     }
 
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
