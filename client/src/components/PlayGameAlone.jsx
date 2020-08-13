@@ -472,7 +472,7 @@ function PlayGameAlone (props) {
 
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
-    let { unoTurn, playerCards, playerCardsPile,
+    let { unoTurn, playerCards, playerCardsPile, playerPickCard,
           cards, pile, finishRound, numberPlay, unoWin, checkUNO } = values
     if (finishRound) return
     if (unoTurn) return
@@ -529,9 +529,10 @@ function PlayGameAlone (props) {
       playerCards.push({ card: cards.pop(), numberPlay: numberPlay })
     }
 
+    playerPickCard = false
     setValues(values => ({ ...values, unoTurn: unoTurn,
                           playerCards: playerCards,
-                          playerCardsPile: playerCardsPile,
+                          playerCardsPile: playerCardsPile, playerPickCard: playerPickCard,
                           cards: cards, pile: pile, finishRound: finishRound, numberPlay: numberPlay, unoWin: unoWin, checkUNO: false }))
 
   }
