@@ -704,7 +704,7 @@ function PlayGameAlone (props) {
           </ContainerRow>
         </ContainerRow>
         <ContainerRow>
-          {!values.finishRound &&
+          {!(values.finishRound && !values.unoWin) &&
             <PMe>{state.player.player_id.name.split('').map(ele => {
               return (
                 <>
