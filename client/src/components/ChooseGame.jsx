@@ -131,7 +131,7 @@ function ChooseGame() {
         listGames = games.data.data.map((ele, ind) => {
           return (
             <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
-              <PGame>{ele.keyWord} - {ele.players} - cards:{ele.cards} - {ele.creator_id.name}</PGame>
+              <PGame>Description: {ele.keyWord} - Principal Player: {ele.creator_id.name}</PGame>
               { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
                 (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
               }

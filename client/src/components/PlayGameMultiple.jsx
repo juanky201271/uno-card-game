@@ -155,7 +155,7 @@ function PlayGameMultiple(props) {
 
       return ({unoTurn: -1, playerPickCard: false, startGame: false, nextTurnStep: 1,
               cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: -1,
-              numCards: Number(state.game.cards), round: state.game.curr_round,
+              numCards: Number(state.game.cards), round: state.game.curr_round, mySocket: null,
               viewUnoCards: false, playersUno: {}, cardIndex: -1, wildColor: null, pickCard: false, checkUno: false })
     } else {
       return ({})
@@ -183,9 +183,6 @@ function PlayGameMultiple(props) {
   }
 
   const play = () => {
-    if (state.game.creator_id._id !== state.user._id) return
-    if (!values.startGame) return
-
     let {playersUno,
         unoTurn,
         nextTurnStep,
@@ -202,8 +199,11 @@ function PlayGameMultiple(props) {
         checkUno,
         startGame,
         round,
-        viewUnoCards} = values
+        viewUnoCards,
+        mySocket} = values
 
+    if (state.game.creator_id._id !== state.user._id) return
+    if (!values.startGame) return
     if (values.finishRound) return
 
     //console.log('uno turn', unoTurn)
@@ -234,7 +234,7 @@ function PlayGameMultiple(props) {
       }
       playersUno['UNO'] = { player: state.uno.player_id, cards: auxCards, pile: [], uno: true }
       unoTurn = Object.entries(playersUno).length - 1
-      //console.log('players UNO antes', playersUno, unoTurn, pile)
+      console.log('i am in', Object.entries(playersUno).filter(ele => ele[1].player._id === state.user._id).length === 1, playersUno)
       if (pile.length === 0) {
         while (true) {
           let aux = cards.pop()
@@ -833,6 +833,7 @@ function PlayGameMultiple(props) {
       console.log('emit game',obj, id, listClients)
       api.getPlayersByGameId(obj.game_id).then(players => {
         setState(state => ({ ...state, players: players.data.data, listUserGame: listClients }))
+        setValues(values => ({ ...values, mySocket: socket.id, playersUno: (!values.playersUno ? {} : values.playersUno) }))
       })
       .catch(error => {
         console.log(error)
@@ -847,14 +848,14 @@ function PlayGameMultiple(props) {
     socket.on("start", (obj, id, listClients) => {
       console.log('emit start', obj, id, listClients)
       setState(state => ({ ...state, listUserGame: listClients }))
-      setValues(values => ({ ...values, startGame: true }))
+      setValues(values => ({ ...values, startGame: true, mySocket: socket.id }))
       setResponse(obj.message)
     })
     socket.on("sincro", (obj, id, listClients, message) => {
       if (state.game.creator_id._id !== state.user._id) {
         console.log('emit sincro', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
-        setValues(values => ({ ...values, ...obj }))
+        setValues(values => ({ ...values, ...obj, mySocket: socket.id }))
         setResponse(message)
       }
     })
@@ -892,7 +893,7 @@ function PlayGameMultiple(props) {
     })
     socket.on("sincro view", (obj, id, listClients, message) => {
       //if (state.game.creator_id._id !== state.user._id) {
-        console.log('emit sincro', obj, id, listClients)
+        console.log('emit sincro view', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
         setResponse(message)
@@ -937,7 +938,18 @@ function PlayGameMultiple(props) {
         </ContainerRow>
       }
 
-      { values.startGame && values.playersUno &&
+      { values.startGame && !(Object.entries(values.playersUno).length > 0 && values.mySocket && values.playersUno[values.mySocket] ? values.playersUno[values.mySocket].player._id === state.user._id : false) &&
+        <ContainerRow>
+          <p>The play is running now. Waiting for the principal player start a new round</p>
+          <ContainerColumn>
+            <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
+            <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
+          </ContainerColumn>
+          <CancelGame onClick={handleClickCancel} id="Cancel"> Cancel Game </CancelGame>
+        </ContainerRow>
+      }
+
+      { values.startGame && (Object.entries(values.playersUno).length > 0 && values.mySocket && values.playersUno[values.mySocket] ? values.playersUno[values.mySocket].player._id === state.user._id : false) &&
         (
           <ContainerColumn>
             <ContainerRow>

@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
     obj.message = "<" + socket.id + "> " + obj.message
     listClients[socket.id] = { user_id: obj.user_id }
     io.sockets.emit('log in', obj, socket.id, listClients)
-    console.log(obj.message, listClients)
+    console.log(obj.message)
   })
   socket.on('game', function (obj) {
     obj.message = "<" + socket.id + "> " + obj.message
@@ -58,27 +58,27 @@ io.on("connection", (socket) => {
     socket.join("game-" + obj.game_id)
     //io.sockets.in("game-" + obj.game_id).emit('game', obj, socket.id, listClients)
     io.sockets.emit('game', obj, socket.id, listClients)
-    console.log(obj.message, listClients)
+    console.log(obj.message)
   })
   socket.on('start', function (obj) {
     obj.message = "<" + socket.id + "> " + obj.message
     io.sockets.in("game-" + obj.game_id).emit('start', obj, socket.id, listClients)
-    console.log(obj.message, listClients)
+    console.log(obj.message)
   })
   socket.on('sincro', function (obj, game_id) {
     let message = "<" + socket.id + "> sending data to sincronize"
     io.sockets.in("game-" + game_id).emit('sincro', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on('pile card', function (obj, game_id) {
     let message = "<" + socket.id + "> play a card"
     io.sockets.in("game-" + game_id).emit('pile card', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on('pick card', function (obj, game_id) {
     let message = "<" + socket.id + "> pick a card"
     io.sockets.in("game-" + game_id).emit('pick card', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on('cancel game', function (obj, game_id) {
     let message = "<" + socket.id + "> cancel the game"
@@ -87,18 +87,18 @@ io.on("connection", (socket) => {
       if (ele[1].game_id === game_id) listClients[ele[0]] = { user_id: ele[1].user_id }
     })
     io.sockets.in("game-" + game_id).emit('cancel game', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on('cancel', function (obj, game_id) {
     let message = "<" + socket.id + "> cancel"
     listClients[socket.id] = { user_id: obj.user_id }
     io.sockets.emit('cancel', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on('sincro view', function (obj, game_id) {
     let message = "<" + socket.id + "> sending view cards"
     io.sockets.in("game-" + game_id).emit('sincro view', obj, socket.id, listClients, message)
-    console.log(message, listClients)
+    console.log(message)
   })
   socket.on("disconnect", () => {
     console.log("Client disconnected " + socket.id)

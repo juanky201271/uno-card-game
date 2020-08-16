@@ -36,6 +36,11 @@ const PUno = styled.p.attrs({ className: 'text-secondary' })
   font-size: 35px;
   text-shadow: 2px 2px 2px #000000;
 `
+const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  width: 125px;
+  font-size: 10px;
+`
 const PMe = styled.p.attrs({ className: 'text-secondary' })
 `
   font-size: 35px;
@@ -641,6 +646,7 @@ function PlayGameAlone (props) {
           <CancelGame onClick={handleClickCancelGame} id="CancelGame"> Cancel Game </CancelGame>
           <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
           <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide UNO Cards </ViewUnoCards>
+          <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
         </ContainerRow>
         <ContainerRow>
           <>
@@ -669,38 +675,39 @@ function PlayGameAlone (props) {
         </ContainerRow>
         <ContainerRow>
           <ContainerRow>
-            <ContainerRow>
-            {values.pile.map((ele, ind) => {
-              if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
-                return(
-                 ele.player === state.player._id ?
-                  (
-                    <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+            <ContainerRow style={{ backgroundColor: 'lightgray' }}>
+              {values.pile.map((ele, ind) => {
+                if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
+                  return(
+                   ele.player === state.player._id ?
+                    (
+                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+                    )
+                    :
+                    ele.player === state.uno._id ?
+                    (
+                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
+                    )
+                    :
+                    (
+                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
+                    )
                   )
-                  :
-                  ele.player === state.uno._id ?
-                  (
-                    <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
+                else
+                  return ('')
+              })}
+
+              {values.pile.map((ele, ind) => {
+                if (ind === values.pile.length - 1)
+                  return (
+                    <ContainerRow key={ind + ele.player}>
+                      <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                    </ContainerRow>
                   )
-                  :
-                  (
-                    <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
-                  )
-                )
-              else
-                return ('')
-            })}
+                else
+                  return ('')
+              })}
             </ContainerRow>
-            {values.pile.map((ele, ind) => {
-              if (ind === values.pile.length - 1)
-                return (
-                  <ContainerRow key={ind + ele.player}>
-                    <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
-                  </ContainerRow>
-                )
-              else
-                return ('')
-            })}
           </ContainerRow>
         </ContainerRow>
         <ContainerRow>
