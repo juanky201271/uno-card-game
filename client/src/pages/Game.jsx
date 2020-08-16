@@ -18,7 +18,7 @@ function Game (props) {
 
   const [ state, setState ] = useContext(GameContext)
 
-  console.log('game', state)
+  //console.log('game', state)
   return (
     <WrapperGen>
         <Title>Game {state.game ? ' - ' + state.game.keyWord : '' }</Title>

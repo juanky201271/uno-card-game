@@ -15,6 +15,10 @@ const JoinGame = styled.button.attrs({ className: 'btn btn-secondary d-flex just
 `
   margin: 10px 10px 10px 10px;
 `
+const DeleteGame = styled.button.attrs({ className: 'btn btn-dark d-flex justify-content-center align-items-center align-self-center' })
+`
+  margin: 10px 10px 10px 10px;
+`
 const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
 `
   padding: 10px 10px 10px 10px;
@@ -44,6 +48,17 @@ function ChooseGame() {
   const handleClickAddGame = (event) => {
     if (event) event.preventDefault()
     setValues(values => ({ ...values, addGame: true} ))
+  }
+
+  const handleClickDeleteGame = (event) => {
+    if (event) event.preventDefault()
+    api.deleteGameById(event.target.id).then(game => {
+      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+      //console.log('delete', game)
+    })
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   const handleClickJoinGame = (event) => {
@@ -100,22 +115,22 @@ function ChooseGame() {
 
   useEffect(() => {
     socket.on("log in", (obj, id, listClients) => {
-      console.log('emit log in', obj, id, listClients)
+      //console.log('emit log in', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
     socket.on("game", (obj, id, listClients) => {
-      console.log('emit game',obj, id, listClients)
+      //console.log('emit game',obj, id, listClients)
       setState(state => ({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
     socket.on("cancel", (obj, id, listClients) => {
-      console.log('emit cancel',obj, id, listClients)
+      //console.log('emit cancel',obj, id, listClients)
       setState(state => ({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
     socket.on("log out", (obj, id, listClients) => {
-      console.log('emit log out', obj, id, listClients)
+      //console.log('emit log out', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
@@ -133,7 +148,10 @@ function ChooseGame() {
             <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
               <PGame>Description: {ele.keyWord} - Principal Player: {ele.creator_id.name}</PGame>
               { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
-                (<JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>)
+                (<ContainerRow>
+                  <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
+                  <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                </ContainerRow>)
               }
               { !state.game && state.user && ele.players === 'Multiple' &&
                 (<ContainerRow>
@@ -142,6 +160,11 @@ function ChooseGame() {
                     <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
                     <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                   </ContainerColumn>
+                  { state.user._id === ele.creator_id._id &&
+                    (
+                      <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                    )
+                  }
                 </ContainerRow>)
               }
             </ContainerRow>
@@ -159,7 +182,7 @@ function ChooseGame() {
 
   }, [state])
 
-  console.log('game choose', values, state)
+  //console.log('game choose', values, state)
   return (
     <Container>
 

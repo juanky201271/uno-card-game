@@ -31,7 +31,6 @@ function LoginForm() {
 
   const addGame = async () => {
     if (!values.players || !values.cards || !values.keyWord) return
-    //console.log(values)
 
     const payload = { creator_id: state.user._id, winner_id: null, keyWord: values.keyWord,
                       players: values.players, cards: values.cards, curr_round: 0,
@@ -70,7 +69,7 @@ function LoginForm() {
     })
   }
 
-  console.log('form game', values, state)
+  //console.log('form game', values, state)
   return (
     <ContainerExt>
       { !state.game && state.user && !values.done &&

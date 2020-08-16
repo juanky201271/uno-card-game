@@ -234,7 +234,6 @@ function PlayGameMultiple(props) {
       }
       playersUno['UNO'] = { player: state.uno.player_id, cards: auxCards, pile: [], uno: true }
       unoTurn = Object.entries(playersUno).length - 1
-      console.log('i am in', Object.entries(playersUno).filter(ele => ele[1].player._id === state.user._id).length === 1, playersUno)
       if (pile.length === 0) {
         while (true) {
           let aux = cards.pop()
@@ -419,7 +418,7 @@ function PlayGameMultiple(props) {
           rankingNumber[ele.card.n.toString()]++
         }
       }
-      console.log('actual', nextColor, nextNumber)
+      //console.log('actual', nextColor, nextNumber)
       //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
       let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
       let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
@@ -453,8 +452,8 @@ function PlayGameMultiple(props) {
         if (exit) break
       }
 
-      console.log('color', haveColorIndex)
-      console.log('number', haveNumberIndex)
+      //console.log('color', haveColorIndex)
+      //console.log('number', haveNumberIndex)
 
       if (Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.length <= 3) {
         if (haveColorD2Index !== null) {
@@ -622,7 +621,7 @@ function PlayGameMultiple(props) {
       Object.entries(playersUno)[unoTurn][1].pile.push({ card: selectedCard, player: Object.entries(playersUno)[unoTurn][1].player._id, color: wildColor, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].player.name })
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
-        console.log('no coincide color o numero')
+        //console.log('no coincide color o numero')
         return
       } else {
         selectedCard = Object.entries(playersUno)[unoTurn][1].cards.splice(cardIndex, 1)[0].card
@@ -712,7 +711,7 @@ function PlayGameMultiple(props) {
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
-    console.log('pick', nextColor, nextNumber)
+    //console.log('pick', nextColor, nextNumber)
 
     let iCanPlay = false
     Object.entries(playersUno)[unoTurn][1].cards.forEach((ele, ind) => {
@@ -758,7 +757,7 @@ function PlayGameMultiple(props) {
       playerPickCard = false
     }
 
-    console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
+    //console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
 
     //setValues(values => ({ ...values, cards: cards, pile: pile,
     //                                  playerPickCard: playerPickCard, unoTurn:unoTurn, numberPlay: numberPlay }))
@@ -825,35 +824,35 @@ function PlayGameMultiple(props) {
 
   useEffect(() => {
     socket.on("log in", (obj, id, listClients) => {
-      console.log('emit log in', obj, id, listClients)
+     //console.log('emit log in', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
       setResponse(obj.message)
     })
     socket.on("game", (obj, id, listClients) => {
-      console.log('emit game',obj, id, listClients)
+     //console.log('emit game',obj, id, listClients)
       api.getPlayersByGameId(obj.game_id).then(players => {
         setState(state => ({ ...state, players: players.data.data, listUserGame: listClients }))
         setValues(values => ({ ...values, mySocket: socket.id, playersUno: (!values.playersUno ? {} : values.playersUno) }))
       })
       .catch(error => {
-        console.log(error)
+       //console.log(error)
       })
       setResponse(obj.message)
     })
     socket.on("log out", (obj, id, listClients) => {
-      console.log('emit log out', obj, id, listClients)
+     //console.log('emit log out', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
       setResponse(obj.message)
     })
     socket.on("start", (obj, id, listClients) => {
-      console.log('emit start', obj, id, listClients)
+     //console.log('emit start', obj, id, listClients)
       setState(state => ({ ...state, listUserGame: listClients }))
       setValues(values => ({ ...values, startGame: true, mySocket: socket.id }))
       setResponse(obj.message)
     })
     socket.on("sincro", (obj, id, listClients, message) => {
       if (state.game.creator_id._id !== state.user._id) {
-        console.log('emit sincro', obj, id, listClients)
+       //console.log('emit sincro', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj, mySocket: socket.id }))
         setResponse(message)
@@ -861,7 +860,7 @@ function PlayGameMultiple(props) {
     })
     socket.on("pile card", (obj, id, listClients, message) => {
       if (state.game.creator_id._id === state.user._id) {
-        console.log('emit pile card', obj, id, listClients)
+       //console.log('emit pile card', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
         setResponse(message)
@@ -869,7 +868,7 @@ function PlayGameMultiple(props) {
     })
     socket.on("pick card", (obj, id, listClients, message) => {
       if (state.game.creator_id._id === state.user._id) {
-        console.log('emit pick card', obj, id, listClients)
+       //console.log('emit pick card', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
         setResponse(message)
@@ -877,13 +876,13 @@ function PlayGameMultiple(props) {
     })
     socket.on("cancel game", (obj, id, listClients, message) => {
       //if (state.game.creator_id._id === state.user._id) {
-        console.log('emit cancel', obj, id, listClients)
+       //console.log('emit cancel', obj, id, listClients)
         setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
         setResponse(message)
       //}
     })
     socket.on("cancel", (obj, id, listClients, message) => {
-      console.log('emit cancel', obj, id, listClients)
+     //console.log('emit cancel', obj, id, listClients)
       if (obj.user_id === state.user._id) {
         setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
       } else {
@@ -893,7 +892,7 @@ function PlayGameMultiple(props) {
     })
     socket.on("sincro view", (obj, id, listClients, message) => {
       //if (state.game.creator_id._id !== state.user._id) {
-        console.log('emit sincro view', obj, id, listClients)
+       //console.log('emit sincro view', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
         setResponse(message)
@@ -905,11 +904,11 @@ function PlayGameMultiple(props) {
   }, [])
 
   useEffect(() => {
-    console.log('uno Play')
+   //console.log('uno Play')
     play(state.game.curr_round + 1)
   })
 
-  console.log('play multiplayer game render', state, values)
+ //console.log('play multiplayer game render', state, values)
   return (
     <WrapperGen>
       <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>

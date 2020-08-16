@@ -291,7 +291,7 @@ function PlayGameAlone (props) {
             rankingNumber[ele.card.n.toString()]++
           }
         }
-        console.log('actual', nextColor, nextNumber)
+        //console.log('actual', nextColor, nextNumber)
         //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
         let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
         let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
@@ -325,8 +325,8 @@ function PlayGameAlone (props) {
           if (exit) break
         }
 
-        console.log('color', haveColorIndex)
-        console.log('number', haveNumberIndex)
+        //console.log('color', haveColorIndex)
+        //console.log('number', haveNumberIndex)
 
 
         if (playerCards.length <= 3) {
@@ -492,7 +492,7 @@ function PlayGameAlone (props) {
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
     let selectedCard = playerCards[event.target.id].card
-    console.log('play card', selectedCard)
+    //console.log('play card', selectedCard)
 
     if (selectedCard.n === 'c' || selectedCard.n === '+4') {
       let inputColor = document.getElementById('color-' + event.target.id).value
@@ -502,7 +502,7 @@ function PlayGameAlone (props) {
       unoTurn = true
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
-        console.log('no coincide color o numero')
+        //console.log('no coincide color o numero')
         return
       } else {
         selectedCard = playerCards.splice(event.target.id, 1)[0].card
@@ -558,7 +558,7 @@ function PlayGameAlone (props) {
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
-    console.log('pick', nextColor, nextNumber)
+    //console.log('pick', nextColor, nextNumber)
 
     let iCanPlay = false
     playerCards.forEach((ele, ind) => {
@@ -604,7 +604,7 @@ function PlayGameAlone (props) {
       playerPickCard = false
     }
 
-    console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
+    //console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
 
     setValues(values => ({ ...values, playerCards: playerCards, cards: cards, pile: pile,
                                       playerPickCard: playerPickCard, unoTurn:unoTurn, numberPlay: numberPlay }))
@@ -634,11 +634,11 @@ function PlayGameAlone (props) {
   const [ values, setValues ] = useState(init())
 
   useEffect(() => {
-    console.log('uno Play')
+    //console.log('uno Play')
     unoPlay(state.game.curr_round + 1)
   })
 
-  console.log('play game render', state, values)
+  //console.log('play game render', state, values)
   return (
     <WrapperGen>
       <ContainerColumn>

@@ -54,7 +54,7 @@ function LoginForm() {
 
   }
 
-  console.log('login form', values, state)
+  //console.log('login form', values, state)
   return (
     <ContainerExt>
       { !values.user &&
