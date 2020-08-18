@@ -198,7 +198,7 @@ function ChooseGame() {
 
   }, [state])
 
-  console.log('game choose', values, state)
+  //console.log('game choose', values, state)
   return (
     <Container>
 
