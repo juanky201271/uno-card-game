@@ -152,7 +152,7 @@ function PlayGameAlone (props) {
             unoCards: [], playerCards: [],
             unoCardsPile: [], playerCardsPile: [], playerPickCard: false,
             cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: false,
-            numCards: Number(state.game.cards), round: state.game.curr_round, viewUnoCards: false, checkUNO: false })
+            numCards: Number(state.game.cards), viewUnoCards: false, checkUNO: false })
   }
 
   const initCardsAgain = (pile) => {
@@ -175,7 +175,7 @@ function PlayGameAlone (props) {
     return { cards: cards, pile: pileAux }
   }
 
-  const unoPlay = (round) => {
+  const unoPlay = () => {
     let { unoTurn, unoCards, unoCardsPile, playerCards,
           cards, pile, numCards, playerPickCard, finishRound, numberPlay, unoWin } = values
     if (finishRound) return
@@ -484,6 +484,7 @@ function PlayGameAlone (props) {
   }
 
   const unoFinishWin = (unoWin, cards) => {
+    let game = state.game
     let t = 0
     for (let i = 0; i < cards.length; i++) {
       t += Number(value[cards[i].card.n.toString()])
@@ -494,18 +495,27 @@ function PlayGameAlone (props) {
     } else {
       player_id = state.player._id
     }
+    game.curr_round++
     api.getPlayerById(player_id).then(player => {
       //console.log('get', player.data.data)
       let payload = { score: player.data.data[0].score + t }
       api.updatePlayerById(player_id, payload).then(player2 => {
         //console.log('update', player2.data.data)
-        player.data.data[0] = { ...player.data.data[0], score: player2.data.data.score }
-        //console.log('chapu', player.data.data[0])
-        if (unoWin) {
-          setState(state => ({ ...state, uno: player.data.data[0] }))
-        } else {
-          setState(state => ({ ...state, player: player.data.data[0] }))
-        }
+
+        let payload2 = { curr_round: game.curr_round }
+        api.updateGameById(game._id, payload2).then(game2 => {
+          player.data.data[0] = { ...player.data.data[0], score: player2.data.data.score }
+          //console.log('chapu', player.data.data[0])
+          if (unoWin) {
+            setState(state => ({ ...state, uno: player.data.data[0], game: game }))
+          } else {
+            setState(state => ({ ...state, player: player.data.data[0], game: game }))
+          }
+        })
+        .catch(error => {
+          console.log(error)
+        })
+
       })
       .catch(error => {
         console.log(error)
@@ -677,7 +687,7 @@ function PlayGameAlone (props) {
 
   useEffect(() => {
     //console.log('uno Play')
-    unoPlay(state.game.curr_round + 1)
+    unoPlay()
   })
 
   //console.log('play game render', state, values)
@@ -688,7 +698,10 @@ function PlayGameAlone (props) {
           <CancelGame onClick={handleClickCancelGame} id="CancelGame"> Cancel Game </CancelGame>
           <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
           <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide UNO Cards </ViewUnoCards>
-          <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
+          <ContainerColumn>
+            <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
+            <PUnoLit> # Round: {state.game.curr_round}</PUnoLit>
+          </ContainerColumn>
         </ContainerRow>
         <ContainerRow>
           <>

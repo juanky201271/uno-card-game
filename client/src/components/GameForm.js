@@ -5,14 +5,22 @@ import { GameContext } from './GameContext'
 
 const Container = styled.div.attrs({ className: "form-group" })
 `
-  padding: 5px;
+  padding: 5px 5px 5px 5px;
 `
 const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-content-end" })
 `
-  padding: 2px;
+  padding: 2px 2px 2px 2px;
 `
 const LabelRed = styled.label.attrs({ className: "text-danger" })
 ``
+const ContainerRow = styled.div.attrs({ className: "d-flex flex-row" })
+`
+  padding: 5px 5px 5px 5px;
+`
+const Button = styled.button.attrs({ })
+`
+  margin: 5px 5px 5px 5px;
+`
 
 function LoginForm() {
 
@@ -24,6 +32,11 @@ function LoginForm() {
     addGame()
   }
 
+  const handleClickCancel = (event) => {
+    setValues(values => ({ players: 'Alone', cards: '7' }))
+    setState(state => ({ ...state, addGame: false }))
+  }
+
   const handleChange = (event) => {
     event.persist()
     setValues(values => ({ ...values, [event.target.id]: event.target.value}))
@@ -33,7 +46,7 @@ function LoginForm() {
     if (!values.players || !values.cards || !values.keyWord) return
 
     const payload = { creator_id: state.user._id, winner_id: null, keyWord: values.keyWord,
-                      players: values.players, cards: values.cards, curr_round: 0,
+                      players: values.players, cards: values.cards, curr_round: 1,
                       curr_cards: [], curr_cards_pile: [], curr_score: 0,
                       curr_user_id: null, curr_dealer_id: null }
     await api.createGame(payload).then(async game => {
@@ -93,7 +106,10 @@ function LoginForm() {
              <label>Key word:</label>
              <input type="text" className="form-control" id="keyWord" onChange={handleChange} value={values ? values.keyWord : ''} required />
            </Container>
-           <button type="submit" className="btn btn-secondary">Submit</button>
+           <ContainerRow>
+             <Button type="submit" className="btn btn-dark">Submit</Button>
+             <Button type="button" className="btn btn-secondary" onClick={handleClickCancel}>Cancel</Button>
+           </ContainerRow>
           </form>
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
         </>)

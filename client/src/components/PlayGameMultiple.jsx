@@ -161,7 +161,7 @@ function PlayGameMultiple(props) {
 
       return ({unoTurn: -1, playerPickCard: false, startGame: false, nextTurnStep: 1,
               cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: -1,
-              numCards: Number(state.game.cards), round: state.game.curr_round, mySocket: null,
+              numCards: Number(state.game.cards), mySocket: null, round: state.game.curr_round,
               viewUnoCards: false, playersUno: {}, cardIndex: -1, wildColor: null, pickCard: false, checkUno: false })
     } else {
       return ({})
@@ -204,15 +204,15 @@ function PlayGameMultiple(props) {
         pickCard,
         checkUno,
         startGame,
-        round,
         viewUnoCards,
-        mySocket} = values
+        mySocket,
+        round} = values
 
     if (state.game.creator_id._id !== state.user._id) return
     if (!values.startGame) return
     socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      round: round, viewUnoCards: viewUnoCards }, state.game._id)
+      viewUnoCards: viewUnoCards }, state.game._id)
     if (values.finishRound) return
 
     //console.log('uno turn', unoTurn)
@@ -259,7 +259,7 @@ function PlayGameMultiple(props) {
 
     let obj = {}
     if (unoTurn === Object.entries(playersUno).length - 1) {
-      obj = unoPlay({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep })
+      obj = unoPlay({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, round })
       playersUno = obj.playersUno
       unoTurn = obj.unoTurn
       nextTurnStep = obj.nextTurnStep
@@ -270,10 +270,11 @@ function PlayGameMultiple(props) {
       cards = obj.cards
       pile = obj.pile
       checkUno = false
+      round = obj.round
     } else {
       obj = {}
       if (cardIndex > -1) {
-        obj = pileACard({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, cardIndex, wildColor, checkUno })
+        obj = pileACard({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, cardIndex, wildColor, checkUno, round })
         playersUno = obj.playersUno
         unoTurn = obj.unoTurn
         nextTurnStep = obj.nextTurnStep
@@ -286,6 +287,7 @@ function PlayGameMultiple(props) {
         cardIndex = -1
         wildColor = null
         checkUno = false
+        round = obj.round
       } else if (pickCard) {
         obj = pickACard({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep })
         playersUno = obj.playersUno
@@ -303,10 +305,10 @@ function PlayGameMultiple(props) {
         if (firstTime) {
           setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-            round: round, viewUnoCards: viewUnoCards }))
+            viewUnoCards: viewUnoCards, round: round }))
           socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-            round: round, viewUnoCards: viewUnoCards }, state.game._id)
+            viewUnoCards: viewUnoCards, round: round }, state.game._id)
         }
         return
       }
@@ -314,10 +316,10 @@ function PlayGameMultiple(props) {
 
     setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      round: round, viewUnoCards: viewUnoCards }))
+      viewUnoCards: viewUnoCards, round: round }))
     socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      round: round, viewUnoCards: viewUnoCards }, state.game._id)
+      viewUnoCards: viewUnoCards, round: round }, state.game._id)
   }
 
   const nextPlayer = (unoTurn, nextTurnStep, length) => {
@@ -331,7 +333,7 @@ function PlayGameMultiple(props) {
   }
 
   const unoPlay = (obj) => {
-    let { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep } = obj
+    let { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, round } = obj
 
     if (finishRound) return obj
     if (unoTurn < Object.entries(playersUno).length - 1) return obj
@@ -552,6 +554,7 @@ function PlayGameMultiple(props) {
           finishRound = true
           unoWin = unoTurn
           playersUno = unoFinishWin(unoWin, playersUno)
+          round++
         }
 
         if (aux.n === '+4') {
@@ -606,11 +609,11 @@ function PlayGameMultiple(props) {
 
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
     playerPickCard = false
-    return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep }
+    return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep, round }
   }
 
   const pileACard = (obj) => {
-    let { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, cardIndex, wildColor, checkUno } = obj
+    let { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep, cardIndex, wildColor, checkUno, round } = obj
     if (finishRound) return obj
     if (unoTurn === Object.entries(playersUno).length - 1) return obj
 
@@ -644,6 +647,7 @@ function PlayGameMultiple(props) {
       finishRound = true
       unoWin = unoTurn
       playersUno = unoFinishWin(unoWin, playersUno)
+      round++
     }
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 1 && !checkUno) {
       if (cards.length === 0) {
@@ -709,7 +713,7 @@ function PlayGameMultiple(props) {
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
     playerPickCard = false
 
-    return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep, cardIndex, wildColor }
+    return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep, cardIndex, wildColor, round }
   }
 
   const pickACard = (obj) => {
@@ -776,12 +780,14 @@ function PlayGameMultiple(props) {
   }
 
   const unoFinishWin = (unoWin, playersUno) => {
+    let game = state.game
     let t = 0
     for (let i = 0; i < Object.entries(playersUno).length; i++) {
       for (let j = 0; j < Object.entries(playersUno)[i][1].cards.length; j++) {
         t += Number(value[Object.entries(playersUno)[i][1].cards[j].card.n.toString()])
       }
     }
+    game.curr_round++
     let player_id = Object.entries(playersUno)[unoWin][1].player._id
     api.getPlayerById(player_id).then(player => {
       //console.log('get', player.data.data)
@@ -789,8 +795,16 @@ function PlayGameMultiple(props) {
       api.updatePlayerById(player_id, payload).then(player2 => {
         //console.log('update', player2.data.data)
         api.getPlayersByGameId(state.game._id).then(players => {
-          playersUno[Object.entries(playersUno)[unoWin][0]].player.score = player.data.data[0].score + t
-          setState(state => ({ ...state, players: players.data.data }))
+
+          let payload2 = { curr_round: game.curr_round }
+          api.updateGameById(game._id, payload2).then(game2 => {
+            playersUno[Object.entries(playersUno)[unoWin][0]].player.score = player.data.data[0].score + t
+            setState(state => ({ ...state, players: players.data.data, game: game }))
+          })
+          .catch(error => {
+            console.log(error)
+          })
+
         })
         .catch(error => {
           console.log(error)
@@ -947,7 +961,7 @@ function PlayGameMultiple(props) {
 
   useEffect(() => {
    //console.log('uno Play')
-    play(state.game.curr_round + 1)
+    play(1)
   })
 
  //console.log('play multiplayer game render', state, values)
@@ -999,7 +1013,10 @@ function PlayGameMultiple(props) {
                 <NewGame onClick={handleClickNewGame} id="NewGame"> New Game </NewGame>
               }
               <ViewUnoCards onClick={handleViewUnoCards} id="ViewUnoCards"> View / Hide All Cards </ViewUnoCards>
-              <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
+              <ContainerColumn>
+                <PUnoLit> # Cards left: {values.cards.length}</PUnoLit>
+                <PUnoLit> # Round: {values.round}</PUnoLit>
+              </ContainerColumn>
             </ContainerRow>
 
             <ContainerRow>
