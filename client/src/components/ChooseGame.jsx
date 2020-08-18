@@ -76,17 +76,17 @@ function ChooseGame() {
         for (let i = 0; i < players.data.data.length; i++) {
           if (players.data.data[i].uno)
             uno = players.data.data[i]
-          else if (game.data.data[0].creator_id._id === players.data.data[i].player_id._id) {
-            if (state.user._id === players.data.data[i].player_id._id)
+          else if (game.data.data[0].creator_id._id === players.data.data[i].user_id._id) {
+            if (state.user._id === players.data.data[i].user_id._id)
               playerExist = true
             player = players.data.data[i]
           }
-          else if (state.user._id === players.data.data[i].player_id._id)
+          else if (state.user._id === players.data.data[i].user_id._id)
             playerExist = true
         }
         socket.emit('game', { message: 'Player ' + state.user.name + ' join to the game ' + game.data.data[0].keyWord + '.', user_id: state.user._id, game_id: game.data.data[0]._id });
         if (!playerExist) {
-          const payload = { player_id: state.user._id, game_id: game.data.data[0]._id, score: 0,
+          const payload = { user_id: state.user._id, game_id: game.data.data[0]._id, score: 0,
                             curr_round: 0, curr_cards: [], curr_cards_pile: [],
                             curr_score: 0, uno: false }
           api.createPlayer(payload).then(player2 => {

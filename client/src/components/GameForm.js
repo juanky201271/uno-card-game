@@ -35,16 +35,16 @@ function LoginForm() {
     const payload = { creator_id: state.user._id, winner_id: null, keyWord: values.keyWord,
                       players: values.players, cards: values.cards, curr_round: 0,
                       curr_cards: [], curr_cards_pile: [], curr_score: 0,
-                      curr_player_id: null, curr_dealer_id: null }
+                      curr_user_id: null, curr_dealer_id: null }
     await api.createGame(payload).then(async game => {
       //console.log(game.data.data)
-      const payload2 = { player_id: state.user._id, game_id: game.data.data._id, score: 0,
+      const payload2 = { user_id: state.user._id, game_id: game.data.data._id, score: 0,
                         curr_round: 0, curr_cards: [], curr_cards_pile: [],
                         curr_score: 0, uno: false }
       await api.createPlayer(payload2).then(async player => {
         //console.log(player.data.data)
         await api.getUserByEmail("UNO").then(async user => {
-          const payload3 = { player_id: user.data.data._id, game_id: game.data.data._id, score: 0,
+          const payload3 = { user_id: user.data.data._id, game_id: game.data.data._id, score: 0,
                             curr_round: 0, curr_cards: [], curr_cards_pile: [],
                             curr_score: 0, uno: true }
           await api.createPlayer(payload3).then(playerUNO => {

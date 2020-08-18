@@ -106,7 +106,7 @@ module.exports = function(io) {
   getPlayerById = async (req, res) => {
     await Player
       .find({ _id: ObjectId(req.params._id) })
-      .populate('player_id')
+      .populate('user_id')
       .populate('game_id')
       .exec((err, player) => {
         if (err) {
@@ -122,7 +122,7 @@ module.exports = function(io) {
   getPlayersByGameId = async (req, res) => {
     await Player
       .find({ game_id: ObjectId(req.params.game_id) })
-      .populate('player_id')
+      .populate('user_id')
       .populate('game_id')
       .exec((err, players) => {
         if (err) {
@@ -138,7 +138,7 @@ module.exports = function(io) {
   getPlayers = async (req, res) => {
     await Player
       .find({})
-      .populate('player_id')
+      .populate('user_id')
       .populate('game_id')
       .exec((err, players) => {
         if (err) {

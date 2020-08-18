@@ -19,7 +19,7 @@ const Games = new Schema({
   curr_cards: { type : Array , "default" : [] },
   curr_cards_pile: { type : Array , "default" : [] },
   curr_score: { type: 'Number', required: true },
-  curr_player_id: {
+  curr_user_id: {
     type: Schema.Types.ObjectId,
     required: false,
     ref: 'ucg-users'

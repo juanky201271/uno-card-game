@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { GameContext, Card, MiniCard } from '../components'
+import { GameContext, Card, MiniCard, Points } from '../components'
+import api from '../api'
 import styled from 'styled-components'
 
 const WrapperGen = styled.div
@@ -40,6 +41,10 @@ const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
 `
   width: 125px;
   font-size: 10px;
+`
+const PScore = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  font-size: 15px;
 `
 const PMe = styled.p.attrs({ className: 'text-secondary' })
 `
@@ -129,6 +134,8 @@ const cardsOrder = [
   { c: 'blue', n: 's', o: 1 }, { c: 'blue', n: 's', o: 2 },
 ]
 
+const value = { '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '+2': 20, 's': 20, 'r': 20, '+4': 50, 'c': 50 }
+
 function PlayGameAlone (props) {
 
   const init = () => {
@@ -185,7 +192,7 @@ function PlayGameAlone (props) {
       while (true) {
         let aux = cards.pop()
         if (['red', 'yellow', 'green', 'blue'].includes(aux.c) && [0,1,2,3,4,5,6,7,8,9].includes(aux.n)) {
-          pile.push({ card: aux, player: null, color: null, drawDone: true, numberPlay: numberPlay })
+          pile.push({ card: aux, user_id: null, color: null, drawDone: true, numberPlay: numberPlay })
           break
         } else {
           cards.unshift(aux)
@@ -409,8 +416,8 @@ function PlayGameAlone (props) {
           iHaveACard = true
         } else {
           let aux = unoCards.splice(index, 1)[0].card
-          pile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay })
-          unoCardsPile.push({ card: aux, player: state.uno._id, color: color, drawDone: true, numberPlay: numberPlay })
+          pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay })
+          unoCardsPile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay })
 
           if (aux.n === '+4') {
             if (cards.length === 0) {
@@ -466,6 +473,7 @@ function PlayGameAlone (props) {
     if (unoCards.length === 0) {
       finishRound = true
       unoWin = true
+      unoFinishWin(true, playerCards)
     }
     unoTurn = false
     playerPickCard = false
@@ -475,9 +483,42 @@ function PlayGameAlone (props) {
                           cards: cards, pile: pile, finishRound: finishRound, unoWin: unoWin }))
   }
 
+  const unoFinishWin = (unoWin, cards) => {
+    let t = 0
+    for (let i = 0; i < cards.length; i++) {
+      t += Number(value[cards[i].card.n.toString()])
+    }
+    let player_id
+    if (unoWin) {
+      player_id = state.uno._id
+    } else {
+      player_id = state.player._id
+    }
+    api.getPlayerById(player_id).then(player => {
+      //console.log('get', player.data.data)
+      let payload = { score: player.data.data[0].score + t }
+      api.updatePlayerById(player_id, payload).then(player2 => {
+        //console.log('update', player2.data.data)
+        player.data.data[0] = { ...player.data.data[0], score: player2.data.data.score }
+        //console.log('chapu', player.data.data[0])
+        if (unoWin) {
+          setState(state => ({ ...state, uno: player.data.data[0] }))
+        } else {
+          setState(state => ({ ...state, player: player.data.data[0] }))
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    })
+    .catch(error => {
+      console.log(error)
+    })
+  }
+
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
-    let { unoTurn, playerCards, playerCardsPile, playerPickCard,
+    let { unoTurn, playerCards, playerCardsPile, playerPickCard, unoCards,
           cards, pile, finishRound, numberPlay, unoWin, checkUNO } = values
     if (finishRound) return
     if (unoTurn) return
@@ -497,8 +538,8 @@ function PlayGameAlone (props) {
     if (selectedCard.n === 'c' || selectedCard.n === '+4') {
       let inputColor = document.getElementById('color-' + event.target.id).value
       selectedCard = playerCards.splice(event.target.id, 1)[0].card
-      pile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: false, numberPlay: numberPlay })
-      playerCardsPile.push({ card: selectedCard, player: state.player._id, color: inputColor, drawDone: true, numberPlay: numberPlay })
+      pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: false, numberPlay: numberPlay })
+      playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: true, numberPlay: numberPlay })
       unoTurn = true
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
@@ -506,8 +547,8 @@ function PlayGameAlone (props) {
         return
       } else {
         selectedCard = playerCards.splice(event.target.id, 1)[0].card
-        pile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: false, numberPlay: numberPlay })
-        playerCardsPile.push({ card: selectedCard, player: state.player._id, color: null, drawDone: true, numberPlay: numberPlay })
+        pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: false, numberPlay: numberPlay })
+        playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: true, numberPlay: numberPlay })
         if (!(selectedCard.n === 'r' || selectedCard.n === 's')) {
           unoTurn = true
         }
@@ -517,6 +558,7 @@ function PlayGameAlone (props) {
     if (playerCards.length === 0) {
       finishRound = true
       unoWin = false
+      unoFinishWin(false, unoCards)
     }
 
     if (playerCards.length === 1 && !checkUNO) {
@@ -650,27 +692,36 @@ function PlayGameAlone (props) {
         </ContainerRow>
         <ContainerRow>
           <>
-            {!values.finishRound && !values.unoWin &&
-              <PUno>P<br/>E<br/>P<br/>E</PUno>
+            {!(values.finishRound && values.unoWin) &&
+              <PUno>{state.uno.user_id.name.split('').map(ele => {
+                return (
+                  <>
+                    {ele}<br/>
+                  </>
+                )
+              })}</PUno>
             }
-
+            <PScore> ({state.uno.score}) </PScore>
             {values.finishRound && values.unoWin &&
-              <PWinner>PEPE is the Winner!!!!</PWinner>
+              <PWinner>{state.uno.user_id.name} is the Winner!!!!</PWinner>
             }
             {values.unoCards.map((ele, ind) => {
-              if (values.viewUnoCards)
+              if (values.viewUnoCards || values.finishRound)
                 return (
-                  <ContainerRow key={ind + ele.player}>
+                  <ContainerRow key={ind}>
                     <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
                   </ContainerRow>
                 )
               else
                 return (
-                  <ContainerRow key={ind + ele.player}>
+                  <ContainerRow key={ind}>
                     <Card color={'wild'} wildColor={null} number={'UNO'} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
                   </ContainerRow>
                 )
             })}
+            { (values.viewUnoCards || values.finishRound) &&
+              <Points cards={values.unoCards} />
+            }
           </>
         </ContainerRow>
         <ContainerRow>
@@ -679,12 +730,12 @@ function PlayGameAlone (props) {
               {values.pile.map((ele, ind) => {
                 if (ind > values.pile.length - 11 && ind !== values.pile.length - 1)
                   return(
-                   ele.player === state.player._id ?
+                   ele.user_id === state.player.user_id._id ?
                     (
                       <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
                     )
                     :
-                    ele.player === state.uno._id ?
+                    ele.user_id === state.uno.user_id._id ?
                     (
                       <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
                     )
@@ -700,7 +751,7 @@ function PlayGameAlone (props) {
               {values.pile.map((ele, ind) => {
                 if (ind === values.pile.length - 1)
                   return (
-                    <ContainerRow key={ind + ele.player}>
+                    <ContainerRow key={ind}>
                       <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
                     </ContainerRow>
                   )
@@ -712,7 +763,7 @@ function PlayGameAlone (props) {
         </ContainerRow>
         <ContainerRow>
           {!(values.finishRound && !values.unoWin) &&
-            <PMe>{state.player.player_id.name.split('').map(ele => {
+            <PMe>{state.player.user_id.name.split('').map(ele => {
               return (
                 <>
                   {ele}<br/>
@@ -720,13 +771,14 @@ function PlayGameAlone (props) {
               )
             })}</PMe>
           }
+          <PScore> ({state.player.score}) </PScore>
           {values.finishRound && !values.unoWin &&
-            <PWinner>{state.player.player_id.name} is the Winner!!!!</PWinner>
+            <PWinner>{state.player.user_id.name} is the Winner!!!!</PWinner>
           }
           {values.playerCards.map((ele, ind) => {
             return (
               <ContainerColumn key={ind}>
-                <ContainerRow key={ind + ele.player}>
+                <ContainerRow>
                   <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
                 </ContainerRow>
 
@@ -767,6 +819,7 @@ function PlayGameAlone (props) {
                 </div>
               </>)
             }
+            <Points cards={values.playerCards} />
           </ContainerColumn>
         </ContainerRow>
       </ContainerColumn>

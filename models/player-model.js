@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const Players = new Schema({
   //key - _id
-  player_id: {
+  user_id: {
     type: Schema.Types.ObjectId,
     required: true,
     ref: 'ucg-users'
