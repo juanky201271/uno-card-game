@@ -103,6 +103,21 @@ module.exports = function(io) {
       })
   }
 
+  deletePlayersByGameId = async (req, res) => {
+    await Player
+      .findOneAndDelete({ game_id: ObjectId(req.params.game_id) }, (err) => {
+        if (err) {
+          return res.status(400).json({ success: false, error: err, })
+        }
+
+        io.emit("Players", {message: 'Delete Players.'})
+        return res.status(200).json({ success: true, }) // data: player})
+      })
+      .catch(err => {
+        return res.status(400).json({ success: false, error: err, })
+      })
+  }
+
   getPlayerById = async (req, res) => {
     await Player
       .find({ _id: ObjectId(req.params._id) })
@@ -155,6 +170,7 @@ module.exports = function(io) {
     createPlayer,
     updatePlayerById,
     deletePlayerById,
+    deletePlayersByGameId,
     getPlayerById,
     getPlayersByGameId,
     getPlayers,

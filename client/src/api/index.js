@@ -22,6 +22,7 @@ export const getGames = () => api.get(`/games`)
 export const createPlayer = payload => api.post(`/player`, payload)
 export const updatePlayerById = (_id, payload) => api.put(`/player/${_id}`, payload)
 export const deletePlayerById = _id => api.delete(`/player/${_id}`)
+export const deletePlayersByGameId = game_id => api.delete(`/players/game/${game_id}`)
 export const getPlayerById = _id => api.get(`/player/${_id}`)
 export const getPlayersByGameId = game_id => api.get(`/players/game/${game_id}`)
 export const getPlayers = () => api.get(`/players`)
@@ -45,6 +46,7 @@ const apis = {
     createPlayer,
     updatePlayerById,
     deletePlayerById,
+    deletePlayersByGameId,
     getPlayerById,
     getPlayersByGameId,
     getPlayers,

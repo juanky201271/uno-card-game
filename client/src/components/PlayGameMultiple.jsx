@@ -551,9 +551,7 @@ function PlayGameMultiple(props) {
         if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
           finishRound = true
           unoWin = unoTurn
-          console.log('antes', playersUno)
           playersUno = unoFinishWin(unoWin, playersUno)
-          console.log('despues', playersUno)
         }
 
         if (aux.n === '+4') {
@@ -645,9 +643,7 @@ function PlayGameMultiple(props) {
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
       finishRound = true
       unoWin = unoTurn
-      console.log('antes', playersUno)
       playersUno = unoFinishWin(unoWin, playersUno)
-      console.log('despues', playersUno)
     }
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 1 && !checkUno) {
       if (cards.length === 0) {
@@ -792,17 +788,13 @@ function PlayGameMultiple(props) {
       let payload = { score: player.data.data[0].score + t }
       api.updatePlayerById(player_id, payload).then(player2 => {
         //console.log('update', player2.data.data)
-
         api.getPlayersByGameId(state.game._id).then(players => {
-          // actualizar 'player.score' de playersUno solo del ganador
           playersUno[Object.entries(playersUno)[unoWin][0]].player.score = player.data.data[0].score + t
           setState(state => ({ ...state, players: players.data.data }))
-          //setValues(values => ({ ...values, playersUno: playersUno }))
         })
         .catch(error => {
           console.log(error)
         })
-
       })
       .catch(error => {
         console.log(error)
@@ -958,7 +950,7 @@ function PlayGameMultiple(props) {
     play(state.game.curr_round + 1)
   })
 
- console.log('play multiplayer game render', state, values)
+ //console.log('play multiplayer game render', state, values)
   return (
     <WrapperGen>
       <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>

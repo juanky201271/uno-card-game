@@ -51,9 +51,14 @@ function ChooseGame() {
   }
 
   const handleClickDeleteGame = (event) => {
-    if (event) event.preventDefault()
+    event.persist()
     api.deleteGameById(event.target.id).then(game => {
-      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+      api.deletePlayersByGameId(event.target.id).then(players => {
+        setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+      })
+      .catch(error => {
+        console.log(error)
+      })
       //console.log('delete', game)
     })
     .catch(error => {
