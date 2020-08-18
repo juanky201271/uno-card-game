@@ -47,7 +47,7 @@ function ChooseGame() {
 
   const handleClickAddGame = (event) => {
     if (event) event.preventDefault()
-    setValues(values => ({ ...values, addGame: true} ))
+    setState(state => ({ ...state, addGame: true }))
   }
 
   const handleClickDeleteGame = (event) => {
@@ -139,6 +139,17 @@ function ChooseGame() {
       setState(state =>({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
+
+    socket.on("add game", (obj, id) => {
+      //console.log('emit log out', obj, id, listClients)
+      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+      //setResponse(obj.message)
+    })
+    socket.on("delete game", (obj, id) => {
+      //console.log('emit log out', obj, id, listClients)
+      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+      //setResponse(obj.message)
+    })
   }, [])
 
   useEffect(() => {
@@ -187,14 +198,14 @@ function ChooseGame() {
 
   }, [state])
 
-  //console.log('game choose', values, state)
+  console.log('game choose', values, state)
   return (
     <Container>
 
       { !state.game && state.user &&
         (<>
           <AddGame onClick={handleClickAddGame}> Add Game </AddGame>
-          { values.addGame &&
+          { state.addGame &&
             <GameForm />
           }
         </>)

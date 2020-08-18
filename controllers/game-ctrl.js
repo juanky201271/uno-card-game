@@ -30,7 +30,7 @@ module.exports = function(io) {
     await game
       .save()
       .then(() => {
-        io.emit("Game", {message: 'Created new Game name: ' + game.keyWord})
+        io.emit("add game", { message: 'Created new Game name: ' + game.keyWord, game_id: game._id })
         return res.status(201).json({
           success: true,
           data: game,
@@ -97,7 +97,7 @@ module.exports = function(io) {
           return res.status(400).json({ success: false, error: err, })
         }
 
-        io.emit("Game", {message: 'Delete Game.'})
+        io.emit("delete game", { message: 'Delete Game.', game_id: req.params._id })
         return res.status(200).json({ success: true, }) // data: game})
       })
       .catch(err => {
