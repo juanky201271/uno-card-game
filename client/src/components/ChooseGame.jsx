@@ -64,6 +64,7 @@ function ChooseGame() {
     if (event) event.preventDefault()
     setState(state => ({ }))
     setValues(values => ({ }))
+    socket.emit('log out', { message: 'User ' + state.user.name + ' Log out.', user_id: state.user._id });
   }
 
   const handleClickDeleteGame = (event) => {
@@ -317,7 +318,7 @@ function ChooseGame() {
 
   }, [state])
 
-  //console.log('game choose', values, state)
+  console.log('game choose', values, state)
   return (
     <Container>
 

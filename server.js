@@ -104,8 +104,14 @@ io.on("connection", (socket) => {
     console.log(message)
   })
   socket.on("disconnect", () => {
-    console.log("Client disconnected " + socket.id)
     delete listClients[socket.id]
+    io.sockets.emit('log out', {}, socket.id, listClients)
+    console.log("Client disconnected " + socket.id)
+  })
+  socket.on('log out', function (obj) {
+    delete listClients[socket.id]
+    io.sockets.emit('log out', obj, socket.id, listClients)
+    console.log(obj.message)
   })
 
   socket.on('add game', function (obj) {
