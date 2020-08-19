@@ -10,7 +10,13 @@ const Container = styled.div.attrs({ className: "container" })
   padding: 10px;
 `
 const AddGame = styled.button.attrs({ className: 'btn btn-secondary' })
-``
+`
+  margin: 5px 5px 5px 5px;
+`
+const LogOut = styled.button.attrs({ className: 'btn btn-dark' })
+`
+  margin: 5px 5px 5px 5px;
+`
 const JoinGame = styled.button.attrs({ className: 'btn btn-secondary d-flex justify-content-center align-items-center align-self-center' })
 `
   margin: 10px 10px 10px 10px;
@@ -36,6 +42,10 @@ const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
   width: 200px;
   font-size: 10px;
 `
+const PUno = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  font-size: 15px;
+`
 //const socket = socketIOClient(ENDPOINT)
 
 function ChooseGame() {
@@ -48,6 +58,12 @@ function ChooseGame() {
   const handleClickAddGame = (event) => {
     if (event) event.preventDefault()
     setState(state => ({ ...state, addGame: true }))
+  }
+
+  const handleClickLogOut = (event) => {
+    if (event) event.preventDefault()
+    setState(state => ({ }))
+    setValues(values => ({ }))
   }
 
   const handleClickDeleteGame = (event) => {
@@ -134,6 +150,16 @@ function ChooseGame() {
       setState(state => ({ ...state, listUserGame: listClients }))
       //setResponse(obj.message)
     })
+    socket.on("cancel game", (obj, id, listClients) => {
+      //console.log('emit cancel',obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
+    socket.on("cancel game alone", (obj, id, listClients) => {
+      //console.log('emit cancel',obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      //setResponse(obj.message)
+    })
     socket.on("log out", (obj, id, listClients) => {
       //console.log('emit log out', obj, id, listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
@@ -156,41 +182,134 @@ function ChooseGame() {
     let ignore = false
 
     async function fetchData() {
-      var listGames = []
+      var listMyGames = [], listMoreGames = [], listRestGames = []
       await api.getGames().then(games => {
         //console.log(games.data.data)
-        listGames = games.data.data.map((ele, ind) => {
-          return (
-            <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
-              <PGame>Description: {ele.keyWord} - Principal Player: {ele.creator_id.name}</PGame>
-              { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
-                (<ContainerRow>
-                  <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
-                  <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
-                </ContainerRow>)
-              }
-              { !state.game && state.user && ele.players === 'Multiple' &&
-                (<ContainerRow>
-                  <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
-                  <ContainerColumn>
-                    <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                    <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
-                  </ContainerColumn>
-                  { state.user._id === ele.creator_id._id &&
-                    (
-                      <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
-                    )
-                  }
-                </ContainerRow>)
-              }
-            </ContainerRow>
-          )
+        listMyGames = games.data.data.map((ele, ind) => {
+          if (state.user._id === ele.creator_id._id)
+            return (
+              <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
+                <PGame>{ele.creator_id.name}: {ele.keyWord}</PGame>
+                { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                  </>)
+                }
+                { !state.game && state.user && ele.players === 'Multiple' &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    { state.user._id === ele.creator_id._id &&
+                      (
+                        <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                      )
+                    }
+                  </>)
+                }
+              </ContainerRow>
+            )
+          else
+            return null
         })
+
+        listMoreGames = games.data.data.map((ele, ind) => {
+          if (state.user._id !== ele.creator_id._id && ele.players === 'Multiple')
+            return (
+              <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
+                <PGame>{ele.creator_id.name}: {ele.keyWord}</PGame>
+                { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                  </>)
+                }
+                { !state.game && state.user && ele.players === 'Multiple' &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    { state.user._id === ele.creator_id._id &&
+                      (
+                        <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                      )
+                    }
+                  </>)
+                }
+              </ContainerRow>
+            )
+          else
+            return null
+        })
+
+        listRestGames = games.data.data.map((ele, ind) => {
+          if (state.user._id !== ele.creator_id._id && ele.players !== 'Multiple')
+            return (
+              <ContainerRow key={'div-' + ele._id} id={'div-' + ele._id}>
+                <PGame>{ele.creator_id.name}: {ele.keyWord}</PGame>
+                { !state.game && state.user && ele.players === 'Alone' && state.user._id === ele.creator_id._id &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                  </>)
+                }
+                { !state.game && state.user && ele.players === 'Alone' && state.user._id !== ele.creator_id._id &&
+                  (<>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                  </>)
+                }
+                { !state.game && state.user && ele.players === 'Multiple' &&
+                  (<>
+                    <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
+                    <ContainerColumn>
+                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit>Round: {ele.curr_round}</PUnoLit>
+                    </ContainerColumn>
+                    { state.user._id === ele.creator_id._id &&
+                      (
+                        <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
+                      )
+                    }
+                  </>)
+                }
+              </ContainerRow>
+            )
+          else
+            return null
+        })
+
       })
       .catch(error => {
         console.log(error)
       })
-      if (!ignore) setValues(values => ({ ...values, listGames: listGames}))
+      if (!ignore) setValues(values => ({ ...values, listMyGames: listMyGames, listMoreGames: listMoreGames, listRestGames: listRestGames }))
     }
 
     fetchData()
@@ -204,18 +323,36 @@ function ChooseGame() {
 
       { !state.game && state.user &&
         (<>
-          <AddGame onClick={handleClickAddGame}> Add Game </AddGame>
+          <ContainerRow>
+            <AddGame onClick={handleClickAddGame}> Add Game </AddGame>
+            <LogOut onClick={handleClickLogOut}> Log out </LogOut>
+          </ContainerRow>
           { state.addGame &&
             <GameForm />
           }
         </>)
       }
-      { values.listGames &&
+      { !state.game && state.user && values.listMyGames &&
         (<Container>
-          {values.listGames}
+          <PUno>My Games</PUno>
+          <hr />
+          {values.listMyGames}
         </Container>)
       }
-
+      { !state.game && state.user && values.listMoreGames &&
+        (<Container>
+          <PUno>More Games</PUno>
+          <hr />
+          {values.listMoreGames}
+        </Container>)
+      }
+      { !state.game && state.user && values.listRestGames &&
+        (<Container>
+          <PUno>Rest of Games</PUno>
+          <hr />
+          {values.listRestGames}
+        </Container>)
+      }
     </Container>
   )
 

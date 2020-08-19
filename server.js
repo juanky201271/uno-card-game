@@ -84,6 +84,14 @@ io.on("connection", (socket) => {
     io.sockets.in("game-" + game_id).emit('cancel game', obj, socket.id, listClients, message)
     console.log(message)
   })
+  socket.on('cancel game alone', function (obj, game_id) {
+    let message = "cancel the game"
+    Object.entries(listClients).forEach((ele, ind) => {
+      if (ele[1].game_id === game_id) listClients[ele[0]] = { user_id: ele[1].user_id }
+    })
+    io.sockets.emit('cancel game alone', obj, socket.id, listClients, message)
+    console.log(message)
+  })
   socket.on('cancel', function (obj, game_id) {
     let message = "cancel"
     listClients[socket.id] = { user_id: obj.user_id }

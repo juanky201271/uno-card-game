@@ -21,9 +21,9 @@ function Game (props) {
   //console.log('game', state)
   return (
     <WrapperGen>
-        <Title>Game {state.game ? ' - ' + state.game.keyWord : '' }</Title>
+        <Title>{state.game ? 'Game - ' + state.game.keyWord : 'Games' }</Title>
         <hr />
-        { !state.game &&
+        { !state.game && state.user &&
           (<ChooseGame />)
         }
         { state.game ?

@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { GameContext, Card, MiniCard, Points } from '../components'
+import { GameContext, Card, MiniCard, socket, Points } from '../components'
 import api from '../api'
 import styled from 'styled-components'
 
@@ -664,6 +664,7 @@ function PlayGameAlone (props) {
 
   const handleClickCancelGame = (event) => {
     if (event) event.preventDefault()
+    socket.emit('cancel game alone', { user_id: state.user._id }, state.game._id)
     setState(state => ({ ...state, game: null, player: null, uno: null }))
   }
 

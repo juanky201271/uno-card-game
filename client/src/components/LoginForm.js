@@ -41,7 +41,6 @@ function LoginForm() {
     await api.getUserByEmail(values.email).then(user => {
       if (user.data.data.password === values.pwd) {
         socket.emit('log in', { message: 'User ' + user.data.data.name + ' Log in.', user_id: user.data.data._id });
-        setValues(values => ({ ...values, user: user.data.data }))
         setState(state => ({ ...state, user: user.data.data }))
       } else {
         setValues(values => ({ ...values, message: 'User or Password incorrect, try again.' }))
@@ -57,7 +56,7 @@ function LoginForm() {
   //console.log('login form', values, state)
   return (
     <ContainerExt>
-      { !values.user &&
+      { !state.user &&
         (<>
           <form className="form-inline" onSubmit={handleSubmit}>
            <Container>
@@ -68,18 +67,15 @@ function LoginForm() {
              <label>Password:</label>
              <input type="password" className="form-control" id="pwd" onChange={handleChange} value={values ? values.pwd : ''} required />
            </Container>
-           <button type="submit" className="btn btn-secondary">Submit</button>
+           <button type="submit" className="btn btn-secondary">Log in</button>
           </form>
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
         </>)
       }
-      {
-        values.user &&
-        (
-           <Container>
-             <label>User: {values.user.name}</label>
-           </Container>
-        )
+      { state.user &&
+        (<Container>
+          <label>User: {state.user.name}</label>
+        </Container>)
       }
     </ContainerExt>
   )
