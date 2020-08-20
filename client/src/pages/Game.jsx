@@ -73,7 +73,7 @@ function Game (props) {
   console.log('game', values, state)
   return (
     <WrapperGen>
-      { values.listUsers &&
+      { values.listUsers && state.user &&
         (<PUnoLit>Users on-line: {values.listUsers}</PUnoLit>)
       }
       <hr />

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import api from '../api'
 //import socketIOClient from "socket.io-client"
 import { GameContext } from './GameContext'
+import SignUpForm from './SignUpForm'
 import socket from './socket'
 
 //const ENDPOINT = process.env.PUBLIC_URL
@@ -28,6 +29,11 @@ function LoginForm() {
   const handleSubmit = (event) => {
     if (event) event.preventDefault()
     login()
+  }
+
+  const handleClickSignUp = (event) => {
+    if (event) event.preventDefault()
+    setState(state => ({ ...state, addUser: true }))
   }
 
   const handleChange = (event) => {
@@ -67,9 +73,13 @@ function LoginForm() {
              <label>Password:</label>
              <input type="password" className="form-control" id="pwd" onChange={handleChange} value={values ? values.pwd : ''} required />
            </Container>
-           <button type="submit" className="btn btn-secondary">Log in</button>
+           <button type="submit" className="btn btn-secondary" style={{margin: '5px 5px 5px 5px'}}>Log in</button>
+           <button type="button" className="btn btn-dark" onClick={handleClickSignUp} style={{margin: '5px 5px 5px 5px'}}>Sign up</button>
           </form>
           <LabelRed>{values.message ? values.message : ''}</LabelRed>
+          { state.addUser &&
+            <SignUpForm />
+          }
         </>)
       }
       { state.user &&
