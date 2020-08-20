@@ -48,10 +48,10 @@ function Game (props) {
         let ret = null
         for (let i = 0; i < Object.entries(state.listUserGame).length; i++) {
           let ele = Object.entries(state.listUserGame)[i]
-console.log(ele[1].user_id)
+ //console.log(ele[1].user_id)
 
           await api.getUserById(ele[1].user_id).then(user => {
-            console.log('user', user.data.data.name)
+            //console.log('user', user.data.data.name)
             listUsers += user.data.data.name + ' // '
           })
           .catch(error => {
@@ -77,8 +77,12 @@ console.log(ele[1].user_id)
         (<PUnoLit>Users on-line: {values.listUsers}</PUnoLit>)
       }
       <hr />
-      <Title>{state.game ? 'Game - ' + state.game.keyWord : 'Games' }</Title>
-      <hr />
+      { state.game &&
+        (<>
+          <Title>{'Game - ' + state.game.keyWord}</Title>
+          <hr />
+        </>)
+      }
       { !state.game && state.user &&
         (<ChooseGame />)
       }

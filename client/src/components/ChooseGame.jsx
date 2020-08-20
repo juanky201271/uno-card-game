@@ -37,7 +37,7 @@ const PGame = styled.p.attrs({ className: 'd-flex justify-content-center align-i
 `
   margin: 10px 10px 10px 10px;
 `
-const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
+const PUnoLit = styled.div.attrs({ className: 'text-center' })
 `
   width: 200px;
   font-size: 10px;
@@ -195,8 +195,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
@@ -206,8 +206,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 1 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     { state.user._id === ele.creator_id._id &&
@@ -232,8 +232,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
@@ -243,8 +243,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 1 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     { state.user._id === ele.creator_id._id &&
@@ -269,8 +269,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Alone! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     <DeleteGame onClick={handleClickDeleteGame} id={ele._id}> Delete Game </DeleteGame>
@@ -279,8 +279,8 @@ function ChooseGame() {
                 { !state.game && state.user && ele.players === 'Alone' && state.user._id !== ele.creator_id._id &&
                   (<>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                   </>)
@@ -289,8 +289,8 @@ function ChooseGame() {
                   (<>
                     <JoinGame onClick={handleClickJoinGame} id={ele._id}> Join Game, Multiple Players! </JoinGame>
                     <ContainerColumn>
-                      <PUnoLit>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
-                      <PUnoLit>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Principal player connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === ele.creator_id._id && e[1].game_id === ele._id).length > 0 ? 'Yes' : 'No' : 'No'}</PUnoLit>
+                      <PUnoLit style={state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length > 1 ? { color: 'green', fontWeight: 'bold' } : {} : {}}>Players connected: {state.listUserGame ? Object.entries(state.listUserGame).filter((e, i) => e[1].game_id === ele._id).length : '0'}</PUnoLit>
                       <PUnoLit>Round: {ele.curr_round}</PUnoLit>
                     </ContainerColumn>
                     { state.user._id === ele.creator_id._id &&

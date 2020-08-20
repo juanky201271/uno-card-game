@@ -995,7 +995,7 @@ function PlayGameMultiple(props) {
 
       { values.startGame && !(Object.entries(values.playersUno).length > 0 && values.mySocket && values.playersUno[values.mySocket] ? values.playersUno[values.mySocket].user._id === state.user._id : false) &&
         <ContainerRow>
-          <p>The play is running now. Waiting for the principal player start a new round</p>
+          <p>The game is running now. Waiting for the principal player start a new round</p>
           <ContainerColumn>
             <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
             <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
@@ -1101,12 +1101,16 @@ function PlayGameMultiple(props) {
                         <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
                           <PUnoLitNumber> {i + 1} </PUnoLitNumber>
                           {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
-                            <PMe>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name.split('').map(ele => {
-                              return (
-                                <>
-                                  {ele}<br/>
-                                </>
-                              )
+                            <PMe>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name.split('').map((ele, ind) => {
+                              if (ind <= 5)
+                                return (
+                                  <>
+                                    {ele}<br/>
+                                  </>
+                                )
+                              else {
+                                return null
+                              }
                             })}</PMe>
                           }
                           <PScore> ({a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.score}) </PScore>

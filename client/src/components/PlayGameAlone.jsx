@@ -777,12 +777,16 @@ function PlayGameAlone (props) {
         </ContainerRow>
         <ContainerRow>
           {!(values.finishRound && !values.unoWin) &&
-            <PMe>{state.player.user_id.name.split('').map(ele => {
-              return (
-                <>
-                  {ele}<br/>
-                </>
-              )
+            <PMe>{state.player.user_id.name.split('').map((ele, ind) => {
+              if (ind <= 5)
+                return (
+                  <>
+                    {ele}<br/>
+                  </>
+                )
+              else {
+                return null
+              }
             })}</PMe>
           }
           <PScore> ({state.player.score}) </PScore>
