@@ -70,7 +70,7 @@ function Game (props) {
 
   }, [state])
 
-  console.log('game', values, state)
+  //console.log('game', values, state)
   return (
     <WrapperGen>
       { values.listUsers && state.user &&

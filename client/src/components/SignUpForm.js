@@ -68,7 +68,7 @@ function SignUpForm() {
              <input type="text" className="form-control" id="name" onChange={handleChange} value={values ? values.name : ''} required />
            </Container>
            <Container>
-             <label>email:</label>
+             <label>Email:</label>
              <input type="email" className="form-control" id="email" onChange={handleChange} value={values ? values.email: ''} required />
            </Container>
            <Container>
