@@ -15,7 +15,7 @@ function Links() {
       <ContainerRow>
         <Logo className="navbar-brand d-flex justify-content-center align-items-center align-self-start" />
         <Link to="/" className="navbar-brand d-flex justify-content-center align-items-center align-self-start">
-          <div style={{ color: '#222' }} >UNO Card Game (juanky201271&copy;)</div>
+          <div style={{ color: '#222' }} >UNO Card Game<br />(juanky201271&copy;)</div>
         </Link>
         <LoginForm />
       </ContainerRow>
