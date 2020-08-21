@@ -9,6 +9,10 @@ const DivCardLitNumberPile = styled.div.attrs({ className:"font-weight-bold font
   font-size: 20px;
   text-shadow: 2px 2px 2px #000000;
 `
+const DivCardLitNumberPileNull = styled.div.attrs({ className:"font-weight-bold font-italic text-secondary" })
+`
+  font-size: 10px;
+`
 const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
 `
   width: 50px;
@@ -53,6 +57,12 @@ function MiniCard(props) {
         }
         {props.number === 'c' &&
           (<DivCardLitNumberPile>{'Wild'}</DivCardLitNumberPile>)
+        }
+        {props.number === 'pickedCard' &&
+          (<DivCardLitNumberPileNull>Picked<br />Card</DivCardLitNumberPileNull>)
+        }
+        {props.number === 'lostTurn' &&
+          (<DivCardLitNumberPileNull>Lost<br />Turn</DivCardLitNumberPileNull>)
         }
       </DivPile>
     </ContainerColumn>

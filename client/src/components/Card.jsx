@@ -1,6 +1,17 @@
 import React from 'react'
+import { MiniCard } from '../components'
 import styled from 'styled-components'
 
+const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column" })
+`
+  padding: 5px 5px 5px 5px;
+`
+const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  width: 50px;
+  font-size: 10px;
+  font-weight: bold;
+`
 const DivCardExt = styled.div.attrs({ className:"d-flex justify-content-center align-items-center" })
 `
 `
@@ -398,6 +409,13 @@ function Card(props) {
               <DivCardBigNumberUNO>{'UNO'}</DivCardBigNumberUNO>
             </DivCardCirBigUNO>
           )
+        }
+        {(props.number === 'pickedCard' || props.number === 'lostTurn') &&
+          (<ContainerColumn>
+            <MiniCard name={props.name} color={props.color} wildColor={props.wildColor} number={props.number} order={props.order} lastPlay={false} align="center" width={50} height={35} />
+            <PUnoLit className="d-flex justify-content-center align-items-center align-self-center">Remainder:</PUnoLit>
+            <MiniCard name={props.lastCard.name.substr(0,6)} color={props.lastCard.card.c} wildColor={props.lastCard.color} number={props.lastCard.card.n} order={props.lastCard.card.o} lastPlay={false} align="center" width={50} height={35} />
+          </ContainerColumn>)
         }
       </DivCardExtColor>
     </DivCardExt>

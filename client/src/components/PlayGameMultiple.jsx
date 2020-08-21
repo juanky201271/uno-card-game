@@ -171,16 +171,15 @@ function PlayGameMultiple(props) {
   const initCardsAgain = (pile) => {
     let cards = []
     //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
-    pile.forEach((ele, ind) => {
-      cards.unshift(ele.card)
-    })
+    pile.filter(ele => ele.card.c !== null && ele.card.o !== null).forEach(ele => cards.unshift(ele.card))
 
     cards.shift()
     //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
     const getRandomValue = (i, N) => Math.floor(Math.random() * (N - i) + i)
     cards.forEach( (elem, i, arr, j = getRandomValue(i, arr.length)) => [arr[i], arr[j]] = [arr[j], arr[i]] )
 
-    let last = pile[pile.length - 1]
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let last = pilef[pilef.length - 1]
     //console.log('last', last)
     let pileAux = []
     pileAux.push(last)
@@ -338,10 +337,10 @@ function PlayGameMultiple(props) {
     if (finishRound) return obj
     if (unoTurn < Object.entries(playersUno).length - 1) return obj
 
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    let drawDone = pile[pile.length - 1].drawDone
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
+    let drawDone = pilef[pilef.length - 1].drawDone
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
     let arrHaveColorIndex = [], arrHaveNumberIndex = [], haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }, rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
@@ -373,7 +372,14 @@ function PlayGameMultiple(props) {
       Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
       playerPickCard = false
-      pile[pile.length - 1].drawDone = true
+      for (let i = pile.length - 1; i >= 0; i--) {
+        let ele = pile[i]
+        if (ele.card.c !== null && ele.card.n !== null && ele.card.o !== null) {
+          pile[i].drawDone = true
+          break
+        }
+      }
+      //pile[pile.length - 1].drawDone = true
       return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep }
     } else if (!drawDone && lastCardPile.n === '+2') {
       if (cards.length === 0) {
@@ -390,221 +396,254 @@ function PlayGameMultiple(props) {
       Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
       playerPickCard = false
-      pile[pile.length - 1].drawDone = true
+      for (let i = pile.length - 1; i >= 0; i--) {
+        let ele = pile[i]
+        if (ele.card.c !== null && ele.card.n !== null && ele.card.o !== null) {
+          pile[i].drawDone = true
+          break
+        }
+      }
+      //pile[pile.length - 1].drawDone = true
       return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay: numberPlay + 1, unoWin, playersUno, nextTurnStep }
     } else {
-      let iHaveACard = false, index = null, color = null
+      let iHaveACard = false, keepTurn = false, index = null, color = null
+      while (true) {
+        let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+        lastCardPile = pilef[pilef.length - 1].card
+        lastColorPile = pilef[pilef.length - 1].color
+        drawDone = pilef[pilef.length - 1].drawDone
+        nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
+        nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
+        arrHaveColorIndex = []
+        arrHaveNumberIndex = []
+        haveColorIndex = null
+        haveNumberIndex = null
+        haveCIndex = null
+        haveCd4Index = null
+        haveColorD2Index = null
+        haveColorReverseIndex = null
+        haveColorSkipIndex = null
+        rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
+        rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
 
-      lastCardPile = pile[pile.length - 1].card
-      //lastPlayerPile = pile[pile.length - 1].player
-      lastColorPile = pile[pile.length - 1].color
-      drawDone = pile[pile.length - 1].drawDone
-      nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
-      nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
-      arrHaveColorIndex = []
-      arrHaveNumberIndex = []
-      haveColorIndex = null
-      haveNumberIndex = null
-      haveCIndex = null
-      haveCd4Index = null
-      haveColorD2Index = null
-      haveColorReverseIndex = null
-      haveColorSkipIndex = null
-      rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }
-      rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
-
-      index = null
-      color = null
-      for (let ind = 0; ind < Object.entries(playersUno)[unoTurn][1].cards.length; ind++) {
-        let ele = Object.entries(playersUno)[unoTurn][1].cards[ind]
-        if (ele.card.c === nextColor) arrHaveColorIndex.push([ele.card.n.toString(), ind])
-        if (ele.card.c === nextColor && ele.card.n === '+2') haveColorD2Index = ind
-        if (ele.card.c === nextColor && ele.card.n === 'r') haveColorReverseIndex = ind
-        if (ele.card.c === nextColor && ele.card.n === 's') haveColorSkipIndex = ind
-        if (ele.card.n === nextNumber) arrHaveNumberIndex.push([ele.card.c, ind])
-        if (ele.card.n === 'c') haveCIndex = ind
-        if (ele.card.n === '+4') haveCd4Index = ind
-        if (ele.card.c !== 'wild') {
-          rankingColor[ele.card.c]++
-          rankingNumber[ele.card.n.toString()]++
-        }
-      }
-      //console.log('actual', nextColor, nextNumber)
-      //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
-      let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
-      let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
-      //console.log('color rank', arrRankingColor, 'number rank', arrRankingNumber)
-
-      // mejor la que tenga mas del mismo color
-      let exit = false
-      for (let i = 0; i < arrRankingColor.length; i++) {
-        for (let j = 0; j < arrHaveNumberIndex.length; j++ ) {
-          //console.log(i, arrRankingColor[i], j, arrHaveNumberIndex[j])
-          if (arrRankingColor[i][0] === arrHaveNumberIndex[j][0]) {
-            haveNumberIndex = arrHaveNumberIndex[j][1]
-            exit = true
-            break
+        keepTurn = false
+        index = null
+        color = null
+        for (let ind = 0; ind < Object.entries(playersUno)[unoTurn][1].cards.length; ind++) {
+          let ele = Object.entries(playersUno)[unoTurn][1].cards[ind]
+          if (ele.card.c === nextColor) arrHaveColorIndex.push([ele.card.n.toString(), ind])
+          if (ele.card.c === nextColor && ele.card.n === '+2') haveColorD2Index = ind
+          if (ele.card.c === nextColor && ele.card.n === 'r') haveColorReverseIndex = ind
+          if (ele.card.c === nextColor && ele.card.n === 's') haveColorSkipIndex = ind
+          if (ele.card.n === nextNumber) arrHaveNumberIndex.push([ele.card.c, ind])
+          if (ele.card.n === 'c') haveCIndex = ind
+          if (ele.card.n === '+4') haveCd4Index = ind
+          if (ele.card.c !== 'wild') {
+            rankingColor[ele.card.c]++
+            rankingNumber[ele.card.n.toString()]++
           }
         }
-        if (exit) break
-      }
+        //console.log('actual', nextColor, nextNumber)
+        //console.log('color', arrHaveColorIndex, 'number', arrHaveNumberIndex, 'c', haveCIndex, '+4', haveCd4Index, '+2', haveColorD2Index, 'reverse', haveColorReverseIndex, 'skip', haveColorSkipIndex)
+        let arrRankingColor = Object.entries(rankingColor).sort((a,b) => b[1] - a[1])
+        let arrRankingNumber = Object.entries(rankingNumber).sort((a,b) => b[1] - a[1])
+        //console.log('color rank', arrRankingColor, 'number rank', arrRankingNumber)
 
-      // mejor el numero que se repita menos
-      exit = false
-      for (let i = arrRankingNumber.length - 1; i >= 0; i--) {
-        for (let j = 0; j < arrHaveColorIndex.length; j++ ) {
-          //console.log(i, arrRankingNumber[i], j, arrHaveColorIndex[j])
-          if (arrRankingNumber[i][0] === arrHaveColorIndex[j][0]) {
-            haveColorIndex = arrHaveColorIndex[j][1]
-            exit = true
-            break
+        // mejor la que tenga mas del mismo color
+        let exit = false
+        for (let i = 0; i < arrRankingColor.length; i++) {
+          for (let j = 0; j < arrHaveNumberIndex.length; j++ ) {
+            //console.log(i, arrRankingColor[i], j, arrHaveNumberIndex[j])
+            if (arrRankingColor[i][0] === arrHaveNumberIndex[j][0]) {
+              haveNumberIndex = arrHaveNumberIndex[j][1]
+              exit = true
+              break
+            }
           }
+          if (exit) break
         }
-        if (exit) break
-      }
 
-      //console.log('color', haveColorIndex)
-      //console.log('number', haveNumberIndex)
+        // mejor el numero que se repita menos
+        exit = false
+        for (let i = arrRankingNumber.length - 1; i >= 0; i--) {
+          for (let j = 0; j < arrHaveColorIndex.length; j++ ) {
+            //console.log(i, arrRankingNumber[i], j, arrHaveColorIndex[j])
+            if (arrRankingNumber[i][0] === arrHaveColorIndex[j][0]) {
+              haveColorIndex = arrHaveColorIndex[j][1]
+              exit = true
+              break
+            }
+          }
+          if (exit) break
+        }
 
-      if (Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.length <= 3) {
-        if (haveColorD2Index !== null) {
-          index = haveColorD2Index
-          color = null
-        } else if (haveCd4Index !== null) {
-          index = haveCd4Index
-          color = arrRankingColor[0][0]
-        } else if (haveNumberIndex !== null) {
-          index = haveNumberIndex
-          color = null
-        } else if (haveCIndex !== null) {
-          index = haveCIndex
-          if (nextColor === arrRankingColor[0][0]) {
-            if (arrRankingColor[1][1] > 0)
-              color = arrRankingColor[1][0]
-            else
-              color = arrRankingColor[0][0]
-          } else {
+        //console.log('color', haveColorIndex)
+        //console.log('number', haveNumberIndex)
+
+        if (Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.length <= 3) {
+          if (haveColorD2Index !== null) {
+            index = haveColorD2Index
+            color = null
+          } else if (haveCd4Index !== null) {
+            index = haveCd4Index
             color = arrRankingColor[0][0]
-          }
-        } else if (haveColorReverseIndex !== null) {
-          index = haveColorReverseIndex
-          color = null
-        } else if (haveColorSkipIndex !== null) {
-          index = haveColorSkipIndex
-          color = null
-        } else if (haveColorIndex !== null) {
-          index = haveColorIndex
-          color = null
-        } else {
-          // robar carta
-          index = null
-          color = null
-        }
-      } else {
-        if (haveColorReverseIndex !== null) {
-          index = haveColorReverseIndex
-          color = null
-        } else if (haveColorSkipIndex !== null) {
-          index = haveColorSkipIndex
-          color = null
-        } else if (haveColorIndex !== null) {
-          index = haveColorIndex
-          color = null
-        } else if (haveNumberIndex !== null) {
-          index = haveNumberIndex
-          color = null
-        } else if (haveColorD2Index !== null) {
-          index = haveColorD2Index
-          color = null
-        } else if (haveCIndex !== null) {
-          index = haveCIndex
-          if (nextColor === arrRankingColor[0][0]) {
-            if (arrRankingColor[1][1] > 0)
-              color = arrRankingColor[1][0]
-            else
+          } else if (haveNumberIndex !== null) {
+            index = haveNumberIndex
+            color = null
+          } else if (haveCIndex !== null) {
+            index = haveCIndex
+            if (nextColor === arrRankingColor[0][0]) {
+              if (arrRankingColor[1][1] > 0)
+                color = arrRankingColor[1][0]
+              else
+                color = arrRankingColor[0][0]
+            } else {
               color = arrRankingColor[0][0]
+            }
+          } else if (haveColorReverseIndex !== null) {
+            index = haveColorReverseIndex
+            color = null
+          } else if (haveColorSkipIndex !== null) {
+            index = haveColorSkipIndex
+            color = null
+          } else if (haveColorIndex !== null) {
+            index = haveColorIndex
+            color = null
           } else {
-            color = arrRankingColor[0][0]
+            // robar carta
+            index = null
+            color = null
           }
-        } else if (haveCd4Index !== null) {
-          index = haveCd4Index
-          color = arrRankingColor[0][0]
         } else {
-          // robar carta
-          index = null
-          color = null
+          if (haveColorReverseIndex !== null) {
+            index = haveColorReverseIndex
+            color = null
+          } else if (haveColorSkipIndex !== null) {
+            index = haveColorSkipIndex
+            color = null
+          } else if (haveColorIndex !== null) {
+            index = haveColorIndex
+            color = null
+          } else if (haveNumberIndex !== null) {
+            index = haveNumberIndex
+            color = null
+          } else if (haveColorD2Index !== null) {
+            index = haveColorD2Index
+            color = null
+          } else if (haveCIndex !== null) {
+            index = haveCIndex
+            if (nextColor === arrRankingColor[0][0]) {
+              if (arrRankingColor[1][1] > 0)
+                color = arrRankingColor[1][0]
+              else
+                color = arrRankingColor[0][0]
+            } else {
+              color = arrRankingColor[0][0]
+            }
+          } else if (haveCd4Index !== null) {
+            index = haveCd4Index
+            color = arrRankingColor[0][0]
+          } else {
+            // robar carta
+            index = null
+            color = null
+          }
         }
-      }
-      if (index === null) {
-        if (!iHaveACard) {
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
+        if (index === null) {
+          if (!iHaveACard) {
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            iHaveACard = true
+            keepTurn = true
+          } else {
+            pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.uno.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+            Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.uno.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
           }
-          Object.entries(playersUno)[unoTurn][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          iHaveACard = true
+        } else {
+          let aux = Object.entries(playersUno)[unoTurn][1].cards.splice(index, 1)[0].card
+          pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+          Object.entries(playersUno)[unoTurn][1].pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+
+          if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
+            finishRound = true
+            unoWin = unoTurn
+            playersUno = unoFinishWin(unoWin, playersUno)
+            round++
+          }
+
+          if (aux.n === '+4') {
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+            pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+            Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
+          } else if (aux.n === '+2') {
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            if (cards.length === 0) {
+              let obj = initCardsAgain(pile)
+              cards = obj.cards
+              pile = obj.pile
+            }
+            Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
+            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+            pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+            Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
+          } else if (aux.n === 'r') {
+            nextTurnStep = nextTurnStep * (-1)
+          } else if (aux.n === 's') {
+            unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+            pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+            Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
+          }
+
         }
-      } else {
-        let aux = Object.entries(playersUno)[unoTurn][1].cards.splice(index, 1)[0].card
-        pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
-        Object.entries(playersUno)[unoTurn][1].pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
 
-        if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
-          finishRound = true
-          unoWin = unoTurn
-          playersUno = unoFinishWin(unoWin, playersUno)
-          round++
-        }
+        if (!keepTurn) break
 
-        if (aux.n === '+4') {
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-        } else if (aux.n === '+2') {
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          if (cards.length === 0) {
-            let obj = initCardsAgain(pile)
-            cards = obj.cards
-            pile = obj.pile
-          }
-          Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
-          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-        } else if (aux.n === 'r') {
-          nextTurnStep = nextTurnStep * (-1)
-        } else if (aux.n === 's') {
-          unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-        }
-
-      }
-
+      } // while
     } // else
 
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
@@ -617,10 +656,9 @@ function PlayGameMultiple(props) {
     if (finishRound) return obj
     if (unoTurn === Object.entries(playersUno).length - 1) return obj
 
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    //let drawDone = pile[pile.length - 1].drawDone
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -690,6 +728,12 @@ function PlayGameMultiple(props) {
       }
       Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+      pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+      Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
     } else if (selectedCard.n === '+2') {
       if (cards.length === 0) {
         let obj = initCardsAgain(pile)
@@ -704,10 +748,22 @@ function PlayGameMultiple(props) {
       }
       Object.entries(playersUno)[nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)][1].cards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+      pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+      Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
     } else if (selectedCard.n === 'r') {
       nextTurnStep = nextTurnStep * (-1)
     } else if (selectedCard.n === 's') {
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+
+
+      pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+      Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'lostTurn', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+
+
     }
 
     unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
@@ -719,10 +775,10 @@ function PlayGameMultiple(props) {
   const pickACard = (obj) => {
     let { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep } = obj
     if (finishRound) return obj
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    //let drawDone = pile[pile.length - 1].drawDone
+
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -761,16 +817,18 @@ function PlayGameMultiple(props) {
     })
 
     if (!iCanPlay) {
+      pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
+      Object.entries(playersUno)[unoTurn][1].pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: Object.entries(playersUno)[unoTurn][1].user._id, color: null, drawDone: true, numberPlay: numberPlay, name: Object.entries(playersUno)[unoTurn][1].user.name })
       unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
       playerPickCard = false
     } else {
       playerPickCard = true
     }
 
-    if (!iCanPlay && playerPickCard) {
-      unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
-      playerPickCard = false
-    }
+    //if (!iCanPlay && playerPickCard) {
+    //  unoTurn = nextPlayer(unoTurn, nextTurnStep, Object.entries(playersUno).length)
+    //  playerPickCard = false
+    //}
 
     //console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
 
@@ -1048,7 +1106,7 @@ function PlayGameMultiple(props) {
                       return (
                         <ContainerColumn key={ind + ele.user_id}>
                           <PUnoLit>{ele.name.substr(0,6)}</PUnoLit>
-                          <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                          <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} lastCard={values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1]} />
                           <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].user.name.substr(0,6)}</PUnoLit>
                         </ContainerColumn>
                       )
@@ -1125,9 +1183,9 @@ function PlayGameMultiple(props) {
                                 </ContainerRow>
 
                                 { (ele.card.c === 'wild' ||
-                                    ele.card.c === values.pile[values.pile.length - 1].card.c ||
-                                    ele.card.n === values.pile[values.pile.length - 1].card.n ||
-                                    ele.card.c === values.pile[values.pile.length - 1].color) &&
+                                    ele.card.c === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].card.c ||
+                                    ele.card.n === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].card.n ||
+                                    ele.card.c === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].color) &&
                                     !values.finishRound && values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
                                   (<ContainerRow>
                                     <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>

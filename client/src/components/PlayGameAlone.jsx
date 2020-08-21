@@ -158,16 +158,15 @@ function PlayGameAlone (props) {
   const initCardsAgain = (pile) => {
     let cards = []
     //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
-    pile.forEach((ele, ind) => {
-      cards.unshift(ele.card)
-    })
+    pile.filter(ele => ele.card.c !== null && ele.card.o !== null).forEach(ele => cards.unshift(ele.card))
 
     cards.shift()
     //console.log('cards', cards, cards.length, 'pile', pile, pile.length)
     const getRandomValue = (i, N) => Math.floor(Math.random() * (N - i) + i)
     cards.forEach( (elem, i, arr, j = getRandomValue(i, arr.length)) => [arr[i], arr[j]] = [arr[j], arr[i]] )
 
-    let last = pile[pile.length - 1]
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let last = pilef[pilef.length - 1]
     //console.log('last', last)
     let pileAux = []
     pileAux.push(last)
@@ -202,10 +201,10 @@ function PlayGameAlone (props) {
 
     if (!unoTurn) return
 
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    let drawDone = pile[pile.length - 1].drawDone
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
+    let drawDone = pilef[pilef.length - 1].drawDone
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
     let arrHaveColorIndex = [], arrHaveNumberIndex = [], haveColorIndex = null, haveNumberIndex = null, haveCIndex = null, haveCd4Index = null, haveColorD2Index = null, haveColorReverseIndex = null, haveColorSkipIndex = null, rankingColor = { 'red': 0, 'yellow': 0, 'green': 0, 'blue': 0 }, rankingNumber = { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '+2': 0, 's': 0, 'r': 0 }
@@ -237,7 +236,13 @@ function PlayGameAlone (props) {
       unoCards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = false
       playerPickCard = false
-      pile[pile.length - 1].drawDone = true
+      for (let i = pile.length - 1; i >= 0; i--) {
+        let ele = pile[i]
+        if (ele.card.c !== null && ele.card.n !== null && ele.card.o !== null) {
+          pile[i].drawDone = true
+          break
+        }
+      }
       setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard,
                             unoCards: unoCards, cards: cards, numberPlay: numberPlay + 1 }))
       return
@@ -256,17 +261,23 @@ function PlayGameAlone (props) {
       unoCards.push({ card: cards.pop(), numberPlay: numberPlay })
       unoTurn = false
       playerPickCard = false
-      pile[pile.length - 1].drawDone = true
+      for (let i = pile.length - 1; i >= 0; i--) {
+        let ele = pile[i]
+        if (ele.card.c !== null && ele.card.n !== null && ele.card.o !== null) {
+          pile[i].drawDone = true
+          break
+        }
+      }
       setValues(values => ({ ...values, unoTurn: unoTurn, pile: pile, playerPickCard: playerPickCard,
                             unoCards: unoCards, cards: cards, numberPlay: numberPlay + 1 }))
       return
     } else {
       let iHaveACard = false, keepTurn = false, index = null, color = null
       while (true) {
-        lastCardPile = pile[pile.length - 1].card
-        //lastPlayerPile = pile[pile.length - 1].player
-        lastColorPile = pile[pile.length - 1].color
-        drawDone = pile[pile.length - 1].drawDone
+        let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+        lastCardPile = pilef[pilef.length - 1].card
+        lastColorPile = pilef[pilef.length - 1].color
+        drawDone = pilef[pilef.length - 1].drawDone
         nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
         nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
         arrHaveColorIndex = []
@@ -406,7 +417,11 @@ function PlayGameAlone (props) {
           }
         }
         if (index === null) {
-          if (iHaveACard) break
+          if (iHaveACard) {
+            pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.uno.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+            unoCardsPile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.uno.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+            break
+          }
           if (cards.length === 0) {
             let obj = initCardsAgain(pile)
             cards = obj.cards
@@ -535,10 +550,9 @@ function PlayGameAlone (props) {
     if (document.getElementById('color-' + event.target.id)) {
       if (!document.getElementById('color-' + event.target.id).value) return
     }
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    //let drawDone = pile[pile.length - 1].drawDone
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -601,12 +615,12 @@ function PlayGameAlone (props) {
 
   const handleClickPickCard = (event) => {
     if (event) event.preventDefault()
-    let { playerCards, cards, pile, playerPickCard, unoTurn, finishRound, numberPlay } = values
+    let { playerCards, cards, pile, playerPickCard, unoTurn, finishRound, numberPlay, playerCardsPile } = values
     if (finishRound) return
-    let lastCardPile = pile[pile.length - 1].card
-    //let lastPlayerPile = pile[pile.length - 1].player
-    let lastColorPile = pile[pile.length - 1].color
-    //let drawDone = pile[pile.length - 1].drawDone
+
+    let pilef = pile.filter(ele => ele.card.c !== null && ele.card.o !== null)
+    let lastCardPile = pilef[pilef.length - 1].card
+    let lastColorPile = pilef[pilef.length - 1].color
     let nextNumber = lastCardPile.c === 'wild' ? null : lastCardPile.n
     let nextColor = lastColorPile === null ? lastCardPile.c : lastColorPile
 
@@ -645,21 +659,23 @@ function PlayGameAlone (props) {
     })
 
     if (!iCanPlay) {
+      pile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.player.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.player.user_id.name })
+      playerCardsPile.push({ card: { c: null, n: 'pickedCard', o: null }, user_id: state.player.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.player.user_id.name })
       unoTurn = true
       playerPickCard = false
     } else {
       playerPickCard = true
     }
 
-    if (!iCanPlay && playerPickCard) {
-      unoTurn = true
-      playerPickCard = false
-    }
+    //if (!iCanPlay && playerPickCard) {
+    //  unoTurn = true
+    //  playerPickCard = false
+    //}
 
     //console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
 
     setValues(values => ({ ...values, playerCards: playerCards, cards: cards, pile: pile,
-                                      playerPickCard: playerPickCard, unoTurn:unoTurn, numberPlay: numberPlay }))
+                                      playerPickCard: playerPickCard, unoTurn:unoTurn, numberPlay: numberPlay, playerCardsPile: playerCardsPile }))
   }
 
   const handleClickCancelGame = (event) => {
@@ -767,7 +783,7 @@ function PlayGameAlone (props) {
                   return (
                     <ContainerColumn key={ind}>
                       <PUnoLit>{ele.name.substr(0,6)}</PUnoLit>
-                      <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
+                      <Card name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} lastCard={values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1]} />
                     </ContainerColumn>
                   )
                 else
@@ -802,9 +818,9 @@ function PlayGameAlone (props) {
                 </ContainerRow>
 
                 { (ele.card.c === 'wild' ||
-                    ele.card.c === values.pile[values.pile.length - 1].card.c ||
-                    ele.card.n === values.pile[values.pile.length - 1].card.n ||
-                    ele.card.c === values.pile[values.pile.length - 1].color) && !values.finishRound &&
+                    ele.card.c === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].card.c ||
+                    ele.card.n === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].card.n ||
+                    ele.card.c === values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null)[values.pile.filter(ele => ele.card.c !== null && ele.card.o !== null).length - 1].color) && !values.finishRound &&
                   <ContainerRow>
                     <PileCard onClick={handleClickPileCard} id={ind}> Play Card </PileCard>
                   </ContainerRow>
