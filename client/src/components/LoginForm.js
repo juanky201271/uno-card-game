@@ -66,11 +66,11 @@ function LoginForm() {
         (<>
           <form className="form-inline" onSubmit={handleSubmit}>
            <Container>
-             <label>Email address:</label>
+             <label>Email:</label>
              <input type="email" className="form-control" id="email" onChange={handleChange} value={values ? values.email : ''} required />
            </Container>
            <Container>
-             <label>Password:</label>
+             <label>Pwd:</label>
              <input type="password" className="form-control" id="pwd" onChange={handleChange} value={values ? values.pwd : ''} required />
            </Container>
            <button type="submit" className="btn btn-secondary" style={{margin: '5px 5px 5px 5px'}}>Log in</button>

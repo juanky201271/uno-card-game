@@ -3,8 +3,6 @@ import { GameContext, Card, MiniCard, socket, Points } from '../components'
 import api from '../api'
 import styled from 'styled-components'
 
-const StartGame = styled.button.attrs({ className: 'btn btn-secondary' })
-``
 const WrapperGen = styled.div
 `
   margin: 5px 5px 5px 5px;
@@ -44,14 +42,6 @@ const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
   width: 125px;
   font-size: 10px;
 `
-const PUnoLitNumber = styled.div.attrs({ className: 'text-dark text-center' })
-`
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
-  border: 1px solid black;
-  border-radius: 10px;
-`
 const PMe = styled.p.attrs({ className: 'text-secondary' })
 `
   font-size: 35px;
@@ -65,6 +55,16 @@ const PWinner = styled.p.attrs({ className: 'text-secondary d-flex justify-conte
 const PScore = styled.div.attrs({ className: 'text-dark text-center' })
 `
   font-size: 15px;
+`
+const StartGame = styled.button.attrs({ className: 'btn btn-secondary' })
+``
+const PUnoLitNumber = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
 `
 
 const cardsOrder = [
@@ -961,13 +961,13 @@ function PlayGameMultiple(props) {
 
   useEffect(() => {
    //console.log('uno Play')
-    play(1)
+    play()
   })
 
  //console.log('play multiplayer game render', state, values)
   return (
     <WrapperGen>
-      <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
+      <div style={{ display: 'none' }} style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
         ::: {response} :::
       </div>
       <hr />
@@ -1027,16 +1027,16 @@ function PlayGameMultiple(props) {
                       return(
                        ele.user_id === state.user._id ?
                         (
-                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+                          <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
                         )
                         :
                         !ele.user_id ?
                         (
-                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
+                          <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
                         )
                         :
                         (
-                          <MiniCard name={ele.name} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
+                          <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
                         )
                       )
                     else
@@ -1047,9 +1047,9 @@ function PlayGameMultiple(props) {
                     if (ind === values.pile.length - 1)
                       return (
                         <ContainerColumn key={ind + ele.user_id}>
-                          <PUnoLit>{ele.name}</PUnoLit>
+                          <PUnoLit>{ele.name.substr(0,6)}</PUnoLit>
                           <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
-                          <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].user.name}</PUnoLit>
+                          <PUnoLit>NEXT : {Object.entries(values.playersUno)[values.unoTurn][1].user.name.substr(0,6)}</PUnoLit>
                         </ContainerColumn>
                       )
                     else
@@ -1069,7 +1069,7 @@ function PlayGameMultiple(props) {
                         <ContainerRow style={ values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) ? { border: '3px solid black'} : { border: '0px solid black' }}>
                           <PUnoLitNumber> {i + 1} </PUnoLitNumber>
                           {!(values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i)) &&
-                            <PUno>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name}</PUno>
+                            <PUno>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name.substr(0,6)}</PUno>
                           }
                           <PScore> ({a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.score}) </PScore>
                           {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&

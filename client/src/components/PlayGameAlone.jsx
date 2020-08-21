@@ -42,10 +42,6 @@ const PUnoLit = styled.div.attrs({ className: 'text-dark text-center' })
   width: 125px;
   font-size: 10px;
 `
-const PScore = styled.div.attrs({ className: 'text-dark text-center' })
-`
-  font-size: 15px;
-`
 const PMe = styled.p.attrs({ className: 'text-secondary' })
 `
   font-size: 35px;
@@ -55,6 +51,10 @@ const PWinner = styled.p.attrs({ className: 'text-secondary d-flex justify-conte
 `
   font-size: 70px;
   text-shadow: 2px 2px 2px #000000;
+`
+const PScore = styled.div.attrs({ className: 'text-dark text-center' })
+`
+  font-size: 15px;
 `
 
 const cardsOrder = [
@@ -192,7 +192,7 @@ function PlayGameAlone (props) {
       while (true) {
         let aux = cards.pop()
         if (['red', 'yellow', 'green', 'blue'].includes(aux.c) && [0,1,2,3,4,5,6,7,8,9].includes(aux.n)) {
-          pile.push({ card: aux, user_id: null, color: null, drawDone: true, numberPlay: numberPlay })
+          pile.push({ card: aux, user_id: null, color: null, drawDone: true, numberPlay: numberPlay, name: '---' })
           break
         } else {
           cards.unshift(aux)
@@ -416,8 +416,8 @@ function PlayGameAlone (props) {
           iHaveACard = true
         } else {
           let aux = unoCards.splice(index, 1)[0].card
-          pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay })
-          unoCardsPile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay })
+          pile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
+          unoCardsPile.push({ card: aux, user_id: state.uno.user_id._id, color: color, drawDone: true, numberPlay: numberPlay, name: state.uno.user_id.name })
 
           if (aux.n === '+4') {
             if (cards.length === 0) {
@@ -548,8 +548,8 @@ function PlayGameAlone (props) {
     if (selectedCard.n === 'c' || selectedCard.n === '+4') {
       let inputColor = document.getElementById('color-' + event.target.id).value
       selectedCard = playerCards.splice(event.target.id, 1)[0].card
-      pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: false, numberPlay: numberPlay })
-      playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: true, numberPlay: numberPlay })
+      pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: false, numberPlay: numberPlay, name: state.player.user_id.name })
+      playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: inputColor, drawDone: true, numberPlay: numberPlay, name: state.player.user_id.name })
       unoTurn = true
     } else {
       if (selectedCard.c !== nextColor && selectedCard.n !== nextNumber) {
@@ -557,8 +557,8 @@ function PlayGameAlone (props) {
         return
       } else {
         selectedCard = playerCards.splice(event.target.id, 1)[0].card
-        pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: false, numberPlay: numberPlay })
-        playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: true, numberPlay: numberPlay })
+        pile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: false, numberPlay: numberPlay, name: state.player.user_id.name })
+        playerCardsPile.push({ card: selectedCard, user_id: state.player.user_id._id, color: null, drawDone: true, numberPlay: numberPlay, name: state.player.user_id.name })
         if (!(selectedCard.n === 'r' || selectedCard.n === 's')) {
           unoTurn = true
         }
@@ -746,16 +746,16 @@ function PlayGameAlone (props) {
                   return(
                    ele.user_id === state.player.user_id._id ?
                     (
-                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
+                      <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="end" width={50} height={35} />
                     )
                     :
                     ele.user_id === state.uno.user_id._id ?
                     (
-                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
+                      <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="start" width={50} height={35} />
                     )
                     :
                     (
-                      <MiniCard color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
+                      <MiniCard name={ele.name.substr(0,6)} color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} align="center" width={50} height={35} />
                     )
                   )
                 else
@@ -765,9 +765,10 @@ function PlayGameAlone (props) {
               {values.pile.map((ele, ind) => {
                 if (ind === values.pile.length - 1)
                   return (
-                    <ContainerRow key={ind}>
+                    <ContainerColumn key={ind}>
+                      <PUnoLit>{ele.name.substr(0,6)}</PUnoLit>
                       <Card color={ele.card.c} wildColor={ele.color} number={ele.card.n} order={ele.card.o} lastPlay={(ele.numberPlay >= values.numberPlay - 1)} width={125} height={200} />
-                    </ContainerRow>
+                    </ContainerColumn>
                   )
                 else
                   return ('')

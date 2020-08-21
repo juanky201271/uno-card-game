@@ -72,7 +72,7 @@ function SignUpForm() {
              <input type="email" className="form-control" id="email" onChange={handleChange} value={values ? values.email: ''} required />
            </Container>
            <Container>
-             <label>Password:</label>
+             <label>Pwd:</label>
              <input type="password" className="form-control" id="password" onChange={handleChange} value={values ? values.password : ''} required />
            </Container>
            <ContainerRow>
