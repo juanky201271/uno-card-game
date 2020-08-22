@@ -1,10 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react'
 import api from '../api'
-//import socketIOClient from "socket.io-client"
 import { GameContext, GameForm, socket } from '../components'
 import styled from 'styled-components'
 
-//const ENDPOINT = process.env.PUBLIC_URL
 const Container = styled.div.attrs({ className: "container" })
 `
   padding: 10px;
@@ -46,7 +44,6 @@ const PUno = styled.div.attrs({ className: 'text-dark text-center' })
 `
   font-size: 15px;
 `
-//const socket = socketIOClient(ENDPOINT)
 
 function ChooseGame() {
 

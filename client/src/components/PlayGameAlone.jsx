@@ -353,7 +353,14 @@ function PlayGameAlone (props) {
             color = null
           } else if (haveCd4Index !== null) {
             index = haveCd4Index
-            color = arrRankingColor[0][0]
+            if (nextColor === arrRankingColor[0][0]) {
+              if (arrRankingColor[1][1] > 0)
+                color = arrRankingColor[1][0]
+              else
+                color = arrRankingColor[0][0]
+            } else {
+              color = arrRankingColor[0][0]
+            }
           } else if (haveNumberIndex !== null) {
             index = haveNumberIndex
             color = null
@@ -409,7 +416,14 @@ function PlayGameAlone (props) {
             }
           } else if (haveCd4Index !== null) {
             index = haveCd4Index
-            color = arrRankingColor[0][0]
+            if (nextColor === arrRankingColor[0][0]) {
+              if (arrRankingColor[1][1] > 0)
+                color = arrRankingColor[1][0]
+              else
+                color = arrRankingColor[0][0]
+            } else {
+              color = arrRankingColor[0][0]
+            }
           } else {
             // robar carta
             index = null
@@ -667,13 +681,6 @@ function PlayGameAlone (props) {
       playerPickCard = true
     }
 
-    //if (!iCanPlay && playerPickCard) {
-    //  unoTurn = true
-    //  playerPickCard = false
-    //}
-
-    //console.log('unoTurn', unoTurn, 'playerPickCard', playerPickCard)
-
     setValues(values => ({ ...values, playerCards: playerCards, cards: cards, pile: pile,
                                       playerPickCard: playerPickCard, unoTurn:unoTurn, numberPlay: numberPlay, playerCardsPile: playerCardsPile }))
   }
@@ -681,7 +688,7 @@ function PlayGameAlone (props) {
   const handleClickCancelGame = (event) => {
     if (event) event.preventDefault()
     socket.emit('cancel game alone', { user_id: state.user._id }, state.game._id)
-    setState(state => ({ ...state, game: null, player: null, uno: null }))
+    //setState(state => ({ ...state, game: null, player: null, uno: null }))
   }
 
   const handleClickNewGame = (event) => {
@@ -701,6 +708,23 @@ function PlayGameAlone (props) {
 
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState(init())
+
+  useEffect(() => {
+    socket.on("log out", (obj, id, listClients) => {
+     //console.log('emit log out', obj, id, listClients)
+      setState(state =>({ ...state, listUserGame: listClients }))
+      socket.emit('cancel game alone', { user_id: state.user._id }, state.game._id)
+    })
+    socket.on("cancel game alone", (obj, id, listClients, message) => {
+      if (state.game.creator_id._id === state.user._id) {
+       //console.log('emit cancel game alone', obj, id, listClients)
+        setState(state => ({ ...state, game: null, player: null, uno: null }))
+      }
+    })
+
+    //return (() => socket.disconnect())
+
+  }, [])
 
   useEffect(() => {
     //console.log('uno Play')
