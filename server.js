@@ -46,6 +46,8 @@ const listClients = {}
 
 io.on("connection", (socket) => {
   console.log("New client connected " + socket.id)
+  io.sockets.in(socket.id).emit('new connection', {}, socket.id, listClients)
+
   socket.on('log in', function (obj) {
     listClients[socket.id] = { user_id: obj.user_id }
     io.sockets.emit('log in', obj, socket.id, listClients)
@@ -82,6 +84,7 @@ io.on("connection", (socket) => {
       if (ele[1].game_id === game_id) listClients[ele[0]] = { user_id: ele[1].user_id }
     })
     io.sockets.in("game-" + game_id).emit('cancel game', obj, socket.id, listClients, message)
+    socket.leave("game-" + obj.game_id)
     console.log(message)
   })
   socket.on('cancel game alone', function (obj, game_id) {
@@ -96,6 +99,7 @@ io.on("connection", (socket) => {
     let message = "cancel"
     listClients[socket.id] = { user_id: obj.user_id }
     io.sockets.emit('cancel', obj, socket.id, listClients, message)
+    socket.leave("game-" + obj.game_id)
     console.log(message)
   })
   socket.on('sincro view', function (obj, game_id) {
