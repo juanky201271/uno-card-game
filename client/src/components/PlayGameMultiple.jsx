@@ -921,10 +921,8 @@ function PlayGameMultiple(props) {
     })
     socket.on("log out", (obj, id, listClients) => {
      //console.log('emit log out', obj, id, listClients)
-      setState(state => ({ }))
-      setValues(values => ({ }))
       setState(state =>({ ...state, listUserGame: listClients }))
-      //socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
+      socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
       setResponse(obj.message)
     })
     socket.on("start", (obj, id, listClients) => {
