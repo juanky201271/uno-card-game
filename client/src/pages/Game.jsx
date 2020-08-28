@@ -8,7 +8,6 @@ const WrapperGen = styled.div
   margin: 5px 5px 5px 5px;
   padding: 10px 10px 10px 10px;
 `
-
 const Title = styled.h1.attrs({ className: 'h2' })
 `
   margin: 5px 5px 5px 5px;
@@ -25,33 +24,34 @@ function Game (props) {
   const [ values, setValues ] = useState({})
 
   useEffect(() => {
-    socket.on("log in", (obj, id, listClients) => {
-      //console.log('emit log in', obj, id, listClients)
+    socket.on("new connection", (obj, socket_id, listClients, message) => {
+      fetchData(listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
     })
-    socket.on("log out", (obj, id, listClients) => {
-      //console.log('emit log out', obj, id, listClients)
+    socket.on("log in", (obj, socket_id, listClients, message) => {
+      fetchData(listClients)
       setState(state =>({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
+    })
+    socket.on("log out", (obj, socket_id, listClients, message) => {
+      fetchData(listClients)
+      setState(state =>({ ...state, listUserGame: listClients }))
+    })
+    socket.on("new disconnect", (obj, socket_id, listClients, message) => {
+      fetchData(listClients)
+      setState(state =>({ ...state, listUserGame: listClients }))
     })
   }, [])
 
-  useEffect(() => {
-    let ignore = false
+  //useEffect(() => {
+  //  let ignore = false
 
-    async function fetchData() {
+    async function fetchData(list) {
       var listUsers = ''
-
-      //console.log(games.data.data)
-      if (state.listUserGame) {
-        let ret = null
-        for (let i = 0; i < Object.entries(state.listUserGame).length; i++) {
-          let ele = Object.entries(state.listUserGame)[i]
- //console.log(ele[1].user_id)
+      if (list) {
+        for (let i = 0; i < Object.entries(list).length; i++) {
+          let ele = Object.entries(list)[i]
 
           await api.getUserById(ele[1].user_id).then(user => {
-            //console.log('user', user.data.data.name)
             listUsers += user.data.data.name + ' // '
           })
           .catch(error => {
@@ -59,16 +59,14 @@ function Game (props) {
           })
 
         }
-
       }
-
-      if (!ignore) setValues(values => ({ ...values, listUsers: listUsers }))
+      setValues(values => ({ ...values, listUsers: listUsers }))
     }
 
-    fetchData()
-    return () => { ignore = true }
+    //fetchData()
+    //return () => { ignore = true }
 
-  }, [state])
+  //}, [state])
 
   //console.log('game', values, state)
   return (

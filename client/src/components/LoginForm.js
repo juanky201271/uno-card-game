@@ -1,12 +1,10 @@
 import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import api from '../api'
-//import socketIOClient from "socket.io-client"
 import { GameContext } from './GameContext'
 import SignUpForm from './SignUpForm'
 import socket from './socket'
 
-//const ENDPOINT = process.env.PUBLIC_URL
 const Container = styled.div.attrs({ className: "form-group" })
 `
   padding: 5px;
@@ -17,14 +15,11 @@ const ContainerExt = styled.div.attrs({ className: "d-flex flex-column justify-c
 `
 const LabelRed = styled.label.attrs({ className: "text-danger" })
 ``
-//const socket = socketIOClient(ENDPOINT)
 
 function LoginForm() {
 
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState({})
-
-  //const socket = state.socket
 
   const handleSubmit = (event) => {
     if (event) event.preventDefault()
@@ -46,15 +41,20 @@ function LoginForm() {
 
     await api.getUserByEmail(values.email).then(user => {
       if (user.data.data.password === values.pwd) {
-        socket.emit('log in', { message: 'User ' + user.data.data.name + ' Log in.', user_id: user.data.data._id });
-        setState(state => ({ ...state, user: user.data.data }))
+        //console.log('---', Object.entries(state.listUserGame), user.data.data._id)
+        if (Object.entries(state.listUserGame).filter(ele => ele[1].user_id === user.data.data._id).length === 0) {
+          socket.emit('log in', {}, user.data.data._id, state.game ? state.game._id : null, 'User: ' + user.data.data.name + ' Log in.');
+          setState(state => ({ ...state, user: user.data.data }))
+        } else {
+          setValues(values => ({ ...values, message: 'You are already log in.' }))
+        }
       } else {
         setValues(values => ({ ...values, message: 'User or Password incorrect, try again.' }))
       }
     })
     .catch(error => {
       console.log(error)
-      setValues(values => ({ ...values, message: 'User or Password incorrect, try again.' }))
+      setValues(values => ({ ...values, message: 'ERROR: User or Password incorrect, try again.' }))
     })
 
   }

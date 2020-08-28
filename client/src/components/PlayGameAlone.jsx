@@ -687,8 +687,7 @@ function PlayGameAlone (props) {
 
   const handleClickCancelGame = (event) => {
     if (event) event.preventDefault()
-    socket.emit('cancel game alone', { user_id: state.user._id }, state.game._id)
-    //setState(state => ({ ...state, game: null, player: null, uno: null }))
+    socket.emit('cancel game alone', {}, state.user ? state.user._id : null, state.game ? state.game._id : null, 'Cancel alone game: ' + state.game.keyWord)
   }
 
   const handleClickNewGame = (event) => {
@@ -710,25 +709,22 @@ function PlayGameAlone (props) {
   const [ values, setValues ] = useState(init())
 
   useEffect(() => {
-    socket.on("log out", (obj, id, listClients) => {
-     //console.log('emit log out', obj, id, listClients)
-      setState(state =>({ ...state, listUserGame: listClients }))
-      socket.emit('cancel game alone', { user_id: state.user._id }, state.game._id)
-    })
-    socket.on("cancel game alone", (obj, id, listClients, message) => {
-      if (state.game.creator_id._id === state.user._id) {
-       //console.log('emit cancel game alone', obj, id, listClients)
-        setState(state => ({ ...state, game: null, player: null, uno: null }))
+    socket.on("cancel game alone", (obj, socket_id, listClients, message) => {
+      if (socket.id === socket_id) {
+        console.log('emit cancel game alone', obj, socket_id, listClients, message)
+        setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
+      } else {
+        setState(state => ({ ...state, listUserGame: listClients }))
       }
+      setValues(values => ({ ...values, ...obj }))
     })
-
-    //return (() => socket.disconnect())
 
   }, [])
 
   useEffect(() => {
     //console.log('uno Play')
-    unoPlay()
+    if (state.game && state.player && state.uno)
+      unoPlay()
   })
 
   //console.log('play game render', state, values)

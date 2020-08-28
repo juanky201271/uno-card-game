@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import api from '../api'
 import { GameContext } from './GameContext'
+import socket from './socket'
 
 const Container = styled.div.attrs({ className: "form-group" })
 `
@@ -64,6 +65,7 @@ function LoginForm() {
             //console.log(playerUNO.data.data)
             setValues(values => ({ players: 'Alone', cards: '7' }))
             setState(state => ({ ...state, addGame: false }))
+            socket.emit('add game', {}, state.user ? state.user._id : null, state.game ? state.game._id : null, 'Add game with name: ' + game.data.data.name)
           })
           .catch(error => {
             console.log(error)

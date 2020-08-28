@@ -149,7 +149,7 @@ const value = { '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, 
 function PlayGameMultiple(props) {
 
   const init = () => {
-    if (state.game.creator_id._id === state.user._id) {
+    //if (state.game.creator_id._id === state.user._id) {
       let cards = [...cardsOrder], pile = []
       const getRandomValue = (i, N) => Math.floor(Math.random() * (N - i) + i)
       cards.forEach( (elem, i, arr, j = getRandomValue(i, arr.length)) => [arr[i], arr[j]] = [arr[j], arr[i]] )
@@ -161,11 +161,11 @@ function PlayGameMultiple(props) {
 
       return ({unoTurn: -1, playerPickCard: false, startGame: false, nextTurnStep: 1,
               cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: -1,
-              numCards: Number(state.game.cards), mySocket: null, round: state.game.curr_round,
+              numCards: Number(state.game.cards), round: state.game.curr_round,
               viewUnoCards: false, playersUno: {}, cardIndex: -1, wildColor: null, pickCard: false, checkUno: false })
-    } else {
-      return ({})
-    }
+    //} else {
+    //  return ({})
+    //}
   }
 
   const initCardsAgain = (pile) => {
@@ -202,15 +202,11 @@ function PlayGameMultiple(props) {
         checkUno,
         startGame,
         viewUnoCards,
-        mySocket,
         round} = values
 
     if (state.game.creator_id._id !== state.user._id) return
-    if (!values.startGame) return
-    socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
-      unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      viewUnoCards: viewUnoCards }, state.game._id)
-    if (values.finishRound) return
+    if (!startGame) return
+    if (finishRound) return
 
     let firstTime = false
     if (Object.entries(playersUno).length === 0) {
@@ -299,9 +295,9 @@ function PlayGameMultiple(props) {
           setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
             viewUnoCards: viewUnoCards, round: round }))
-          socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
+          socket.emit('sincro game', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-            viewUnoCards: viewUnoCards, round: round }, state.game._id)
+            viewUnoCards: viewUnoCards, round: round }, state.user._id, state.game._id, 'User: ' + state.user.name + ' first sincronizing multiple game: ' + state.game.keyWord)
         }
         return
       }
@@ -310,9 +306,9 @@ function PlayGameMultiple(props) {
     setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
       viewUnoCards: viewUnoCards, round: round }))
-    socket.emit('sincro', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
+    socket.emit('sincro game', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      viewUnoCards: viewUnoCards, round: round }, state.game._id)
+      viewUnoCards: viewUnoCards, round: round }, state.user._id, state.game._id, 'User: ' + state.user.name + ' end sincronizing multiple game: ' + state.game.keyWord)
   }
 
   const nextPlayer = (unoTurn, nextTurnStep, length) => {
@@ -848,16 +844,16 @@ function PlayGameMultiple(props) {
   const handleClickStartGame = (event) => {
     if (event) event.preventDefault()
     if (Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length < 2) return
-    socket.emit('start', { message: 'Player ' + state.user.name + ' Start the game ' + state.game.keyWord + '.', user_id: state.user._id, game_id: state.game._id });
+    socket.emit('start game', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' Start the game: ' + state.game.keyWord)
   }
 
   const handleClickPileCard = (event) => {
     if (event) event.preventDefault()
     if (document.getElementById('color-' + event.target.id)) {
       if (!document.getElementById('color-' + event.target.id).value) return
-      socket.emit('pile card', { cardIndex: event.target.id, wildColor: document.getElementById('color-' + event.target.id).value, checkUno: document.getElementById('checkUno').checked }, state.game._id)
+      socket.emit('play card', { cardIndex: event.target.id, wildColor: document.getElementById('color-' + event.target.id).value, checkUno: document.getElementById('checkUno').checked }, state.user._id, state.game._id, 'User: ' + state.user.name + ' Play a card')
     } else {
-      socket.emit('pile card', { cardIndex: event.target.id, wildColor: null, checkUno: document.getElementById('checkUno').checked }, state.game._id)
+      socket.emit('play card', { cardIndex: event.target.id, wildColor: null, checkUno: document.getElementById('checkUno').checked }, state.user._id, state.game._id, 'User: ' + state.user.name + ' Play a card')
     }
   }
 
@@ -868,29 +864,27 @@ function PlayGameMultiple(props) {
 
   const handleClickPickCard = (event) => {
     if (event) event.preventDefault()
-    socket.emit('pick card', { pickCard: true  }, state.game._id)
+    socket.emit('pick card', { pickCard: true  }, state.user._id, state.game._id, 'User: ' + state.user.name + ' Pick a card')
   }
 
   const handleClickCancelGame = (event) => {
     if (event) event.preventDefault()
-    socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
+    socket.emit('cancel game multiple', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' Cancel running multiple game: ' + state.game.keyWord)
   }
 
   const handleClickCancel = (event) => {
     if (event) event.preventDefault()
-    socket.emit('cancel', { user_id: state.user._id }, state.game._id)
+    socket.emit('cancel game', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' Cancel game: ' + state.game.keyWord)
   }
 
   const handleClickNewGame = (event) => {
     if (event) event.preventDefault()
-    setValues(values => ({ ...values, ...init() }))
-    socket.emit('start', { message: 'Player ' + state.user.name + ' Start the game ' + state.game.keyWord + '.', user_id: state.user._id, game_id: state.game._id });
+    socket.emit('start game', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' Start new round of the game: ' + state.game.keyWord)
   }
 
   const handleViewUnoCards = (event) => {
     if (event) event.preventDefault()
-    socket.emit('sincro view', { viewUnoCards: !values.viewUnoCards }, state.game._id)
-    setValues(values => ({ ...values, viewUnoCards: !values.viewUnoCards }))
+    socket.emit('sincro view game', { viewUnoCards: !values.viewUnoCards }, state.user._id, state.game._id, 'User: ' + state.user.name + ' sincronizing view multiple game: ' + state.game.keyWord)
   }
 
   const handleChangeCheckUNO = (event) => {
@@ -900,109 +894,162 @@ function PlayGameMultiple(props) {
 
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState(init())
-  const [ response, setResponse ] = useState(" waiting ")
+  const [ response, setResponse ] = useState({ listMessages: [" waiting "] })
 
   useEffect(() => {
-    socket.on("log in", (obj, id, listClients) => {
-     //console.log('emit log in', obj, id, listClients)
-      setState(state =>({ ...state, listUserGame: listClients }))
-      setResponse(obj.message)
+    socket.on("new connection", (obj, socket_id, listClients, message) => {
+      //console.log('new connection', listClients, state.listUserGame)
+
+        if (socket.id === socket_id) {
+          setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+        }
+        else
+          setState(state =>({ ...state, listUserGame: listClients }))
+
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
     })
-    socket.on("game", (obj, id, listClients) => {
+    socket.on("log in", (obj, socket_id, listClients, message) => {
+     //console.log('emit log in', obj, id, listClients)
+
+        if (socket.id === socket_id) {
+          setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+        }
+        else
+          setState(state =>({ ...state, listUserGame: listClients }))
+
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
+    socket.on("game", (obj, socket_id, listClients, message) => {
      //console.log('emit game',obj, id, listClients)
-      api.getPlayersByGameId(obj.game_id).then(players => {
+      api.getPlayersByGameId(state.game._id).then(players => {
         setState(state => ({ ...state, players: players.data.data, listUserGame: listClients }))
-        setValues(values => ({ ...values, mySocket: socket.id, playersUno: (!values.playersUno ? {} : values.playersUno) }))
+        setValues(values => ({ ...values, playersUno: (!values.playersUno ? {} : values.playersUno) }))
       })
       .catch(error => {
         console.log(error)
       })
-      setResponse(obj.message)
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
     })
-    socket.on("log out", (obj, id, listClients) => {
-     //console.log('emit log out', obj, id, listClients)
-      setState(state =>({ ...state, listUserGame: listClients }))
-      socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
-      setResponse(obj.message)
-    })
-    socket.on("start", (obj, id, listClients) => {
-     //console.log('emit start', obj, id, listClients)
+
+    socket.on("start game", (obj, socket_id, listClients, message) => {
+      //console.log(socket.id, socket_id)
+      if (state.game.creator_id._id === state.user._id) {
+        setValues(values => ({ ...values, ...init(), startGame: true }))
+      }
       setState(state => ({ ...state, listUserGame: listClients }))
-      setValues(values => ({ ...values, startGame: true, mySocket: socket.id }))
-      setResponse(obj.message)
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
     })
-    socket.on("sincro", (obj, id, listClients, message) => {
+    socket.on("sincro game", (obj, socket_id, listClients, message) => {
+      //console.log('emit sincro', obj, id, listClients)
       if (state.game.creator_id._id !== state.user._id) {
-       //console.log('emit sincro', obj, id, listClients)
-        setState(state => ({ ...state, listUserGame: listClients }))
-        setValues(values => ({ ...values, ...obj, mySocket: socket.id }))
-        setResponse(message)
-      }
-    })
-    socket.on("pile card", (obj, id, listClients, message) => {
-      if (state.game.creator_id._id === state.user._id) {
-       //console.log('emit pile card', obj, id, listClients)
+        //console.log('No Creador: sincro game => actulizando values & state')
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
-        setResponse(message)
+        setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
       }
     })
-    socket.on("pick card", (obj, id, listClients, message) => {
+    socket.on("play card", (obj, socket_id, listClients, message) => {
+      //console.log('emit pile card', obj, id, listClients)
       if (state.game.creator_id._id === state.user._id) {
-       //console.log('emit pick card', obj, id, listClients)
         setState(state => ({ ...state, listUserGame: listClients }))
         setValues(values => ({ ...values, ...obj }))
-        setResponse(message)
+        setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
       }
     })
-    socket.on("cancel game", (obj, id, listClients, message) => {
-      //if (state.game.creator_id._id === state.user._id) {
-       //console.log('emit cancel', obj, id, listClients)
-        setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
-        setResponse(message)
-      //}
+    socket.on("pick card", (obj, socket_id, listClients, message) => {
+      //console.log('emit pick card', obj, id, listClients)
+      if (state.game.creator_id._id === state.user._id) {
+        setState(state => ({ ...state, listUserGame: listClients }))
+        setValues(values => ({ ...values, ...obj }))
+        setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+      }
     })
-    socket.on("new connection", (obj, id, listClients) => {
-      //if (state.game.creator_id._id === state.user._id) {
-       //console.log('emit cancel', obj, id, listClients)
-        setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
-        socket.emit('log out', { message: 'User ' + state.user.name + ' Log out.', user_id: state.user._id });
-        //socket.emit('cancel game', { user_id: state.user._id }, state.game._id)
-        //setResponse(message)
-      //}
+    socket.on("sincro view game", (obj, socket_id, listClients, message) => {
+       //console.log('emit sincro view', obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      setValues(values => ({ ...values, ...obj }))
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
     })
-    socket.on("cancel", (obj, id, listClients, message) => {
+    socket.on("cancel game multiple", (obj, socket_id, listClients, message) => {
+       //console.log('emit cancel', obj, id, listClients)
+        if (state.game.creator_id._id === state.user._id) {
+          //console.log('Creador: cancel game multiple => sincro game with init()')
+          socket.emit('sincro game', { ...init() }, state.user._id, state.game._id, 'User: ' + state.user.name + ' cancel sincronizing multiple game: ' + state.game.keyWord)
+          setValues(values => ({ ...values, ...init() }))
+        }
+        //console.log('Todos: cancel game multiple => actualizar state')
+        setState(state => ({ ...state, listUserGame: listClients }))
+        setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
+
+    socket.on("cancel game", (obj, socket_id, listClients, message) => {
      //console.log('emit cancel', obj, id, listClients)
-      if (obj.user_id === state.user._id) {
-        setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
+      if (socket.id === socket_id) {
+        setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
       } else {
         setState(state => ({ ...state, listUserGame: listClients }))
       }
-      setResponse(message)
-    })
-    socket.on("sincro view", (obj, id, listClients, message) => {
-      //if (state.game.creator_id._id !== state.user._id) {
-       //console.log('emit sincro view', obj, id, listClients)
-        setState(state => ({ ...state, listUserGame: listClients }))
-        setValues(values => ({ ...values, ...obj }))
-        setResponse(message)
-      //}
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
     })
 
-    //return (() => socket.disconnect())
+    socket.on("log out", (obj, socket_id, listClients, message) => {
+     //console.log('emit log out', obj, id, listClients)
+
+       //if (socket.id === socket_id) {
+      //    setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+       //} else {
+         setState(state => ({ ...state, listUserGame: listClients }))
+       //}
+       setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
+    socket.on("new disconnect", (obj, socket_id, listClients, message) => {
+      //console.log('new disconnect', listClients, state.listUserGame, socket_id)
+
+      //if (socket.id === socket_id) {
+      // setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+      //} else {
+       setState(state => ({ ...state, listUserGame: listClients }))
+      //}
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
+    socket.on("disconnect game", (obj, socket_id, listClients, message) => {
+       //console.log('disconnect game', listClients, state.listUserGame, socket_id)
+
+        if (state.game.creator_id._id === state.user._id) {
+          socket.emit('sincro game', { ...init() }, state.user._id, state.game._id, 'User: ' + state.user.name + ' disconnect sincronizing multiple game: ' + state.game.keyWord)
+          setValues(values => ({ ...values, ...init() }))
+        } else {
+          setValues(values => ({ ...values, ...init() }))
+        }
+        //socket.emit('cancel game multiple', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' Cancel/disconnect running multiple game: ' + state.game.keyWord)
+        setState(state => ({ ...state, listUserGame: listClients }))
+        setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
 
   }, [])
 
   useEffect(() => {
     //console.log('uno Play')
-    play()
+    if (state.game && state.player && state.uno)
+      play()
   })
 
- //console.log('play multiplayer game render', state, values)
+ //console.log('play multiplayer game render', state, values, response)
   return (
     <WrapperGen>
-      <div style={{ display: 'none' }} style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
-        ::: {response} :::
+      <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
+        <select>
+          {response.listMessages.map((ele, ind) => {
+            if (ind === response.listMessages.length - 1)
+              return (
+                <option selected value={ind}>{ele}</option>
+              )
+            else
+              return (
+                <option value={ind}>{ele}</option>
+              )
+          })}
+        </select>
       </div>
       <hr />
       { state.game.creator_id._id === state.user._id && !values.startGame &&
@@ -1027,7 +1074,7 @@ function PlayGameMultiple(props) {
         </ContainerRow>
       }
 
-      { values.startGame && !(Object.entries(values.playersUno).length > 0 && values.mySocket && values.playersUno[values.mySocket] ? values.playersUno[values.mySocket].user._id === state.user._id : false) &&
+      { values.startGame && !(Object.entries(values.playersUno).length > 0 && values.playersUno[socket.id] ? values.playersUno[socket.id].user._id === state.user._id : false) &&
         <ContainerRow>
           <p>The game is running now. Waiting for the principal player start a new round</p>
           <ContainerColumn>
@@ -1038,7 +1085,7 @@ function PlayGameMultiple(props) {
         </ContainerRow>
       }
 
-      { values.startGame && (Object.entries(values.playersUno).length > 0 && values.mySocket && values.playersUno[values.mySocket] ? values.playersUno[values.mySocket].user._id === state.user._id : false) &&
+      { values.startGame && (Object.entries(values.playersUno).length > 0 && values.playersUno[socket.id] ? values.playersUno[socket.id].user._id === state.user._id : false) &&
         (
           <ContainerColumn>
             <ContainerRow>

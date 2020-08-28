@@ -50,8 +50,6 @@ function ChooseGame() {
   const [ state, setState ] = useContext(GameContext)
   const [ values, setValues ] = useState({})
 
-  //const socket = state.socket
-
   const handleClickAddGame = (event) => {
     if (event) event.preventDefault()
     setState(state => ({ ...state, addGame: true }))
@@ -59,21 +57,19 @@ function ChooseGame() {
 
   const handleClickLogOut = (event) => {
     if (event) event.preventDefault()
-    setState(state => ({ }))
-    setValues(values => ({ }))
-    socket.emit('log out', { message: 'User ' + state.user.name + ' Log out.', user_id: state.user._id });
+    socket.emit('log out', {}, state.user ? state.user._id : null, state.game ? state.game._id : null, 'User: ' + state.user.name + ' Log out.' )
   }
 
   const handleClickDeleteGame = (event) => {
     event.persist()
     api.deleteGameById(event.target.id).then(game => {
       api.deletePlayersByGameId(event.target.id).then(players => {
-        setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+        //setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
+        socket.emit('delete game', {}, state.user ? state.user._id : null, state.game ? state.game._id : null, 'Delete game with name: ' + game.data.data.name)
       })
       .catch(error => {
         console.log(error)
       })
-      //console.log('delete', game)
     })
     .catch(error => {
       console.log(error)
@@ -82,13 +78,7 @@ function ChooseGame() {
 
   const handleClickJoinGame = (event) => {
     event.persist()
-    //if (!state.listUserGame) return
     api.getGameById(event.target.id).then(game => {
-
-      //if (Object.entries(state.listUserGame).filter((e, i) => e[1].user_id === game.data.data[0].creator_id._id && e[1].game_id === game.data.data[0]._id).length === 0 &&
-      //    state.user_id !== game.data.data[0].creator_id._id)
-      //  return
-
       api.getPlayersByGameId(event.target.id).then(players => {
         //console.log(players.data.data)
         let player, uno, playerExist = false
@@ -103,7 +93,7 @@ function ChooseGame() {
           else if (state.user._id === players.data.data[i].user_id._id)
             playerExist = true
         }
-        socket.emit('game', { message: 'Player ' + state.user.name + ' join to the game ' + game.data.data[0].keyWord + '.', user_id: state.user._id, game_id: game.data.data[0]._id });
+        socket.emit('game', {}, state.user ? state.user._id : null, game.data.data[0]._id, 'User: ' + state.user.name + ' join to the game: ' + game.data.data[0].keyWord);
         if (!playerExist) {
           const payload = { user_id: state.user._id, game_id: game.data.data[0]._id, score: 0,
                             curr_round: 0, curr_cards: [], curr_cards_pile: [],
@@ -133,46 +123,41 @@ function ChooseGame() {
   }
 
   useEffect(() => {
-    socket.on("log in", (obj, id, listClients) => {
-      //console.log('emit log in', obj, id, listClients)
-      setState(state =>({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
-    })
-    socket.on("game", (obj, id, listClients) => {
-      //console.log('emit game',obj, id, listClients)
+    socket.on("new connection", (obj, socket_id, listClients, message) => {
       setState(state => ({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
     })
-    socket.on("cancel", (obj, id, listClients) => {
-      //console.log('emit cancel',obj, id, listClients)
+    socket.on("log in", (obj, socket_id, listClients, message) => {
       setState(state => ({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
     })
-    socket.on("cancel game", (obj, id, listClients) => {
-      //console.log('emit cancel',obj, id, listClients)
+    socket.on("game", (obj, socket_id, listClients, message) => {
       setState(state => ({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
     })
-    socket.on("cancel game alone", (obj, id, listClients) => {
-      //console.log('emit cancel',obj, id, listClients)
+    socket.on("cancel game", (obj, socket_id, listClients, message) => {
       setState(state => ({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
     })
-    socket.on("log out", (obj, id, listClients) => {
-      //console.log('emit log out', obj, id, listClients)
-      setState(state =>({ ...state, listUserGame: listClients }))
-      //setResponse(obj.message)
+    socket.on("cancel game multiple", (obj, socket_id, listClients, message) => {
+      setState(state => ({ ...state, listUserGame: listClients }))
+    })
+    socket.on("cancel game alone", (obj, socket_id, listClients, message) => {
+      setState(state => ({ ...state, listUserGame: listClients }))
+    })
+    socket.on("log out", (obj, socket_id, listClients, message) => {
+      if (socket.id === socket_id) {
+        setState(state => ({ }))
+        setValues(values => ({ }))
+      }
+      else
+        setState(state => ({ ...state, listUserGame: listClients }))
+    })
+    socket.on("new disconnect", (obj, socket_id, listClients, message) => {
+      setState(state => ({ ...state, listUserGame: listClients }))
     })
 
-    socket.on("add game", (obj, id) => {
-      //console.log('emit log out', obj, id, listClients)
-      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
-      //setResponse(obj.message)
+    socket.on("add game", (obj, socket_id, listClients, message) => {
+      setState(state => ({ ...state, listUserGame: listClients }))
     })
-    socket.on("delete game", (obj, id) => {
-      //console.log('emit log out', obj, id, listClients)
-      setState(state => ({ ...state, doRender: (state.doRender ? state.doRender + 1 : 0) }))
-      //setResponse(obj.message)
+    socket.on("delete game", (obj, socket_id, listClients, message) => {
+      setState(state => ({ ...state, listUserGame: listClients }))
     })
   }, [])
 
