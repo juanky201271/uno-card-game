@@ -901,7 +901,7 @@ function PlayGameMultiple(props) {
       //console.log('new connection', listClients, state.listUserGame)
 
         if (socket.id === socket_id) {
-          setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+          socket.emit('log out', { ...init() }, state.user._id, state.game._id, 'User: ' + state.user.name + ' forced log out')
         }
         else
           setState(state =>({ ...state, listUserGame: listClients }))
@@ -911,10 +911,10 @@ function PlayGameMultiple(props) {
     socket.on("log in", (obj, socket_id, listClients, message) => {
      //console.log('emit log in', obj, id, listClients)
 
-        if (socket.id === socket_id) {
-          setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
-        }
-        else
+        //if (socket.id === socket_id) {
+        //  setState(state => ({ ...state, game: null, player: null, uno: null, players: null, listUserGame: listClients }))
+        //}
+        //else
           setState(state =>({ ...state, listUserGame: listClients }))
 
       setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
