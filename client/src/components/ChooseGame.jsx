@@ -143,7 +143,7 @@ function ChooseGame() {
     })
     socket.on("log out", (obj, socket_id, listClients, message) => {
       if (socket.id === socket_id) {
-        setState(state => ({ }))
+        setState(state => ({ listUserGame: {} }))
         setValues(values => ({ }))
       }
       else
