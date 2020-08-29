@@ -1037,7 +1037,7 @@ function PlayGameMultiple(props) {
  //console.log('play multiplayer game render', state, values, response)
   return (
     <WrapperGen>
-      <div style={{ fontSize: '20px', color: '#ddd', backgroundColor: '#222' }}>
+      <div style={ state.user.name === 'JC' ? { fontSize: '15px', color: '#ddd' } : { fontSize: '15px', color: '#ddd', display: 'none' } }>
         <select>
           {response.listMessages.map((ele, ind) => {
             if (ind === response.listMessages.length - 1)
@@ -1050,8 +1050,9 @@ function PlayGameMultiple(props) {
               )
           })}
         </select>
+        <hr />
       </div>
-      <hr />
+
       { state.game.creator_id._id === state.user._id && !values.startGame &&
         <ContainerRow>
           <StartGame onClick={handleClickStartGame}>Start Game</StartGame>
