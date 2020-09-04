@@ -901,7 +901,7 @@ function PlayGameMultiple(props) {
       //console.log('new connection', listClients, state.listUserGame)
 
         if (socket.id === socket_id) {
-          socket.emit('log out', { ...init() }, state.user._id, state.game._id, 'User: ' + state.user.name + ' forced log out')
+          socket.emit('log out', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' forced log out')
         }
         else
           setState(state =>({ ...state, listUserGame: listClients }))
