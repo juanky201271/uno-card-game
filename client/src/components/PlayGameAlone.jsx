@@ -711,7 +711,7 @@ function PlayGameAlone (props) {
   useEffect(() => {
     socket.on("cancel game alone", (obj, socket_id, listClients, message) => {
       if (socket.id === socket_id) {
-        console.log('emit cancel game alone', obj, socket_id, listClients, message)
+        //console.log('emit cancel game alone', obj, socket_id, listClients, message)
         setState(state => ({ ...state, game: null, player: null, uno: null, listUserGame: listClients }))
       } else {
         setState(state => ({ ...state, listUserGame: listClients }))
