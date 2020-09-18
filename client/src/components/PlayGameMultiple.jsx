@@ -221,9 +221,6 @@ function PlayGameMultiple(props) {
               for (let c = 0; c < numCards; c++) {
                 let aux = cards.pop()
                 auxCards.push({ card: aux, numberPlay: numberPlay })
-
-                break
-
               }
               playersUno[ind] = { user: state.players[i].user_id, cards: auxCards, pile: [], uno: false, player: state.players[i] }
               break
