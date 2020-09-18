@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { GameContext, Card, MiniCard, socket, Points } from '../components'
+import { GameContext, Card, MiniCard, socket, Points, MiniCardRed } from '../components'
 import api from '../api'
 import styled from 'styled-components'
 
@@ -33,6 +33,11 @@ const ContainerColumn = styled.div.attrs({ className: "d-flex flex-column" })
   padding: 5px 5px 5px 5px;
 `
 const PUno = styled.p.attrs({ className: 'text-secondary' })
+`
+  font-size: 35px;
+  text-shadow: 2px 2px 2px #000000;
+`
+const PUnoRed = styled.p.attrs({ className: 'text-danger' })
 `
   font-size: 35px;
   text-shadow: 2px 2px 2px #000000;
@@ -1195,10 +1200,12 @@ function PlayGameMultiple(props) {
                           }
                           <PScore> ({a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.score}) </PScore>
                           { (values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
-                            <>
-                              <hr />
-                              <p><strong>I SAY UNO!!!!!</strong></p>
-                            </>
+                            <PUno><strong>SAY_UNO!!!!!</strong></PUno>
+                          }
+                          { !(values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
+                            values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                            a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards.length === 2 &&
+                            <PUnoRed><strong>NOT_SAY_UNO!!!!!</strong></PUnoRed>
                           }
                           {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
                             <PWinner>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name} is the Winner!!!!</PWinner>
@@ -1218,6 +1225,18 @@ function PlayGameMultiple(props) {
                                   </ContainerRow>
                                 )
                             })
+                          }
+                          { !(values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
+                            values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
+                            a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards.length === 2 &&
+                            <>
+                              <ContainerRow>
+                                <MiniCardRed align="center" width={55} height={35} />
+                              </ContainerRow>
+                              <ContainerRow>
+                                <MiniCardRed align="center" width={55} height={35} />
+                              </ContainerRow>
+                            </>
                           }
                           { (values.viewUnoCards || values.finishRound) &&
                             <Points cards={a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards} />
