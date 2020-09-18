@@ -1200,12 +1200,12 @@ function PlayGameMultiple(props) {
                           }
                           <PScore> ({a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.score}) </PScore>
                           { (values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
-                            <PUno><strong>SAY_UNO!!!!!</strong></PUno>
+                            <PUno><strong>SAYS_UNO!!!!!</strong></PUno>
                           }
                           { !(values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
                             values.unoTurn === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
                             a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].cards.length === 2 &&
-                            <PUnoRed><strong>NOT_SAY_UNO!!!!!</strong></PUnoRed>
+                            <PUnoRed><strong>DID_NOT_SAY_UNO!!!!!</strong></PUnoRed>
                           }
                           {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
                             <PWinner>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name} is the Winner!!!!</PWinner>
