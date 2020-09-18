@@ -1095,7 +1095,6 @@ function PlayGameMultiple(props) {
 
       { state.game.creator_id._id === state.user._id && !values.startGame &&
         <ContainerRow>
-          <p>You can start the game anytime. ({socket.id})</p>
           <StartGame onClick={handleClickStartGame}>Start Game</StartGame>
           <ContainerColumn>
             <PUnoLit>All posible Players: {state.players.length}</PUnoLit>

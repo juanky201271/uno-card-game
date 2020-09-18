@@ -84,7 +84,7 @@ function LoginForm() {
       }
       { state.user &&
         (<Container>
-          <label>User: {state.user.name} ({socket.id})</label>
+          <label>User: {state.user.name}</label>
         </Container>)
       }
     </ContainerExt>
