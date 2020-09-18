@@ -162,7 +162,8 @@ function PlayGameMultiple(props) {
       return ({unoTurn: -1, playerPickCard: false, startGame: false, nextTurnStep: 1,
               cards: cards, pile: pile, finishRound: false, numberPlay: 0, unoWin: -1,
               numCards: Number(state.game.cards), round: state.game.curr_round,
-              viewUnoCards: false, playersUno: {}, cardIndex: -1, wildColor: null, pickCard: false, checkUno: false })
+              viewUnoCards: false, playersUno: {}, cardIndex: -1,
+              wildColor: null, pickCard: false, checkUno: false, sayUno: [] })
     //} else {
     //  return ({})
     //}
@@ -200,6 +201,7 @@ function PlayGameMultiple(props) {
         wildColor,
         pickCard,
         checkUno,
+        sayUno,
         startGame,
         viewUnoCards,
         round} = values
@@ -219,6 +221,9 @@ function PlayGameMultiple(props) {
               for (let c = 0; c < numCards; c++) {
                 let aux = cards.pop()
                 auxCards.push({ card: aux, numberPlay: numberPlay })
+
+                break
+
               }
               playersUno[ind] = { user: state.players[i].user_id, cards: auxCards, pile: [], uno: false, player: state.players[i] }
               break
@@ -259,6 +264,7 @@ function PlayGameMultiple(props) {
       cards = obj.cards
       pile = obj.pile
       checkUno = false
+      sayUno = []
       round = obj.round
     } else {
       obj = {}
@@ -276,6 +282,7 @@ function PlayGameMultiple(props) {
         cardIndex = -1
         wildColor = null
         checkUno = false
+        sayUno = []
         round = obj.round
       } else if (pickCard) {
         obj = pickACard({ unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep })
@@ -290,14 +297,15 @@ function PlayGameMultiple(props) {
         pile = obj.pile
         pickCard = false
         checkUno = false
+        sayUno = []
       } else {
         if (firstTime) {
           setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-            viewUnoCards: viewUnoCards, round: round }))
+            viewUnoCards: viewUnoCards, round: round, sayUno: sayUno }))
           socket.emit('sincro game', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
             unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-            viewUnoCards: viewUnoCards, round: round }, state.user._id, state.game._id, 'User: ' + state.user.name + ' first sincronizing multiple game: ' + state.game.keyWord)
+            viewUnoCards: viewUnoCards, round: round, sayUno: sayUno }, state.user._id, state.game._id, 'User: ' + state.user.name + ' first sincronizing multiple game: ' + state.game.keyWord)
         }
         return
       }
@@ -305,10 +313,10 @@ function PlayGameMultiple(props) {
 
     setValues(values =>({ ...values, playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      viewUnoCards: viewUnoCards, round: round }))
+      viewUnoCards: viewUnoCards, round: round, sayUno: sayUno }))
     socket.emit('sincro game', { playersUno: playersUno, unoTurn: unoTurn, nextTurnStep: nextTurnStep, finishRound: finishRound, playerPickCard: playerPickCard, numberPlay: numberPlay,
       unoWin: unoWin, cards: cards, pile: pile, cardIndex: cardIndex, wildColor: wildColor, pickCard: pickCard, checkUno: checkUno, startGame: startGame, numCards: numCards,
-      viewUnoCards: viewUnoCards, round: round }, state.user._id, state.game._id, 'User: ' + state.user.name + ' end sincronizing multiple game: ' + state.game.keyWord)
+      viewUnoCards: viewUnoCards, round: round, sayUno: sayUno }, state.user._id, state.game._id, 'User: ' + state.user.name + ' end sincronizing multiple game: ' + state.game.keyWord)
   }
 
   const nextPlayer = (unoTurn, nextTurnStep, length) => {
@@ -563,7 +571,13 @@ function PlayGameMultiple(props) {
           if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
             finishRound = true
             unoWin = unoTurn
-            playersUno = unoFinishWin(unoWin, playersUno)
+            unoFinishWin(unoWin, playersUno)
+              .then(result => {
+                playersUno = result
+              })
+              .catch(error => {
+                console.log(error)
+              })
             round++
           }
 
@@ -667,7 +681,13 @@ function PlayGameMultiple(props) {
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 0) {
       finishRound = true
       unoWin = unoTurn
-      playersUno = unoFinishWin(unoWin, playersUno)
+      unoFinishWin(unoWin, playersUno)
+        .then(result => {
+          playersUno = result
+        })
+        .catch(error => {
+          console.log(error)
+        })
       round++
     }
     if (Object.entries(playersUno)[unoTurn][1].cards.length === 1 && !checkUno) {
@@ -804,24 +824,38 @@ function PlayGameMultiple(props) {
     return { unoTurn, cards, pile, playerPickCard, finishRound, numberPlay, unoWin, playersUno, nextTurnStep }
   }
 
-  const unoFinishWin = (unoWin, playersUno) => {
-    let game = state.game
-    let t = 0
-    for (let i = 0; i < Object.entries(playersUno).length; i++) {
-      for (let j = 0; j < Object.entries(playersUno)[i][1].cards.length; j++) {
-        t += Number(value[Object.entries(playersUno)[i][1].cards[j].card.n.toString()])
+  const unoFinishWin = async (unoWin, playersUno) => {
+    let playersUno2
+    await unoFinishWinAsyncCallback(unoWin, playersUno, function(playersUno) {
+      socket.emit('sincro game', { playersUno: playersUno }, state.user._id, state.game._id, 'User: ' + state.user.name + ' last end sincronizing multiple game: ' + state.game.keyWord)
+    })
+    return playersUno2
+  }
+
+  const unoFinishWinAsyncCallback = (unoWin, playersUno, callback) => {
+      let game = state.game
+      let t = 0
+      for (let i = 0; i < Object.entries(playersUno).length; i++) {
+        for (let j = 0; j < Object.entries(playersUno)[i][1].cards.length; j++) {
+          t += Number(value[Object.entries(playersUno)[i][1].cards[j].card.n.toString()])
+        }
       }
-    }
-    game.curr_round++
-    let player_id = Object.entries(playersUno)[unoWin][1].player._id
-    api.getPlayerById(player_id).then(player => {
-      let payload = { score: player.data.data[0].score + t }
-      api.updatePlayerById(player_id, payload).then(player2 => {
-        api.getPlayersByGameId(state.game._id).then(players => {
-          let payload2 = { curr_round: game.curr_round }
-          api.updateGameById(game._id, payload2).then(game2 => {
-            playersUno[Object.entries(playersUno)[unoWin][0]].player.score = player.data.data[0].score + t
-            setState(state => ({ ...state, players: players.data.data, game: game }))
+      game.curr_round++
+      let player_id = Object.entries(playersUno)[unoWin][1].player._id
+      api.getPlayerById(player_id).then(player => {
+        let payload = { score: player.data.data[0].score + t }
+        api.updatePlayerById(player_id, payload).then(player2 => {
+          api.getPlayersByGameId(state.game._id).then(players => {
+            let payload2 = { curr_round: game.curr_round }
+            api.updateGameById(game._id, payload2).then(game2 => {
+              playersUno[Object.entries(playersUno)[unoWin][0]].player.score = player.data.data[0].score + t
+              setState(state => ({ ...state, players: players.data.data, game: game }))
+              callback(playersUno)
+              return playersUno
+            })
+            .catch(error => {
+              console.log(error)
+            })
           })
           .catch(error => {
             console.log(error)
@@ -834,11 +868,6 @@ function PlayGameMultiple(props) {
       .catch(error => {
         console.log(error)
       })
-    })
-    .catch(error => {
-      console.log(error)
-    })
-    return playersUno
   }
 
   const handleClickStartGame = (event) => {
@@ -889,7 +918,15 @@ function PlayGameMultiple(props) {
 
   const handleChangeCheckUNO = (event) => {
     event.persist()
+    let sayUno = []
+    let i = Object.entries(values.playersUno).findIndex(ele => ele[1].user._id === state.user._id)
+    if (event.target.checked) {
+      sayUno = [...values.sayUno, i]
+    } else {
+      sayUno = values.sayUno.filter((ele) => ele !== i)
+    }
     setValues(values => ({ ...values, [event.target.id]: event.target.checked }))
+    socket.emit('sincro say Uno game', { sayUno: sayUno }, state.user._id, state.game._id, 'User: ' + state.user.name + ' sincronizing say Uno game: ' + state.game.keyWord)
   }
 
   const [ state, setState ] = useContext(GameContext)
@@ -966,6 +1003,12 @@ function PlayGameMultiple(props) {
     })
     socket.on("sincro view game", (obj, socket_id, listClients, message) => {
        //console.log('emit sincro view', obj, id, listClients)
+      setState(state => ({ ...state, listUserGame: listClients }))
+      setValues(values => ({ ...values, ...obj }))
+      setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
+    })
+    socket.on("sincro say Uno game", (obj, socket_id, listClients, message) => {
+       //console.log('emit say Uno view', obj, id, listClients)
       setState(state => ({ ...state, listUserGame: listClients }))
       setValues(values => ({ ...values, ...obj }))
       setResponse(response => ({ ...response, listMessages: [...response.listMessages, message] }))
@@ -1055,6 +1098,7 @@ function PlayGameMultiple(props) {
 
       { state.game.creator_id._id === state.user._id && !values.startGame &&
         <ContainerRow>
+          <p>You can start the game anytime. ({socket.id})</p>
           <StartGame onClick={handleClickStartGame}>Start Game</StartGame>
           <ContainerColumn>
             <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
@@ -1066,7 +1110,7 @@ function PlayGameMultiple(props) {
 
       { state.game.creator_id._id !== state.user._id && !values.startGame &&
         <ContainerRow>
-          <p>Waiting for the principal player start the game</p>
+          <p>Waiting for the principal player start the game. ({socket.id})</p>
           <ContainerColumn>
             <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
             <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
@@ -1077,7 +1121,7 @@ function PlayGameMultiple(props) {
 
       { values.startGame && !(Object.entries(values.playersUno).length > 0 && values.playersUno[socket.id] ? values.playersUno[socket.id].user._id === state.user._id : false) &&
         <ContainerRow>
-          <p>The game is running now. Waiting for the principal player start a new round</p>
+          <p>The game is running now. Waiting for the principal player start a new round. ({socket.id})</p>
           <ContainerColumn>
             <PUnoLit>All posible Players: {state.players.length}</PUnoLit>
             <PUnoLit>Connected Players: {state.listUserGame ? Object.entries(state.listUserGame).filter((ele, ind) => ele[1].game_id === state.game._id).length : '0'}</PUnoLit>
@@ -1154,6 +1198,12 @@ function PlayGameMultiple(props) {
                             <PUno>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name.substr(0,6)}</PUno>
                           }
                           <PScore> ({a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].player.score}) </PScore>
+                          { (values.sayUno.filter(ele => ele === (values.nextTurnStep === 1 ? i : a.length - 1 - i)).length > 0) &&
+                            <>
+                              <hr />
+                              <p><strong>I SAY UNO!!!!!</strong></p>
+                            </>
+                          }
                           {values.finishRound && values.unoWin === (values.nextTurnStep === 1 ? i : a.length - 1 - i) &&
                             <PWinner>{a[values.nextTurnStep === 1 ? i : a.length - 1 - i][1].user.name} is the Winner!!!!</PWinner>
                           }

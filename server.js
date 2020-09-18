@@ -75,6 +75,10 @@ io.on("connection", (socket) => {
     io.sockets.in("game-" + game_id).emit('sincro view game', obj, socket.id, listClients, message)
     console.log(message)
   })
+  socket.on('sincro say Uno game', function (obj, user_id, game_id, message) {
+    io.sockets.in("game-" + game_id).emit('sincro say Uno game', obj, socket.id, listClients, message)
+    console.log(message)
+  })
   socket.on('play card', function (obj, user_id, game_id, message) {
     io.sockets.in("game-" + game_id).emit('play card', obj, socket.id, listClients, message)
     console.log(message)

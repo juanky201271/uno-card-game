@@ -125,7 +125,7 @@ function ChooseGame() {
   useEffect(() => {
     socket.on("new connection", (obj, socket_id, listClients, message) => {
       if (socket.id === socket_id) {
-        socket.emit('log out', {}, state.user._id, state.game._id, 'User: ' + state.user.name + ' forced log out')
+        socket.emit('log out', {}, state.user._id, null, 'User: ' + state.user.name + ' forced log out')
       }
       else
         setState(state => ({ ...state, listUserGame: listClients }))
