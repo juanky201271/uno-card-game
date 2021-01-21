@@ -26,7 +26,7 @@
     "mongoose": "^5.10.3",
     "nodemon": "^2.0.4",
     "path": "^0.12.7",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "resolutions": {
     "cryptiles": "^4.1.3"
