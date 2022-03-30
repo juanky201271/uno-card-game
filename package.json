@@ -11,8 +11,8 @@
   "author": "juanky201271",
   "license": "ISC",
   "engines": {
-    "node": "13.9.x",
-    "npm": "6.13.x"
+    "node": "16.13.x",
+    "npm": "8.5.x"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
