@@ -3,7 +3,7 @@ import api from '../api'
 import { GameContext, GameForm, socket } from '../components'
 import styled from 'styled-components'
 
-const Container = styled.div.attrs({ className: "container" })
+const Container = styled.div.attrs({ className: "container text-center" })
 `
   padding: 10px;
 `
